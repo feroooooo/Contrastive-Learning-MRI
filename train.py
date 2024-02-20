@@ -2,14 +2,26 @@ import torch.optim as optim
 import torch
 import torch.nn as nn
 import os
+import time
 from torch.utils.data import DataLoader, random_split
 from torchvision import transforms
+from torch.utils.tensorboard import SummaryWriter
 from mri_dataset import ADNIDataset
 from model import Simple3DCNN
 
+# TensorBoard
+path = 'logs'
+if os.path.exists('logs'):
+    for file_name in os.listdir(path):
+        os.remove(os.path.join(path, file_name))
+writer = SummaryWriter("logs")
+
+# 训练步数
+step = 0
 # 训练
 def train(model, device, train_loader, optimizer, criterion, epoch):
     model.train()
+    global step
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
@@ -19,6 +31,9 @@ def train(model, device, train_loader, optimizer, criterion, epoch):
         optimizer.step()
         if batch_idx % 100 == 0:
             print(f'\rEpoch: {epoch}\t{batch_idx * len(data):>4} / {len(train_loader.dataset):<4} ({100. * batch_idx / len(train_loader):.0f}%)\tLoss: {loss.item():.6f}', end='')
+        if step % 100 == 0:
+            writer.add_scalar("train loss", loss.item(), step)
+        step += 1
     print(f'\rEpoch: {epoch}\t{len(train_loader.dataset):>4} / {len(train_loader.dataset):<4} ({100.:.0f}%)\tLatest Loss: {loss.item():.6f}')
 
 
@@ -45,6 +60,7 @@ def test(model, device, test_loader, criterion):
     print('Test Dataset:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         accuracy * 100.))
+    writer.add_scalar("test loss", test_loss, epoch)
     
     # 存储模型
     global best_accuracy
@@ -75,6 +91,7 @@ batch_size = 8
 learning_rate = 0.0001
 
 if __name__ == "__main__":
+    time_start = time.perf_counter()
     color_print("Infomations:")
     # 初始化数据集
     data_dir = "D:/Data/MRI/ADNI/Image"
@@ -113,7 +130,11 @@ if __name__ == "__main__":
     for epoch in range(1, epoch_num + 1):  # 总共训练2个epochs
         train(model, device, train_loader, optimizer, criterion, epoch)
         test(model, device, test_loader, criterion)
+    
+    writer.close()
+    time_stop = time.perf_counter()
     color_print("Finish Training.")
     
+    print("total time:{:.3f}s".format(time_stop - time_start))
     print(f"\nbest loss: {best_loss:.6f}")
     print(f"best accuracy: {best_accuracy * 100.:.1f}%")
