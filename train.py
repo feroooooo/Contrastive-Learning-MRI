@@ -58,8 +58,7 @@ def test(model, device, test_loader, criterion):
 
     accuracy = correct / len(test_loader.dataset)
     print('Test Dataset:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(
-        test_loss, correct, len(test_loader.dataset),
-        accuracy * 100.))
+        test_loss, correct, len(test_loader.dataset), accuracy * 100.))
     writer.add_scalar("test loss", test_loss, epoch)
     
     # 存储模型
@@ -79,6 +78,26 @@ def test(model, device, test_loader, criterion):
         torch.save(state, 'checkpoint/best.pth')
     if best_loss > test_loss:
         best_loss = test_loss
+        
+        
+# 测试
+def validate(model, device, val_loader, criterion):
+    model.eval()
+    val_loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in val_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            val_loss += criterion(output, target).item() * data.size(0)
+            pred = output.argmax(dim=1, keepdim=True)
+            correct += pred.eq(target.view_as(pred)).sum().item()
+    val_loss /= len(val_loader.dataset)
+
+    accuracy = correct / len(val_loader.dataset)
+    print('Val Dataset:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(
+        val_loss, correct, len(val_loader.dataset), accuracy * 100.))
+
 
 # 向控制台打印蓝色字符串
 def color_print(str):
@@ -86,7 +105,7 @@ def color_print(str):
 
 
 # 超参数配置
-epoch_num = 5
+epoch_num = 50
 batch_size = 8
 learning_rate = 0.0001
 
@@ -125,7 +144,7 @@ if __name__ == "__main__":
     # 定义损失函数和优化器
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-
+    
     color_print("\nStart Training:")
     for epoch in range(1, epoch_num + 1):  # 总共训练2个epochs
         train(model, device, train_loader, optimizer, criterion, epoch)
