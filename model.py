@@ -29,25 +29,24 @@ class VGG3D(nn.Module):
         super(VGG3D, self).__init__()
         
         # Define the layers
-        self.conv1 = nn.Conv3d(in_channels=1, out_channels=8, kernel_size=3)  # Adjust in_channels based on your input
-        self.conv2 = nn.Conv3d(8, 8, 3)
+        self.conv1 = nn.Conv3d(in_channels=1, out_channels=8, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv3d(8, 8, 3, padding=1)
 
-        self.conv3 = nn.Conv3d(8, 16, 3)
-        self.conv4 = nn.Conv3d(16, 16, 3)
+        self.conv3 = nn.Conv3d(8, 16, 3, padding=1)
+        self.conv4 = nn.Conv3d(16, 16, 3, padding=1)
 
-        self.conv5 = nn.Conv3d(16, 32, 3)
-        self.conv6 = nn.Conv3d(32, 32, 3)
-        self.conv7 = nn.Conv3d(32, 32, 3)
+        self.conv5 = nn.Conv3d(16, 32, 3, padding=1)
+        self.conv6 = nn.Conv3d(32, 32, 3, padding=1)
+        self.conv7 = nn.Conv3d(32, 32, 3, padding=1)
 
-        self.conv8 = nn.Conv3d(32, 64, 3)
-        self.conv9 = nn.Conv3d(64, 64, 3)
-        self.conv10 = nn.Conv3d(64, 64, 3)
+        self.conv8 = nn.Conv3d(32, 64, 3, padding=1)
+        self.conv9 = nn.Conv3d(64, 64, 3, padding=1)
+        self.conv10 = nn.Conv3d(64, 64, 3, padding=1)
 
-        feature_size = 0
-        self.fc1 = nn.Linear(64 * feature_size, 128)  # Adjust feature_size based on your input size after convolutions
+        self.fc1 = nn.Linear(64 * 5 * 6 * 5, 128)
         self.bn1 = nn.BatchNorm1d(128)
         self.fc2 = nn.Linear(128, 64)
-        self.fc3 = nn.Linear(64, 2)  # Assuming your final output has 2 classes
+        self.fc3 = nn.Linear(64, 3) 
 
     def forward(self, x):
         # Define the forward pass
@@ -71,9 +70,20 @@ class VGG3D(nn.Module):
 
         # Flatten the output for the dense layer
         x = torch.flatten(x, 1)
-
+        
         x = F.dropout(F.relu(self.bn1(self.fc1(x))), 0.7)
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
 
-        return F.softmax(x, dim=1)
+        return x
+
+
+if __name__ == '__main__':
+    net = VGG3D()
+    net.eval()
+    # Generate a random test input tensor of the size (1, 91, 109, 91)
+    test_input = torch.randn(1, 1, 91, 109, 91)
+
+    # Forward pass through the network
+    test_output = net(test_input)
+    print(test_output)
