@@ -21,3 +21,59 @@ class Simple3DCNN(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
+    
+
+# VoxVGG
+class VGG3D(nn.Module):
+    def __init__(self):
+        super(VGG3D, self).__init__()
+        
+        # Define the layers
+        self.conv1 = nn.Conv3d(in_channels=1, out_channels=8, kernel_size=3)  # Adjust in_channels based on your input
+        self.conv2 = nn.Conv3d(8, 8, 3)
+
+        self.conv3 = nn.Conv3d(8, 16, 3)
+        self.conv4 = nn.Conv3d(16, 16, 3)
+
+        self.conv5 = nn.Conv3d(16, 32, 3)
+        self.conv6 = nn.Conv3d(32, 32, 3)
+        self.conv7 = nn.Conv3d(32, 32, 3)
+
+        self.conv8 = nn.Conv3d(32, 64, 3)
+        self.conv9 = nn.Conv3d(64, 64, 3)
+        self.conv10 = nn.Conv3d(64, 64, 3)
+
+        feature_size = 0
+        self.fc1 = nn.Linear(64 * feature_size, 128)  # Adjust feature_size based on your input size after convolutions
+        self.bn1 = nn.BatchNorm1d(128)
+        self.fc2 = nn.Linear(128, 64)
+        self.fc3 = nn.Linear(64, 2)  # Assuming your final output has 2 classes
+
+    def forward(self, x):
+        # Define the forward pass
+        x = F.relu(self.conv1(x))
+        x = F.relu(self.conv2(x))
+        x = F.max_pool3d(x, 2)
+
+        x = F.relu(self.conv3(x))
+        x = F.relu(self.conv4(x))
+        x = F.max_pool3d(x, 2)
+
+        x = F.relu(self.conv5(x))
+        x = F.relu(self.conv6(x))
+        x = F.relu(self.conv7(x))
+        x = F.max_pool3d(x, 2)
+
+        x = F.relu(self.conv8(x))
+        x = F.relu(self.conv9(x))
+        x = F.relu(self.conv10(x))
+        x = F.max_pool3d(x, 2)
+
+        # Flatten the output for the dense layer
+        x = torch.flatten(x, 1)
+
+        x = F.dropout(F.relu(self.bn1(self.fc1(x))), 0.7)
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+
+        return F.softmax(x, dim=1)

@@ -106,7 +106,7 @@ def color_print(str):
 
 
 # 超参数配置
-epoch_num = 10
+epoch_num = 30
 batch_size = 8
 learning_rate = 0.0001
 
