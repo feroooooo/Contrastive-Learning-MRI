@@ -76,7 +76,7 @@ def validate(model, device, validation_loader, criterion):
         }
         if not os.path.isdir('checkpoint'):
             os.mkdir('checkpoint')
-        torch.save(state, 'checkpoint/best.pth')
+        torch.save(state, f'checkpoint/best_epoch{epoch}.pth')
     if best_loss > validation_loss:
         best_loss = validation_loss
         
@@ -106,9 +106,9 @@ def color_print(str):
 
 
 # 超参数配置
-epoch_num = 30
-batch_size = 8
-learning_rate = 0.0001
+epoch_num = 100
+batch_size = 16
+learning_rate = 0.001
 
 if __name__ == "__main__":
     time_start = time.perf_counter()
@@ -144,11 +144,13 @@ if __name__ == "__main__":
     # 定义损失函数和优化器
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
     
     color_print("\nStart Training:")
     for epoch in range(1, epoch_num + 1):  # 总共训练2个epochs
         train(model, device, train_loader, optimizer, criterion, epoch)
         validate(model, device, validation_loader, criterion)
+        # scheduler.step()
     
     writer.close()
     time_stop = time.perf_counter()
