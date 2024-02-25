@@ -11,10 +11,15 @@ from model import Simple3DCNN, VGG3D
 
 # TensorBoard
 path = 'logs'
-if os.path.exists('logs'):
+if os.path.exists(path):
     for file_name in os.listdir(path):
         os.remove(os.path.join(path, file_name))
-writer = SummaryWriter("logs")
+writer = SummaryWriter(path)
+
+path = 'checkpoint'
+if os.path.exists(path):
+    for file_name in os.listdir(path):
+        os.remove(os.path.join(path, file_name))
 
 # 训练步数
 step = 0
@@ -106,16 +111,16 @@ def color_print(str):
 
 
 # 超参数配置
-epoch_num = 100
-batch_size = 16
-learning_rate = 0.001
+epoch_num = 50
+batch_size = 32
+learning_rate = 0.005
 
 if __name__ == "__main__":
     time_start = time.perf_counter()
     color_print("Infomations:")
     # 初始化数据集
-    data_dir = "D:/Data/MRI/ADNI/Image"
-    csv_path = "D:/Data/MRI/ADNI/pheno_ADNI_longitudinal_new.csv"
+    data_dir = "E:/Data/ADNI/adni-fnirt-corrected"
+    csv_path = "E:/Data/ADNI/pheno_ADNI_longitudinal_new.csv"
     
     transform = transforms.Normalize((0.1307,), (0.3081,))
     dataset = ADNIDataset(data_dir=data_dir, csv_path=csv_path, transform=transform)
