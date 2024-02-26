@@ -111,7 +111,7 @@ def color_print(str):
 
 
 # 超参数配置
-epoch_num = 50
+epoch_num = 150
 batch_size = 32
 learning_rate = 0.005
 
@@ -119,23 +119,36 @@ if __name__ == "__main__":
     time_start = time.perf_counter()
     color_print("Infomations:")
     # 初始化数据集
-    data_dir = "E:/Data/ADNI/adni-fnirt-corrected"
-    csv_path = "E:/Data/ADNI/pheno_ADNI_longitudinal_new.csv"
-    
     transform = transforms.Normalize((0.1307,), (0.3081,))
-    dataset = ADNIDataset(data_dir=data_dir, csv_path=csv_path, transform=transform)
+    data_dir = "E:/Data/ADNI/adni-fnirt-corrected"
+    # csv_path = "E:/Data/ADNI/pheno_ADNI_longitudinal_new.csv"
+    
+    # dataset = ADNIDataset(data_dir=data_dir, csv_path=csv_path, transform=transform)
 
-    # 数据集大小
-    dataset_size = len(dataset)
-    train_size = int(dataset_size * 0.7)
-    validation_size = int(dataset_size * 0.15)
-    test_size = dataset_size - train_size - validation_size
-    print("train size:", train_size)
-    print("validation size:", validation_size)
-    print("test size:", test_size)
+    # # 数据集大小
+    # dataset_size = len(dataset)
+    # train_size = int(dataset_size * 0.7)
+    # validation_size = int(dataset_size * 0.15)
+    # test_size = dataset_size - train_size - validation_size
+    # print("train size:", train_size)
+    # print("validation size:", validation_size)
+    # print("test size:", test_size)
 
-    # 数据集切分
-    train_dataset, validation_dataset, test_dataset = random_split(dataset, [train_size, validation_size, test_size])
+    # # 数据集切分
+    # train_dataset, validation_dataset, test_dataset = random_split(dataset, [train_size, validation_size, test_size])
+    
+    # 导入数据集
+    train_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/train label.csv", transform=transform)
+    validation_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/validation label.csv", transform=transform)
+    test_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/test label.csv", transform=transform)
+
+    print("train size:", len(train_dataset))
+    print(train_dataset.labels)
+    print("validation size:", len(validation_dataset))
+    print(validation_dataset.labels)
+    print("test size:", len(test_dataset))
+    print(test_dataset.labels)
+    print("total size:", len(train_dataset) + len(validation_dataset) + len(test_dataset))
 
     # DataLoader
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
@@ -149,13 +162,13 @@ if __name__ == "__main__":
     # 定义损失函数和优化器
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.1)
     
     color_print("\nStart Training:")
-    for epoch in range(1, epoch_num + 1):  # 总共训练2个epochs
+    for epoch in range(1, epoch_num + 1):
         train(model, device, train_loader, optimizer, criterion, epoch)
         validate(model, device, validation_loader, criterion)
-        # scheduler.step()
+        scheduler.step()
     
     writer.close()
     time_stop = time.perf_counter()
