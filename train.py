@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import os
 import time
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader, random_split, WeightedRandomSampler
 from torchvision import transforms
 from torch.utils.tensorboard import SummaryWriter
 from mri_dataset import ADNIDataset
@@ -149,9 +149,20 @@ if __name__ == "__main__":
     print("test size:", len(test_dataset))
     print(test_dataset.labels)
     print("total size:", len(train_dataset) + len(validation_dataset) + len(test_dataset))
+    
+    # 类别不平衡
+    all_labels = []
+    for _, label in train_dataset:
+        all_labels.append(label)
+    all_labels = torch.tensor(all_labels)
+    class_count = torch.tensor([(all_labels == t).sum() for t in torch.unique(all_labels, sorted=True)])
+
+    class_weights = 1. / class_count.float()  # 计算类权重
+    samples_weights = class_weights[all_labels.long()]  # 每个样本的权重
+    sampler = WeightedRandomSampler(weights=samples_weights, num_samples=len(samples_weights), replacement=True)
 
     # DataLoader
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, sampler=sampler)
     validation_loader = DataLoader(validation_dataset, batch_size=batch_size, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
