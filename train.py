@@ -34,7 +34,7 @@ def train(model, device, train_loader, optimizer, criterion, epoch):
         loss = criterion(output, target)
         loss.backward()
         optimizer.step()
-        if batch_idx % 100 == 0:
+        if batch_idx % 10 == 0:
             print(f'\rEpoch: {epoch}\t{batch_idx * len(data):>4} / {len(train_loader.dataset):<4} ({100. * batch_idx / len(train_loader):.0f}%)\tLoss: {loss.item():.6f}', end='')
         if step % 100 == 0:
             writer.add_scalar("train loss", loss.item(), step)
@@ -178,9 +178,9 @@ if __name__ == "__main__":
 
     # DataLoader
     # train_loader = DataLoader(train_dataset, batch_size=batch_size, csampler=sampler)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    validation_loader = DataLoader(validation_dataset, batch_size=batch_size, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
+    validation_loader = DataLoader(validation_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print('current device:', device)
