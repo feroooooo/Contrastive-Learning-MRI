@@ -29,21 +29,21 @@ class VGG3D(nn.Module):
         super(VGG3D, self).__init__()
         
         # Define the layers
-        self.conv1 = nn.Conv3d(in_channels=1, out_channels=8, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv3d(8, 8, 3, padding=1)
+        self.conv1 = nn.Conv3d(in_channels=1, out_channels=8, kernel_size=3)
+        self.conv2 = nn.Conv3d(8, 8, 3)
 
-        self.conv3 = nn.Conv3d(8, 16, 3, padding=1)
-        self.conv4 = nn.Conv3d(16, 16, 3, padding=1)
+        self.conv3 = nn.Conv3d(8, 16, 3)
+        self.conv4 = nn.Conv3d(16, 16, 3)
 
-        self.conv5 = nn.Conv3d(16, 32, 3, padding=1)
-        self.conv6 = nn.Conv3d(32, 32, 3, padding=1)
-        self.conv7 = nn.Conv3d(32, 32, 3, padding=1)
+        self.conv5 = nn.Conv3d(16, 32, 3)
+        self.conv6 = nn.Conv3d(32, 32, 3)
+        self.conv7 = nn.Conv3d(32, 32, 3)
 
-        self.conv8 = nn.Conv3d(32, 64, 3, padding=1)
-        self.conv9 = nn.Conv3d(64, 64, 3, padding=1)
-        self.conv10 = nn.Conv3d(64, 64, 3, padding=1)
+        self.conv8 = nn.Conv3d(32, 64, 3)
+        self.conv9 = nn.Conv3d(64, 64, 3)
+        self.conv10 = nn.Conv3d(64, 64, 3)
 
-        self.fc1 = nn.Linear(64 * 5 * 6 * 5, 128)
+        self.fc1 = nn.Linear(64, 128)
         self.bn1 = nn.BatchNorm1d(128)
         self.fc2 = nn.Linear(128, 64)
         self.fc3 = nn.Linear(64, 3) 

@@ -113,13 +113,12 @@ def color_print(str):
 # 超参数配置
 epoch_num = 150
 batch_size = 32
-learning_rate = 0.005
+learning_rate = 0.0005
 
 if __name__ == "__main__":
     time_start = time.perf_counter()
     color_print("Infomations:")
     # 初始化数据集
-    transform = transforms.Normalize((0.1307,), (0.3081,))
     data_dir = "E:/Data/ADNI/adni-fnirt-corrected"
     # csv_path = "E:/Data/ADNI/pheno_ADNI_longitudinal_new.csv"
     
@@ -137,10 +136,26 @@ if __name__ == "__main__":
     # # 数据集切分
     # train_dataset, validation_dataset, test_dataset = random_split(dataset, [train_size, validation_size, test_size])
     
+    # 在你的数据集类中定义transform
+    from monai.transforms import Compose, RandRotate90, RandFlip, NormalizeIntensity, Resize
+
+    transform = Compose([
+        RandRotate90(prob=0.5, spatial_axes=[1, 2]),
+        RandFlip(prob=0.5, spatial_axis=0),
+        
+        Resize(spatial_size=[110, 110, 110]),
+        NormalizeIntensity(nonzero=True, channel_wise=True),
+    ])
+    
+    pre_transform = Compose([
+        Resize(spatial_size=[110, 110, 110]),
+        NormalizeIntensity(nonzero=True, channel_wise=True),
+    ])
+    
     # 导入数据集
     train_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/train label.csv", transform=transform)
-    validation_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/validation label.csv", transform=transform)
-    test_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/test label.csv", transform=transform)
+    validation_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/validation label.csv", transform=pre_transform)
+    test_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/test label.csv", transform=pre_transform)
 
     print("train size:", len(train_dataset))
     print(train_dataset.labels)
@@ -162,7 +177,8 @@ if __name__ == "__main__":
     sampler = WeightedRandomSampler(weights=samples_weights, num_samples=len(samples_weights), replacement=True)
 
     # DataLoader
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, sampler=sampler)
+    # train_loader = DataLoader(train_dataset, batch_size=batch_size, csampler=sampler)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     validation_loader = DataLoader(validation_dataset, batch_size=batch_size, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
