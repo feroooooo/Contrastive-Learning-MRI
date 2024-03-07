@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, random_split, WeightedRandomSampler
 from torchvision import transforms
 from torch.utils.tensorboard import SummaryWriter
 from mri_dataset import ADNIDataset
-from model import Simple3DCNN, VGG3D
+from model import Simple3DCNN, VGG3D, VoxResNet
 
 # TensorBoard
 path = 'logs'
@@ -185,7 +185,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print('current device:', device)
     # 实例化网络
-    model = VGG3D().to(device)
+    model = VoxResNet().to(device)
     # 定义损失函数和优化器
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)

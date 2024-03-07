@@ -78,12 +78,79 @@ class VGG3D(nn.Module):
         return x
 
 
+# VoxResNet
+class VoxResNet(nn.Module):
+    def __init__(self):
+        super(VoxResNet, self).__init__()
+        # Initial Convolution Block
+        self.conv1a = nn.Conv3d(1, 32, kernel_size=3, padding=1)
+        self.bn1a = nn.BatchNorm3d(32)
+        self.conv1b = nn.Conv3d(32, 32, kernel_size=3, padding=1)
+        self.bn1b = nn.BatchNorm3d(32)
+        # self.conv1c = nn.Conv3d(32, 64, kernel_size=3, stride=2, padding=56)
+        self.conv1c = nn.Conv3d(32, 64, kernel_size=3, stride=2, padding=2)
+        # VoxRes Blocks
+        self.voxres2 = self._voxres_block(64, 64)
+        self.voxres3 = self._voxres_block(64, 64)
+        self.conv4 = nn.Conv3d(64, 64, kernel_size=3, stride=2, padding=2)
+        self.voxres5 = self._voxres_block(64, 64)
+        self.voxres6 = self._voxres_block(64, 64)
+        self.conv7 = nn.Conv3d(64, 128, kernel_size=3, stride=2, padding=2)
+        self.voxres8 = self._voxres_block(128, 128)
+        self.voxres9 = self._voxres_block(128, 128)
+        # Final Layers
+        # self.pool10 = nn.AdaptiveAvgPool3d((1, 1, 1))
+        self.fc11 = nn.Linear(1024, 128)
+        self.prob = nn.Linear(128, 3)
+
+    def _voxres_block(self, in_channels, out_channels):
+        layers = nn.Sequential(
+            nn.BatchNorm3d(in_channels),
+            nn.ReLU(inplace=True),
+            nn.Conv3d(in_channels, out_channels, kernel_size=3, padding='same'),
+            nn.BatchNorm3d(out_channels),
+            nn.ReLU(inplace=True),
+            nn.Conv3d(out_channels, out_channels, kernel_size=3, padding='same'),
+        )
+        return layers
+
+    def forward(self, x):
+        # 卷积padding待确定
+        x = F.relu(self.bn1a(self.conv1a(x)))
+        x = F.relu(self.bn1b(self.conv1b(x)))
+        x1 = self.conv1c(x)
+        
+
+        x2 = self.voxres2(x1) + x1
+        x3 = self.voxres3(x2) + x2
+        
+
+        x4 = F.relu(self.conv4(x3))
+
+        x5 = self.voxres5(x4) + x4
+        x6 = self.voxres6(x5) + x5
+
+        x7 = F.relu(self.conv7(x6))
+        x8 = self.voxres8(x7) + x7
+        x9 = self.voxres9(x8) + x8
+        # 最大池化
+        x = F.max_pool3d(x9, 8).view(1, -1)
+        # x = self.pool10(x9).view(x9.size(0), -1)
+        x = F.relu(self.fc11(x))
+        x = self.prob(x)
+
+        return x
+
+
+
+
 if __name__ == '__main__':
-    net = VGG3D()
+    # net = VGG3D()
+    net = VoxResNet()
     net.eval()
     # Generate a random test input tensor of the size (1, 91, 109, 91)
-    test_input = torch.randn(1, 1, 91, 109, 91)
+    test_input = torch.randn(1, 1, 110, 110, 110)
 
     # Forward pass through the network
     test_output = net(test_input)
-    print(test_output)
+    print(test_output.shape)
