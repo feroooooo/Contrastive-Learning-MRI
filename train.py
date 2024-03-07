@@ -113,7 +113,7 @@ def color_print(str):
 # 超参数配置
 epoch_num = 150
 batch_size = 32
-learning_rate = 0.0005
+learning_rate = 0.005
 
 if __name__ == "__main__":
     time_start = time.perf_counter()
@@ -141,7 +141,7 @@ if __name__ == "__main__":
 
     transform = Compose([
         RandRotate90(prob=0.5, spatial_axes=[1, 2]),
-        RandFlip(prob=0.5, spatial_axis=0),
+        # RandFlip(prob=0.5, spatial_axis=0),
         
         Resize(spatial_size=[110, 110, 110]),
         NormalizeIntensity(nonzero=True, channel_wise=True),
@@ -177,10 +177,10 @@ if __name__ == "__main__":
     sampler = WeightedRandomSampler(weights=samples_weights, num_samples=len(samples_weights), replacement=True)
 
     # DataLoader
-    # train_loader = DataLoader(train_dataset, batch_size=batch_size, csampler=sampler)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
-    validation_loader = DataLoader(validation_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=sampler)
+    # train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+    validation_loader = DataLoader(validation_dataset, batch_size=batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print('current device:', device)

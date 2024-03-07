@@ -42,6 +42,7 @@ class ADNIDataset(Dataset):
 
         if self.transform is not None:
             nii_img = self.transform(nii_img)
+            nii_img = nii_img.as_tensor()
         # if self.nomalization == True:
         #     nii_img = transforms.Normalize((0.1307,), (0.3081,))(nii_img)
         
