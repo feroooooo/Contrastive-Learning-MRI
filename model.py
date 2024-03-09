@@ -134,7 +134,8 @@ class VoxResNet(nn.Module):
         x8 = self.voxres8(x7) + x7
         x9 = self.voxres9(x8) + x8
         # 最大池化
-        x = F.max_pool3d(x9, 8).view(1, -1)
+        x = F.max_pool3d(x9, 8)
+        x = torch.flatten(x, 1)
         # x = self.pool10(x9).view(x9.size(0), -1)
         x = F.relu(self.fc11(x))
         x = self.prob(x)
@@ -149,7 +150,7 @@ if __name__ == '__main__':
     net = VoxResNet()
     net.eval()
     # Generate a random test input tensor of the size (1, 91, 109, 91)
-    test_input = torch.randn(1, 1, 110, 110, 110)
+    test_input = torch.randn(2, 1, 110, 110, 110)
 
     # Forward pass through the network
     test_output = net(test_input)

@@ -112,8 +112,8 @@ def color_print(str):
 
 # 超参数配置
 epoch_num = 150
-batch_size = 32
-learning_rate = 0.005
+batch_size = 4
+learning_rate = 0.0001
 
 if __name__ == "__main__":
     time_start = time.perf_counter()
@@ -137,11 +137,15 @@ if __name__ == "__main__":
     # train_dataset, validation_dataset, test_dataset = random_split(dataset, [train_size, validation_size, test_size])
     
     # 在你的数据集类中定义transform
-    from monai.transforms import Compose, RandRotate90, RandFlip, NormalizeIntensity, Resize
+    from monai.transforms import Compose, RandRotate90, RandFlip, NormalizeIntensity, Resize, RandAdjustContrast, RandGaussianNoise, RandAffine
 
     transform = Compose([
         RandRotate90(prob=0.5, spatial_axes=[1, 2]),
         # RandFlip(prob=0.5, spatial_axis=0),
+        
+        RandAdjustContrast(prob=0.5),
+        RandGaussianNoise(prob=0.3),
+        # RandAffine(prob=0.5, translate_range=10, scale_range=(0.9, 1.1), rotate_range=45),
         
         Resize(spatial_size=[110, 110, 110]),
         NormalizeIntensity(nonzero=True, channel_wise=True),
