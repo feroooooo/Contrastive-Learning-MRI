@@ -21,7 +21,7 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),  # ImageNet标准化
 ])
 
-img_path = r"C:\Users\MSi\Pictures\00000017_224resized.jpg"
+img_path = r"C:\Users\MSi\Pictures\both.png"
 original_image = Image.open(img_path).convert('RGB')
 # 预处理图片
 image = transform(original_image)
@@ -42,4 +42,6 @@ print(predicted)
 # 使用matplotlib可视化图像
 plt.imshow(attention_map, cmap='gray')
 plt.colorbar()  # 可选，为图像添加颜色条
-plt.show()
+# plt.show()
+plt.savefig('./attention_maps/fig.jpg')
+plt.imsave('./attention_maps/heatmaps.jpg', attention_map, cmap='gray')
