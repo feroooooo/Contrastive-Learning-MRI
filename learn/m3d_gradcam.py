@@ -9,8 +9,16 @@ from matplotlib import colormaps
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# model = models.resnet152(weights=ResNet152_Weights.DEFAULT)
 model = models.resnet50(weights=ResNet50_Weights.DEFAULT)
+# model = models.resnet50()
+
+# import torch.nn as nn
+# num_ftrs = model.fc.in_features
+# model.fc = nn.Linear(num_ftrs, 6)
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# checkpoint = torch.load(r"C:\Users\17993\Desktop\Animal-World\model\weight.pth", map_location=torch.device(device))
+# # 加载模型权重
+# model.load_state_dict(checkpoint['model'])
 
 from medcam import medcam
 
@@ -22,7 +30,7 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),  # ImageNet标准化
 ])
 
-img_path = r"C:\Users\MSi\Pictures\both.png"
+img_path = r"C:\Users\17993\Pictures\tiger.jpg"
 original_image = Image.open(img_path).convert('RGB')
 # 预处理图片
 image = transform(original_image)
@@ -45,7 +53,7 @@ print('attention_map shape:', attention_map.shape)
 # plt.colorbar()  # 可选，为图像添加颜色条
 # plt.show()
 # plt.savefig('./attention_maps/fig.jpg')
-plt.imsave('./attention_maps/heatmaps.jpg', attention_map)
+plt.imsave('./attention_maps/heatmaps.jpg', attention_map, cmap="jet")
 resize_image = transforms.Resize((224, 224))(original_image)
 resize_image.save('attention_maps/image.jpg')
 image = np.array(resize_image)
@@ -66,7 +74,7 @@ attention_map_colored[..., -1] = attention_map_normalized
 # 创建一个图像来显示结果
 fig, ax = plt.subplots()
 ax.imshow(image)
-ax.imshow(attention_map_colored, cmap='jet', alpha=0.8)  # 调整alpha以改变叠加层的透明度
+ax.imshow(attention_map_colored, alpha=0.8)  # 调整alpha以改变叠加层的透明度
 plt.axis('off')  # 关闭坐标轴
 
 # 保存叠加后的图像
