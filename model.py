@@ -2,27 +2,36 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# 定义CNN网络结构
+
 class Simple3DCNN(nn.Module):
-    def __init__(self):
+    def __init__(self, class_nums):
         super(Simple3DCNN, self).__init__()
         self.conv1 = nn.Conv3d(1, 8, kernel_size=3, stride=1, padding=1)
         self.pool = nn.MaxPool3d(kernel_size=2, stride=2)
         self.conv2 = nn.Conv3d(8, 16, kernel_size=3, stride=2, padding=1)
-        self.fc1 = nn.Linear(16 * 12 * 12 * 12, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 64)  # Assuming 3 classes for CN, MCI, and AD
+        self.last_fc = nn.Linear(16 * 12 * 12 * 12, class_nums)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
-        print(x.shape)
         x = x.view(-1, 16 * 12 * 12 * 12)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
+        x = self.last_fc(x)
         return x
-    
+
+
+
+# out_dim为计算损失时的维度，训练完毕推理时输出的维度为dim_mlp
+class Simple3DCNN_SIMCLR(nn.Module):
+    def __init__(self, out_dim):
+        super(Simple3DCNN_SIMCLR, self).__init__()
+        self.backbone = Simple3DCNN(out_dim)
+        dim_mlp = self.backbone.last_fc.in_features
+        self.backbone.last_fc = nn.Sequential(nn.Linear(dim_mlp, dim_mlp), nn.ReLU(), self.backbone.last_fc)
+
+    def forward(self, x):
+        x = self.backbone(x)
+        return x
+
 
 # VoxVGG
 class VGG3D(nn.Module):
