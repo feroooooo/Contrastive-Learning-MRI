@@ -9,12 +9,14 @@ class Simple3DCNN(nn.Module):
         self.conv1 = nn.Conv3d(1, 8, kernel_size=3, stride=1, padding=1)
         self.pool = nn.MaxPool3d(kernel_size=2, stride=2)
         self.conv2 = nn.Conv3d(8, 16, kernel_size=3, stride=2, padding=1)
-        self.last_fc = nn.Linear(16 * 12 * 12 * 12, class_nums)
+        self.fc = nn.Linear(16 * 12 * 12 * 12, 128)
+        self.last_fc = nn.Linear(128, class_nums)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x = x.view(-1, 16 * 12 * 12 * 12)
+        x = self.fc(x)
         x = self.last_fc(x)
         return x
 
@@ -157,7 +159,7 @@ class VoxResNet(nn.Module):
 
 if __name__ == '__main__':
     # net = VGG3D()
-    net = Simple3DCNN()
+    net = Simple3DCNN(class_nums=3)
     net.eval()
     # Generate a random test input tensor of the size (1, 91, 109, 91)
     test_input = torch.randn(2, 1, 100, 100, 100)
