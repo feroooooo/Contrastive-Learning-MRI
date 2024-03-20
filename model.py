@@ -8,15 +8,16 @@ class Simple3DCNN(nn.Module):
         super(Simple3DCNN, self).__init__()
         self.conv1 = nn.Conv3d(1, 8, kernel_size=3, stride=1, padding=1)
         self.pool = nn.MaxPool3d(kernel_size=2, stride=2)
-        self.conv2 = nn.Conv3d(8, 16, kernel_size=3, stride=1, padding=1)
-        self.fc1 = nn.Linear(16 * 22 * 27 * 22, 120)
+        self.conv2 = nn.Conv3d(8, 16, kernel_size=3, stride=2, padding=1)
+        self.fc1 = nn.Linear(16 * 12 * 12 * 12, 120)
         self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 3)  # Assuming 3 classes for CN, MCI, and AD
+        self.fc3 = nn.Linear(84, 64)  # Assuming 3 classes for CN, MCI, and AD
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 22 * 27 * 22)
+        print(x.shape)
+        x = x.view(-1, 16 * 12 * 12 * 12)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
@@ -147,10 +148,10 @@ class VoxResNet(nn.Module):
 
 if __name__ == '__main__':
     # net = VGG3D()
-    net = VoxResNet()
+    net = Simple3DCNN()
     net.eval()
     # Generate a random test input tensor of the size (1, 91, 109, 91)
-    test_input = torch.randn(2, 1, 110, 110, 110)
+    test_input = torch.randn(2, 1, 100, 100, 100)
 
     # Forward pass through the network
     test_output = net(test_input)
