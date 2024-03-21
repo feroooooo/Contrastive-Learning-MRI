@@ -8,6 +8,7 @@ conda install pandas
 conda install matplotlib
 pip install tensorboard -U
 conda install -c conda-forge monai
+conda install scikit-learn
 conda install tqdm
 pip install medcam
 ```

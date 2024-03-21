@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, random_split, WeightedRandomSampler
 from torchvision import transforms
 from torch.utils.tensorboard import SummaryWriter
 from mri_dataset import ADNIDataset
-from model import Simple3DCNN, VGG3D, VoxResNet
+from model import Simple3DCNN, VoxVGG, VoxResNet
 
 # TensorBoard
 path = 'logs'
@@ -103,6 +103,47 @@ def test(model, device, test_loader, criterion):
     accuracy = correct / len(test_loader.dataset)
     print('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset), accuracy * 100.))
+    
+    
+# 评估测试集
+def train_eval(model, device, train_loader, criterion):
+    test_loader = train_loader
+    model.eval()
+    test_loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            test_loss += criterion(output, target).item() * data.size(0)
+            pred = output.argmax(dim=1, keepdim=True)
+            correct += pred.eq(target.view_as(pred)).sum().item()
+    test_loss /= len(test_loader.dataset)
+
+    accuracy = correct / len(test_loader.dataset)
+    print('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(
+        test_loss, correct, len(test_loader.dataset), accuracy * 100.))
+    
+
+# 评估模型
+def eval(model, device, loader, criterion, train=True):
+    model.eval()
+    loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            loss += criterion(output, target).item() * data.size(0)
+            pred = output.argmax(dim=1, keepdim=True)
+            correct += pred.eq(target.view_as(pred)).sum().item()
+    loss /= len(loader.dataset)
+
+    accuracy = correct / len(loader.dataset)
+    if train:
+        print('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(loss, correct, len(loader.dataset), accuracy * 100.))
+    else:
+        print('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(loss, correct, len(loader.dataset), accuracy * 100.))
 
 
 # 向控制台打印蓝色字符串
@@ -111,63 +152,71 @@ def color_print(str):
 
 
 # 超参数配置
-epoch_num = 150
+epoch_num = 5
 batch_size = 4
 learning_rate = 0.0001
+data_type = 'single'
 
 if __name__ == "__main__":
     time_start = time.perf_counter()
     color_print("Infomations:")
     # 初始化数据集
     data_dir = "E:/Data/ADNI/adni-fnirt-corrected"
-    # csv_path = "E:/Data/ADNI/pheno_ADNI_longitudinal_new.csv"
     
-    # dataset = ADNIDataset(data_dir=data_dir, csv_path=csv_path, transform=transform)
-
-    # # 数据集大小
-    # dataset_size = len(dataset)
-    # train_size = int(dataset_size * 0.7)
-    # validation_size = int(dataset_size * 0.15)
-    # test_size = dataset_size - train_size - validation_size
-    # print("train size:", train_size)
-    # print("validation size:", validation_size)
-    # print("test size:", test_size)
-
-    # # 数据集切分
-    # train_dataset, validation_dataset, test_dataset = random_split(dataset, [train_size, validation_size, test_size])
     
-    # 在你的数据集类中定义transform
+    size = 100
+    # 数据增强
     from monai.transforms import Compose, RandRotate90, RandFlip, NormalizeIntensity, Resize, RandAdjustContrast, RandGaussianNoise, RandAffine
-
     transform = Compose([
-        RandRotate90(prob=0.5, spatial_axes=[1, 2]),
+        # RandRotate90(prob=0.5, spatial_axes=[1, 2]),
         # RandFlip(prob=0.5, spatial_axis=0),
         
         RandAdjustContrast(prob=0.5),
         RandGaussianNoise(prob=0.3),
-        # RandAffine(prob=0.5, translate_range=10, scale_range=(0.9, 1.1), rotate_range=45),
+        RandAffine(prob=0.5, translate_range=10, scale_range=(0.9, 1.1), rotate_range=45),
         
-        Resize(spatial_size=[110, 110, 110]),
+        Resize(spatial_size=[size, size, size]),
         NormalizeIntensity(nonzero=True, channel_wise=True),
     ])
     
     pre_transform = Compose([
-        Resize(spatial_size=[110, 110, 110]),
+        Resize(spatial_size=[size, size, size]),
         NormalizeIntensity(nonzero=True, channel_wise=True),
     ])
     
     # 导入数据集
-    train_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/train label.csv", transform=transform)
-    validation_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/validation label.csv", transform=pre_transform)
-    test_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/test label.csv", transform=pre_transform)
+    # 先导入数据，再切分
+    if data_type == 'all' or 'single':
+        # 全部数据，不针对被试分割数据集，存在信息泄露
+        if data_type == 'all':
+            csv_path = r"E:/Data/ADNI/pheno_ADNI_longitudinal_new.csv"
+        elif data_type == 'single':
+            csv_path = r"E:\Data\ADNI\single_subject.csv"
+        
+        dataset = ADNIDataset(data_dir=data_dir, csv_path=csv_path, transform=transform)
+        # 数据集大小
+        dataset_size = len(dataset)
+        train_size = int(dataset_size * 0.7)
+        validation_size = int(dataset_size * 0.15)
+        test_size = dataset_size - train_size - validation_size
+
+        # 数据集切分
+        train_dataset, validation_dataset, test_dataset = random_split(dataset, [train_size, validation_size, test_size])
+        
+    # 提取分割的数据集，每个被试只存在于一个集合
+    elif data_type == 'split':
+        train_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/train label.csv", transform=transform)
+        validation_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/validation label.csv", transform=pre_transform)
+        test_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/test label.csv", transform=pre_transform)
 
     print("train size:", len(train_dataset))
-    print(train_dataset.labels)
+    # print(train_dataset.labels)
     print("validation size:", len(validation_dataset))
-    print(validation_dataset.labels)
+    # print(validation_dataset.labels)
     print("test size:", len(test_dataset))
-    print(test_dataset.labels)
+    # print(test_dataset.labels)
     print("total size:", len(train_dataset) + len(validation_dataset) + len(test_dataset))
+    # 数据集导入完成
     
     # 类别不平衡
     all_labels = []
@@ -189,7 +238,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print('current device:', device)
     # 实例化网络
-    model = VoxResNet().to(device)
+    model = VoxResNet(class_nums=3).to(device)
     # 定义损失函数和优化器
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
@@ -198,6 +247,7 @@ if __name__ == "__main__":
     color_print("\nStart Training:")
     for epoch in range(1, epoch_num + 1):
         train(model, device, train_loader, optimizer, criterion, epoch)
+        eval(model, device, train_loader, criterion, train=True)
         validate(model, device, validation_loader, criterion)
         scheduler.step()
     
