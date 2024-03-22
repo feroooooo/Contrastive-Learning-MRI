@@ -62,7 +62,7 @@ def validate(model, device, validation_loader, criterion):
     validation_loss /= len(validation_loader.dataset)
 
     accuracy = correct / len(validation_loader.dataset)
-    print('Validate:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(
+    print('Validate:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(
         validation_loss, correct, len(validation_loader.dataset), accuracy * 100.))
     writer.add_scalar("validation loss", validation_loss, epoch)
     writer.add_scalar("validation accuracy", accuracy, epoch)
@@ -72,7 +72,7 @@ def validate(model, device, validation_loader, criterion):
     global best_loss
     if best_accuracy < accuracy:
         best_accuracy = accuracy
-        print('Saving model...')
+        print('Saving model...\n')
         state = {
             'model': model.state_dict(),
             'accuracy': accuracy,
@@ -141,9 +141,11 @@ def eval(model, device, loader, criterion, train=True):
 
     accuracy = correct / len(loader.dataset)
     if train:
-        print('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(loss, correct, len(loader.dataset), accuracy * 100.))
+        print('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
+        writer.add_scalar("average train loss", loss, epoch)
+        writer.add_scalar("average train accuracy", accuracy, epoch)
     else:
-        print('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(loss, correct, len(loader.dataset), accuracy * 100.))
+        print('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
 
 
 # 向控制台打印蓝色字符串
@@ -152,8 +154,8 @@ def color_print(str):
 
 
 # 超参数配置
-epoch_num = 5
-batch_size = 4
+epoch_num = 50
+batch_size = 8
 learning_rate = 0.0001
 data_type = 'single'
 
@@ -167,21 +169,26 @@ if __name__ == "__main__":
     size = 100
     # 数据增强
     from monai.transforms import Compose, RandRotate90, RandFlip, NormalizeIntensity, Resize, RandAdjustContrast, RandGaussianNoise, RandAffine
+    prob = 0.5
     transform = Compose([
-        # RandRotate90(prob=0.5, spatial_axes=[1, 2]),
-        # RandFlip(prob=0.5, spatial_axis=0),
+        RandRotate90(prob=prob, spatial_axes=[1, 2]),
+        # RandRotate90(prob=prob, spatial_axes=[0, 1]),
+        # RandRotate90(prob=prob, spatial_axes=[0, 2]),
+        RandFlip(prob=prob, spatial_axis=0),
+        # RandFlip(prob=prob, spatial_axis=1),
+        # RandFlip(prob=prob, spatial_axis=2),
         
-        RandAdjustContrast(prob=0.5),
-        RandGaussianNoise(prob=0.3),
-        RandAffine(prob=0.5, translate_range=10, scale_range=(0.9, 1.1), rotate_range=45),
+        RandAdjustContrast(prob=prob, gamma=(0.7, 1.3)),
+        RandGaussianNoise(prob=prob),
+        # RandAffine(prob=prob, translate_range=10, scale_range=(0.9, 1.1), rotate_range=45),
         
         Resize(spatial_size=[size, size, size]),
-        NormalizeIntensity(nonzero=True, channel_wise=True),
+        NormalizeIntensity(channel_wise=True),
     ])
     
     pre_transform = Compose([
         Resize(spatial_size=[size, size, size]),
-        NormalizeIntensity(nonzero=True, channel_wise=True),
+        NormalizeIntensity(channel_wise=True),
     ])
     
     # 导入数据集
@@ -242,14 +249,15 @@ if __name__ == "__main__":
     # 定义损失函数和优化器
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
     
     color_print("\nStart Training:")
     for epoch in range(1, epoch_num + 1):
         train(model, device, train_loader, optimizer, criterion, epoch)
         eval(model, device, train_loader, criterion, train=True)
         validate(model, device, validation_loader, criterion)
-        scheduler.step()
+        if epoch > 50:
+            scheduler.step()
     
     writer.close()
     time_stop = time.perf_counter()
