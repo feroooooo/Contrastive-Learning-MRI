@@ -4,22 +4,25 @@ import torch.nn as nn
 import os
 import time
 from torch.utils.data import DataLoader, random_split, WeightedRandomSampler
-from torchvision import transforms
 from torch.utils.tensorboard import SummaryWriter
+import logging
 from mri_dataset import ADNIDataset
 from model import Simple3DCNN, VoxVGG, VoxResNet
 
 # TensorBoard
-path = 'logs'
-if os.path.exists(path):
-    for file_name in os.listdir(path):
-        os.remove(os.path.join(path, file_name))
-writer = SummaryWriter(path)
+# path = 'logs'
+# if os.path.exists(path):
+#     for file_name in os.listdir(path):
+#         os.remove(os.path.join(path, file_name))
+writer = SummaryWriter()
 
-path = 'checkpoint'
-if os.path.exists(path):
-    for file_name in os.listdir(path):
-        os.remove(os.path.join(path, file_name))
+logging.basicConfig(filename=os.path.join(writer.log_dir, 'training.log'), level=logging.INFO)
+
+# path = 'checkpoint'
+# if os.path.exists(path):
+#     for file_name in os.listdir(path):
+#         os.remove(os.path.join(path, file_name))
+
 
 # 训练步数
 step = 0
@@ -34,13 +37,12 @@ def train(model, device, train_loader, optimizer, criterion, epoch):
         loss = criterion(output, target)
         loss.backward()
         optimizer.step()
-        if batch_idx % 10 == 0:
-            print(f'\rEpoch: {epoch}\t{batch_idx * len(data):>4} / {len(train_loader.dataset):<4} ({100. * batch_idx / len(train_loader):.0f}%)\tLoss: {loss.item():.6f}', end='')
+        print(f'\rEpoch: {epoch}\t{batch_idx * len(data):>4} / {len(train_loader.dataset):<4} ({100. * batch_idx / len(train_loader):.0f}%)\tLoss: {loss.item():.6f}', end='')
         if step % 100 == 0:
             writer.add_scalar("train loss", loss.item(), step)
         step += 1
     print(f'\rEpoch: {epoch}\t{len(train_loader.dataset):>4} / {len(train_loader.dataset):<4} ({100.:.0f}%)\tLatest Loss: {loss.item():.6f}')
-
+    logging.info(f"Epoch:{epoch}")
 
 # 最优损失函数
 best_loss = float("inf")
@@ -53,19 +55,21 @@ def validate(model, device, validation_loader, criterion):
     validation_loss = 0
     correct = 0
     with torch.no_grad():
-        for data, target in validation_loader:
+        for idx, (data, target) in enumerate(validation_loader):
+            print(f'\r{idx + 1}/{len(validation_loader)}', end='')
             data, target = data.to(device), target.to(device)
             output = model(data)
             validation_loss += criterion(output, target).item() * data.size(0)
             pred = output.argmax(dim=1, keepdim=True)
             correct += pred.eq(target.view_as(pred)).sum().item()
+        print('\r', end='')
     validation_loss /= len(validation_loader.dataset)
 
     accuracy = correct / len(validation_loader.dataset)
-    print('Validate:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(
-        validation_loss, correct, len(validation_loader.dataset), accuracy * 100.))
+    print('Validate:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(validation_loss, correct, len(validation_loader.dataset), accuracy * 100.))
     writer.add_scalar("validation loss", validation_loss, epoch)
     writer.add_scalar("validation accuracy", accuracy, epoch)
+    logging.info('Validate:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(validation_loss, correct, len(validation_loader.dataset), accuracy * 100.))
     
     # 存储模型
     global best_accuracy
@@ -81,48 +85,48 @@ def validate(model, device, validation_loader, criterion):
         }
         if not os.path.isdir('checkpoint'):
             os.mkdir('checkpoint')
-        torch.save(state, f'checkpoint/best_epoch{epoch}.pth')
+        torch.save(state, os.path.join(writer.log_dir, 'checkpoint.pth'))
     if best_loss > validation_loss:
         best_loss = validation_loss
         
         
-# 测试
-def test(model, device, test_loader, criterion):
-    model.eval()
-    test_loss = 0
-    correct = 0
-    with torch.no_grad():
-        for data, target in test_loader:
-            data, target = data.to(device), target.to(device)
-            output = model(data)
-            test_loss += criterion(output, target).item() * data.size(0)
-            pred = output.argmax(dim=1, keepdim=True)
-            correct += pred.eq(target.view_as(pred)).sum().item()
-    test_loss /= len(test_loader.dataset)
+# # 测试
+# def test(model, device, test_loader, criterion):
+#     model.eval()
+#     test_loss = 0
+#     correct = 0
+#     with torch.no_grad():
+#         for data, target in test_loader:
+#             data, target = data.to(device), target.to(device)
+#             output = model(data)
+#             test_loss += criterion(output, target).item() * data.size(0)
+#             pred = output.argmax(dim=1, keepdim=True)
+#             correct += pred.eq(target.view_as(pred)).sum().item()
+#     test_loss /= len(test_loader.dataset)
 
-    accuracy = correct / len(test_loader.dataset)
-    print('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(
-        test_loss, correct, len(test_loader.dataset), accuracy * 100.))
+#     accuracy = correct / len(test_loader.dataset)
+#     print('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(
+#         test_loss, correct, len(test_loader.dataset), accuracy * 100.))
     
     
-# 评估测试集
-def train_eval(model, device, train_loader, criterion):
-    test_loader = train_loader
-    model.eval()
-    test_loss = 0
-    correct = 0
-    with torch.no_grad():
-        for data, target in test_loader:
-            data, target = data.to(device), target.to(device)
-            output = model(data)
-            test_loss += criterion(output, target).item() * data.size(0)
-            pred = output.argmax(dim=1, keepdim=True)
-            correct += pred.eq(target.view_as(pred)).sum().item()
-    test_loss /= len(test_loader.dataset)
+# # 评估测试集
+# def train_eval(model, device, train_loader, criterion):
+#     test_loader = train_loader
+#     model.eval()
+#     test_loss = 0
+#     correct = 0
+#     with torch.no_grad():
+#         for data, target in test_loader:
+#             data, target = data.to(device), target.to(device)
+#             output = model(data)
+#             test_loss += criterion(output, target).item() * data.size(0)
+#             pred = output.argmax(dim=1, keepdim=True)
+#             correct += pred.eq(target.view_as(pred)).sum().item()
+#     test_loss /= len(test_loader.dataset)
 
-    accuracy = correct / len(test_loader.dataset)
-    print('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(
-        test_loss, correct, len(test_loader.dataset), accuracy * 100.))
+#     accuracy = correct / len(test_loader.dataset)
+#     print('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(
+#         test_loss, correct, len(test_loader.dataset), accuracy * 100.))
     
 
 # 评估模型
@@ -131,12 +135,14 @@ def eval(model, device, loader, criterion, train=True):
     loss = 0
     correct = 0
     with torch.no_grad():
-        for data, target in loader:
+        for idx, (data, target) in enumerate(loader):
+            print(f'\r{idx + 1}/{len(loader)}', end='')
             data, target = data.to(device), target.to(device)
             output = model(data)
             loss += criterion(output, target).item() * data.size(0)
             pred = output.argmax(dim=1, keepdim=True)
             correct += pred.eq(target.view_as(pred)).sum().item()
+        print('\r', end='')
     loss /= len(loader.dataset)
 
     accuracy = correct / len(loader.dataset)
@@ -144,8 +150,10 @@ def eval(model, device, loader, criterion, train=True):
         print('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
         writer.add_scalar("average train loss", loss, epoch)
         writer.add_scalar("average train accuracy", accuracy, epoch)
+        logging.info('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
     else:
         print('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
+        logging.info('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
 
 
 # 向控制台打印蓝色字符串
@@ -154,10 +162,12 @@ def color_print(str):
 
 
 # 超参数配置
+args = {}
 epoch_num = 50
 batch_size = 8
 learning_rate = 0.0001
 data_type = 'single'
+args['model'] = 'simple'
 
 if __name__ == "__main__":
     time_start = time.perf_counter()
@@ -225,33 +235,45 @@ if __name__ == "__main__":
     print("total size:", len(train_dataset) + len(validation_dataset) + len(test_dataset))
     # 数据集导入完成
     
-    # 类别不平衡
-    all_labels = []
-    for _, label in train_dataset:
-        all_labels.append(label)
-    all_labels = torch.tensor(all_labels)
-    class_count = torch.tensor([(all_labels == t).sum() for t in torch.unique(all_labels, sorted=True)])
+    
+    # 是否使用采样器
+    use_sampler = False
+    
+    if use_sampler:
+        # 类别不平衡
+        all_labels = []
+        for _, label in train_dataset:
+            all_labels.append(label)
+        all_labels = torch.tensor(all_labels)
+        class_count = torch.tensor([(all_labels == t).sum() for t in torch.unique(all_labels, sorted=True)])
 
-    class_weights = 1. / class_count.float()  # 计算类权重
-    samples_weights = class_weights[all_labels.long()]  # 每个样本的权重
-    sampler = WeightedRandomSampler(weights=samples_weights, num_samples=len(samples_weights), replacement=True)
-
-    # DataLoader
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=sampler)
-    # train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+        class_weights = 1. / class_count.float()  # 计算类权重
+        samples_weights = class_weights[all_labels.long()]  # 每个样本的权重
+        sampler = WeightedRandomSampler(weights=samples_weights, num_samples=len(samples_weights), replacement=True)
+        
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=sampler)
+    else:
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    
     validation_loader = DataLoader(validation_dataset, batch_size=batch_size, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print('current device:', device)
     # 实例化网络
-    model = VoxResNet(class_nums=3).to(device)
+    if args['model'] == 'simple':
+        model = Simple3DCNN(class_nums=3).to(device)
+    elif args['model'] == 'vgg':
+        model = VoxVGG(class_nums=3).to(device)
+    elif args['model'] == 'resnet':
+        model = VoxResNet(class_nums=3).to(device)
     # 定义损失函数和优化器
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
     
     color_print("\nStart Training:")
+    logging.info("Start Training:")
     for epoch in range(1, epoch_num + 1):
         train(model, device, train_loader, optimizer, criterion, epoch)
         eval(model, device, train_loader, criterion, train=True)
@@ -267,4 +289,4 @@ if __name__ == "__main__":
     print(f"best loss: {best_loss:.6f}")
     print(f"best accuracy: {best_accuracy * 100.:.1f}%\n")
     
-    test(model, device, test_loader, criterion)
+    eval(model, device, test_loader, criterion, train=False)
