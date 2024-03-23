@@ -198,6 +198,7 @@ if __name__ == "__main__":
 
         # 数据集切分
         train_dataset, validation_dataset, test_dataset = random_split(dataset, [train_size, validation_size, test_size])
+        validation_dataset.transform = test_dataset.transform = pre_transform
         
     # 提取分割的数据集，每个被试只存在于一个集合
     elif args['data_type'] == 'split':
