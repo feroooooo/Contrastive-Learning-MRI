@@ -19,13 +19,13 @@ logging.basicConfig(filename=os.path.join(writer.log_dir, 'training.log'), level
 # 超参数以及其它配置信息
 args = {}
 args['model'] = 'simple'
-args['epoch_num'] = 2
-args['batch_size'] = 8
+args['epoch_num'] = 100
+args['batch_size'] = 16
 args['learning_rate'] = 0.0001
 # 数据形式（single：每个被试图像唯一、split：每个被试图像不唯一，但对于某个被试，其图像只同时存在于一个集合、all：每个被试图像不唯一）
 args['data_type'] = 'single'
 # 每个数据增强方法的概率
-args['prob'] = 0.5
+args['prob'] = 1
 # 图像resize后的大小，三个维度相同
 args['size'] = 100
 # 数据路径
@@ -33,6 +33,7 @@ args['data_dir'] = "E:/Data/ADNI/adni-fnirt-corrected"
 # 是否使用采样器
 args['use_sampler'] = False
 args['use_cuda'] = True
+
 device = torch.device("cuda" if torch.cuda.is_available() and args['use_cuda'] else "cpu")
 if str(device) == "cuda":
     args['use_cuda'] = True
@@ -205,19 +206,25 @@ if __name__ == "__main__":
         train_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/train label.csv", transform=transform)
         validation_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/validation label.csv", transform=pre_transform)
         test_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/test label.csv", transform=pre_transform)
+    import copy
+    train_eval_dataset = copy.deepcopy(train_dataset)
+    train_eval_dataset.transform = pre_transform
 
-
-    logging.info("train size:", len(train_dataset))
-    logging.info("validation size:", len(validation_dataset))
-    logging.info("test size:", len(test_dataset))
-    logging.info("total size:", len(train_dataset) + len(validation_dataset) + len(test_dataset), "\n")
-    print("train size:", len(train_dataset))
+    train_size = len(train_dataset)
+    validation_size = len(validation_dataset)
+    test_size = len(test_dataset)
+    total_size = len(train_dataset) + len(validation_dataset) + len(test_dataset)
+    logging.info(f"train size:{train_size}")
+    logging.info(f"validation size:{validation_size}")
+    logging.info(f"test size:{test_size}")
+    logging.info(f"total size:{total_size}\n")
+    print(f"train size:{train_size}")
     # print(train_dataset.labels)
-    print("validation size:", len(validation_dataset))
+    print(f"validation size:{validation_size}")
     # print(validation_dataset.labels)
-    print("test size:", len(test_dataset))
+    print(f"test size:{test_size}")
     # print(test_dataset.labels)
-    print("total size:", len(train_dataset) + len(validation_dataset) + len(test_dataset))
+    print(f"total size:{total_size}\n")
     # 数据集导入完成
     
     
@@ -237,7 +244,7 @@ if __name__ == "__main__":
     else:
         train_loader = DataLoader(train_dataset, batch_size=args['batch_size'], shuffle=True)
     
-    train_eval_loader = DataLoader(train_dataset, batch_size=args['batch_size'], shuffle=False)
+    train_eval_loader = DataLoader(train_eval_dataset, batch_size=args['batch_size'], shuffle=False)
     validation_loader = DataLoader(validation_dataset, batch_size=args['batch_size'], shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=args['batch_size'], shuffle=False)
     
