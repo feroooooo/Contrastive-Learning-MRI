@@ -10,18 +10,9 @@ from mri_dataset import ADNIDataset
 from model import Simple3DCNN, VoxVGG, VoxResNet
 
 # TensorBoard
-# path = 'logs'
-# if os.path.exists(path):
-#     for file_name in os.listdir(path):
-#         os.remove(os.path.join(path, file_name))
 writer = SummaryWriter()
 
 logging.basicConfig(filename=os.path.join(writer.log_dir, 'training.log'), level=logging.INFO)
-
-# path = 'checkpoint'
-# if os.path.exists(path):
-#     for file_name in os.listdir(path):
-#         os.remove(os.path.join(path, file_name))
 
 
 # 训练步数
@@ -83,9 +74,9 @@ def validate(model, device, validation_loader, criterion):
             'loss': validation_loss,
             'epoch': epoch,
         }
-        if not os.path.isdir('checkpoint'):
-            os.mkdir('checkpoint')
-        torch.save(state, os.path.join(writer.log_dir, 'checkpoint.pth'))
+        # if not os.path.isdir('checkpoint'):
+        #     os.mkdir('checkpoint')
+        torch.save(state, os.path.join(writer.log_dir, 'checkpoint_best.pth'))
     if best_loss > validation_loss:
         best_loss = validation_loss
         
@@ -154,6 +145,14 @@ def eval(model, device, loader, criterion, train=True):
     else:
         print('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
         logging.info('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
+        print('Saving model...\n')
+        state = {
+            'model': model.state_dict(),
+            'accuracy': accuracy,
+            'loss': loss,
+            'epoch': epoch,
+        }
+        torch.save(state, os.path.join(writer.log_dir, 'checkpoint_last.pth'))
 
 
 # 向控制台打印蓝色字符串
