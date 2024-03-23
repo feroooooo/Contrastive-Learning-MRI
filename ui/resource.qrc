@@ -1,0 +1,13 @@
+<RCC>
+  <qresource>
+    <file>resource/img/list.png</file>
+    <file>resource/img/classification.png</file>
+    <file>resource/img/extract.png</file>
+    <file>resource/img/logout.png</file>
+    <file>resource/img/setting.png</file>
+    <file>resource/img/hint.png</file>
+    <file>resource/img/mine.png</file>
+    <file>resource/img/reserve.png</file>
+    <file>resource/img/icon.png</file>
+  </qresource>
+</RCC>

@@ -13,6 +13,7 @@ conda install -c conda-forge monai
 conda install scikit-learn
 conda install tqdm
 pip install medcam
+pip install pyside6
 ```
 
 # TensorBoard
