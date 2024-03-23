@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.6.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -236,6 +236,7 @@ class Ui_MainWindow(object):
         self.topFrame.setObjectName(u"topFrame")
         self.topFrame.setMinimumSize(QSize(0, 60))
         self.topFrame.setMaximumSize(QSize(16777215, 60))
+        self.topFrame.setStyleSheet(u"padding-right:3px;")
         self.verticalLayout_10 = QVBoxLayout(self.topFrame)
         self.verticalLayout_10.setSpacing(0)
         self.verticalLayout_10.setObjectName(u"verticalLayout_10")
@@ -445,7 +446,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"\u57fa\u4e8e\u5bf9\u6bd4\u5b66\u4e60\u7684\u7ed3\u6784\u8111\u5f71\u50cf\u7279\u5f81\u63d0\u53d6\u7cfb\u7edf", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"\u57fa\u4e8e\u5bf9\u6bd4\u5b66\u4e60\u7684\u8111\u7ed3\u6784\u78c1\u5171\u632f\u5f71\u50cf\u7279\u5f81\u63d0\u53d6\u7cfb\u7edf", None))
         self.iconLabel.setText("")
         self.extractButton.setText("")
         self.classificationButton.setText("")
@@ -459,7 +460,7 @@ class Ui_MainWindow(object):
         self.label_4.setText("")
         self.settingLabel.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.lineLabel.setText("")
-        self.topLabel.setText(QCoreApplication.translate("MainWindow", u"\u57fa\u4e8e\u5bf9\u6bd4\u5b66\u4e60\u7684\u7ed3\u6784\u8111\u5f71\u50cf\u7279\u5f81\u63d0\u53d6\u7cfb\u7edf", None))
+        self.topLabel.setText(QCoreApplication.translate("MainWindow", u"\u57fa\u4e8e\u5bf9\u6bd4\u5b66\u4e60\u7684\u8111\u7ed3\u6784\u78c1\u5171\u632f\u5f71\u50cf\u7279\u5f81\u63d0\u53d6\u7cfb\u7edf", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"classification", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"extract", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"Hint", None))

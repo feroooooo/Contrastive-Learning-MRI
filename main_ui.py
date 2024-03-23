@@ -76,12 +76,6 @@ class MainWindow(QMainWindow):
                 widget.installEventFilter(self.eventFilter)
     
     
-    @Slot()
-    def switch_info(self):
-        start = 60
-        end = 160
-    
-    
     # 切换设置界面
     @Slot()
     def switch_setting(self):

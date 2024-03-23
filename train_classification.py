@@ -8,11 +8,40 @@ from torch.utils.tensorboard import SummaryWriter
 import logging
 from mri_dataset import ADNIDataset
 from model import Simple3DCNN, VoxVGG, VoxResNet
+import yaml
 
 # TensorBoard
 writer = SummaryWriter()
 
 logging.basicConfig(filename=os.path.join(writer.log_dir, 'training.log'), level=logging.INFO)
+
+
+# 超参数以及其它配置信息
+args = {}
+args['model'] = 'simple'
+args['epoch_num'] = 2
+args['batch_size'] = 8
+args['learning_rate'] = 0.0001
+# 数据形式（single：每个被试图像唯一、split：每个被试图像不唯一，但对于某个被试，其图像只同时存在于一个集合、all：每个被试图像不唯一）
+args['data_type'] = 'single'
+# 每个数据增强方法的概率
+args['prob'] = 0.5
+# 图像resize后的大小，三个维度相同
+args['size'] = 100
+# 数据路径
+args['data_dir'] = "E:/Data/ADNI/adni-fnirt-corrected"
+# 是否使用采样器
+args['use_sampler'] = False
+args['use_cuda'] = True
+device = torch.device("cuda" if torch.cuda.is_available() and args['use_cuda'] else "cpu")
+if str(device) == "cuda":
+    args['use_cuda'] = True
+else:
+    args['use_cuda'] = False
+
+# 存储信息
+with open(os.path.join(writer.log_dir, 'config.yaml'), 'w') as outfile:
+    yaml.dump(args, outfile)
 
 
 # 训练步数
@@ -39,6 +68,8 @@ def train(model, device, train_loader, optimizer, criterion, epoch):
 best_loss = float("inf")
 # 最优准确率
 best_accuracy = 0
+# 最优时的轮数
+best_epoch = 0
 
 # 验证
 def validate(model, device, validation_loader, criterion):
@@ -60,13 +91,15 @@ def validate(model, device, validation_loader, criterion):
     print('Validate:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(validation_loss, correct, len(validation_loader.dataset), accuracy * 100.))
     writer.add_scalar("validation loss", validation_loss, epoch)
     writer.add_scalar("validation accuracy", accuracy, epoch)
-    logging.info('Validate:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(validation_loss, correct, len(validation_loader.dataset), accuracy * 100.))
+    logging.info('Validate:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(validation_loss, correct, len(validation_loader.dataset), accuracy * 100.))
     
     # 存储模型
     global best_accuracy
     global best_loss
+    global best_epoch
     if best_accuracy < accuracy:
         best_accuracy = accuracy
+        best_epoch = epoch
         print('Saving model...\n')
         state = {
             'model': model.state_dict(),
@@ -74,50 +107,9 @@ def validate(model, device, validation_loader, criterion):
             'loss': validation_loss,
             'epoch': epoch,
         }
-        # if not os.path.isdir('checkpoint'):
-        #     os.mkdir('checkpoint')
         torch.save(state, os.path.join(writer.log_dir, 'checkpoint_best.pth'))
     if best_loss > validation_loss:
         best_loss = validation_loss
-        
-        
-# # 测试
-# def test(model, device, test_loader, criterion):
-#     model.eval()
-#     test_loss = 0
-#     correct = 0
-#     with torch.no_grad():
-#         for data, target in test_loader:
-#             data, target = data.to(device), target.to(device)
-#             output = model(data)
-#             test_loss += criterion(output, target).item() * data.size(0)
-#             pred = output.argmax(dim=1, keepdim=True)
-#             correct += pred.eq(target.view_as(pred)).sum().item()
-#     test_loss /= len(test_loader.dataset)
-
-#     accuracy = correct / len(test_loader.dataset)
-#     print('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(
-#         test_loss, correct, len(test_loader.dataset), accuracy * 100.))
-    
-    
-# # 评估测试集
-# def train_eval(model, device, train_loader, criterion):
-#     test_loader = train_loader
-#     model.eval()
-#     test_loss = 0
-#     correct = 0
-#     with torch.no_grad():
-#         for data, target in test_loader:
-#             data, target = data.to(device), target.to(device)
-#             output = model(data)
-#             test_loss += criterion(output, target).item() * data.size(0)
-#             pred = output.argmax(dim=1, keepdim=True)
-#             correct += pred.eq(target.view_as(pred)).sum().item()
-#     test_loss /= len(test_loader.dataset)
-
-#     accuracy = correct / len(test_loader.dataset)
-#     print('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)\n'.format(
-#         test_loss, correct, len(test_loader.dataset), accuracy * 100.))
     
 
 # 评估模型
@@ -160,56 +152,44 @@ def color_print(str):
     print(f"\033[94m{str}\033[0m")
 
 
-# 超参数配置
-args = {}
-epoch_num = 50
-batch_size = 8
-learning_rate = 0.0001
-data_type = 'single'
-args['model'] = 'simple'
-
 if __name__ == "__main__":
     time_start = time.perf_counter()
     color_print("Infomations:")
     # 初始化数据集
-    data_dir = "E:/Data/ADNI/adni-fnirt-corrected"
-    
-    
-    size = 100
     # 数据增强
     from monai.transforms import Compose, RandRotate90, RandFlip, NormalizeIntensity, Resize, RandAdjustContrast, RandGaussianNoise, RandAffine
-    prob = 0.5
+    
     transform = Compose([
-        RandRotate90(prob=prob, spatial_axes=[1, 2]),
-        # RandRotate90(prob=prob, spatial_axes=[0, 1]),
-        # RandRotate90(prob=prob, spatial_axes=[0, 2]),
-        RandFlip(prob=prob, spatial_axis=0),
-        # RandFlip(prob=prob, spatial_axis=1),
-        # RandFlip(prob=prob, spatial_axis=2),
+        RandRotate90(prob=args['prob'], spatial_axes=[1, 2]),
+        # RandRotate90(prob=args['prob'], spatial_axes=[0, 1]),
+        # RandRotate90(prob=args['prob'], spatial_axes=[0, 2]),
+        RandFlip(prob=args['prob'], spatial_axis=0),
+        # RandFlip(prob=args['prob'], spatial_axis=1),
+        # RandFlip(prob=args['prob'], spatial_axis=2),
         
-        RandAdjustContrast(prob=prob, gamma=(0.7, 1.3)),
-        RandGaussianNoise(prob=prob),
-        # RandAffine(prob=prob, translate_range=10, scale_range=(0.9, 1.1), rotate_range=45),
+        RandAdjustContrast(prob=args['prob'], gamma=(0.7, 1.3)),
+        RandGaussianNoise(prob=args['prob']),
+        # RandAffine(prob=args['prob'], translate_range=10, scale_range=(0.9, 1.1), rotate_range=45),
         
-        Resize(spatial_size=[size, size, size]),
+        Resize(spatial_size=[args['size'], args['size'], args['size']]),
         NormalizeIntensity(channel_wise=True),
     ])
     
     pre_transform = Compose([
-        Resize(spatial_size=[size, size, size]),
+        Resize(spatial_size=[args['size'], args['size'], args['size']]),
         NormalizeIntensity(channel_wise=True),
     ])
     
     # 导入数据集
     # 先导入数据，再切分
-    if data_type == 'all' or 'single':
+    if args['data_type'] == 'all' or 'single':
         # 全部数据，不针对被试分割数据集，存在信息泄露
-        if data_type == 'all':
+        if args['data_type'] == 'all':
             csv_path = r"E:/Data/ADNI/pheno_ADNI_longitudinal_new.csv"
-        elif data_type == 'single':
+        elif args['data_type'] == 'single':
             csv_path = r"E:\Data\ADNI\single_subject.csv"
         
-        dataset = ADNIDataset(data_dir=data_dir, csv_path=csv_path, transform=transform)
+        dataset = ADNIDataset(data_dir=args['data_dir'], csv_path=csv_path, transform=transform)
         # 数据集大小
         dataset_size = len(dataset)
         train_size = int(dataset_size * 0.7)
@@ -220,11 +200,16 @@ if __name__ == "__main__":
         train_dataset, validation_dataset, test_dataset = random_split(dataset, [train_size, validation_size, test_size])
         
     # 提取分割的数据集，每个被试只存在于一个集合
-    elif data_type == 'split':
-        train_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/train label.csv", transform=transform)
-        validation_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/validation label.csv", transform=pre_transform)
-        test_dataset = ADNIDataset(data_dir=data_dir, csv_path="E:/Data/ADNI/test label.csv", transform=pre_transform)
+    elif args['data_type'] == 'split':
+        train_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/train label.csv", transform=transform)
+        validation_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/validation label.csv", transform=pre_transform)
+        test_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/test label.csv", transform=pre_transform)
 
+
+    logging.info("train size:", len(train_dataset))
+    logging.info("validation size:", len(validation_dataset))
+    logging.info("test size:", len(test_dataset))
+    logging.info("total size:", len(train_dataset) + len(validation_dataset) + len(test_dataset), "\n")
     print("train size:", len(train_dataset))
     # print(train_dataset.labels)
     print("validation size:", len(validation_dataset))
@@ -235,10 +220,7 @@ if __name__ == "__main__":
     # 数据集导入完成
     
     
-    # 是否使用采样器
-    use_sampler = False
-    
-    if use_sampler:
+    if args['use_sampler']:
         # 类别不平衡
         all_labels = []
         for _, label in train_dataset:
@@ -250,14 +232,14 @@ if __name__ == "__main__":
         samples_weights = class_weights[all_labels.long()]  # 每个样本的权重
         sampler = WeightedRandomSampler(weights=samples_weights, num_samples=len(samples_weights), replacement=True)
         
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=sampler)
+        train_loader = DataLoader(train_dataset, batch_size=args['batch_size'], sampler=sampler)
     else:
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        train_loader = DataLoader(train_dataset, batch_size=args['batch_size'], shuffle=True)
     
-    validation_loader = DataLoader(validation_dataset, batch_size=batch_size, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    train_eval_loader = DataLoader(train_dataset, batch_size=args['batch_size'], shuffle=False)
+    validation_loader = DataLoader(validation_dataset, batch_size=args['batch_size'], shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=args['batch_size'], shuffle=False)
     
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print('current device:', device)
     # 实例化网络
     if args['model'] == 'simple':
@@ -268,14 +250,14 @@ if __name__ == "__main__":
         model = VoxResNet(class_nums=3).to(device)
     # 定义损失函数和优化器
     criterion = nn.CrossEntropyLoss().to(device)
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = optim.Adam(model.parameters(), lr=args['learning_rate'])
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
     
     color_print("\nStart Training:")
-    logging.info("Start Training:")
-    for epoch in range(1, epoch_num + 1):
+    logging.info("Start Training:\n")
+    for epoch in range(1, args['epoch_num'] + 1):
         train(model, device, train_loader, optimizer, criterion, epoch)
-        eval(model, device, train_loader, criterion, train=True)
+        eval(model, device, train_eval_loader, criterion, train=True)
         validate(model, device, validation_loader, criterion)
         if epoch > 50:
             scheduler.step()
@@ -284,8 +266,13 @@ if __name__ == "__main__":
     time_stop = time.perf_counter()
     color_print("Finish Training.")
     
+    logging.info(f"total time:{time_stop - time_start:.3f}s")
+    logging.info(f"best loss: {best_loss:.6f}")
+    logging.info(f"best accuracy: {best_accuracy * 100.:.1f}%")
+    logging.info(f"best epoch: {best_epoch}\n")
     print(f"\ntotal time:{time_stop - time_start:.3f}s")
     print(f"best loss: {best_loss:.6f}")
-    print(f"best accuracy: {best_accuracy * 100.:.1f}%\n")
+    print(f"best accuracy: {best_accuracy * 100.:.1f}%")
+    print(f"best epoch: {best_epoch}\n")
     
     eval(model, device, test_loader, criterion, train=False)
