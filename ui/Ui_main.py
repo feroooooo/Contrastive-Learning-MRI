@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.1
+## Created by: Qt User Interface Compiler version 6.6.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QMainWindow, QPushButton, QSizePolicy, QSpacerItem,
-    QStackedWidget, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
+    QLabel, QMainWindow, QPushButton, QSizePolicy,
+    QSpacerItem, QStackedWidget, QVBoxLayout, QWidget)
 import ui.resource_rc
 
 class Ui_MainWindow(object):
@@ -25,12 +25,12 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(1280, 720)
-        MainWindow.setMinimumSize(QSize(960, 540))
+        MainWindow.setMinimumSize(QSize(1280, 720))
         self.styleSheet = QWidget(MainWindow)
         self.styleSheet.setObjectName(u"styleSheet")
-        self.styleSheet.setStyleSheet(u"QWidget#styleSheet{\n"
+        self.styleSheet.setStyleSheet(u"QFrame#background{\n"
 "	color: #dedede;\n"
-"	background-color:#383838;\n"
+"	background-color:#1b1b1b;\n"
 "}\n"
 "QFrame#leftFrame{\n"
 "	background-color:#1b1b1b;\n"
@@ -42,7 +42,7 @@ class Ui_MainWindow(object):
 "	background-color:#282828;\n"
 "}\n"
 "QFrame#contentFrame{\n"
-"	background-color:#323232;\n"
+"	background-color:#1b1b1b;\n"
 "}\n"
 "QLabel#topLabel{\n"
 "	background-color:#1b1b1b;\n"
@@ -56,11 +56,13 @@ class Ui_MainWindow(object):
 "}\n"
 "QLabel#lineLabel{\n"
 "	background-color:#dedede;\n"
+"}\n"
+"QLabel{\n"
+"	color:#dedede;\n"
 "}")
-        self.verticalLayout = QVBoxLayout(self.styleSheet)
-        self.verticalLayout.setSpacing(0)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout = QGridLayout(self.styleSheet)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.background = QFrame(self.styleSheet)
         self.background.setObjectName(u"background")
         self.horizontalLayout = QHBoxLayout(self.background)
@@ -393,8 +395,8 @@ class Ui_MainWindow(object):
 
         self.contentContainer = QFrame(self.contentFrame)
         self.contentContainer.setObjectName(u"contentContainer")
-        self.contentContainer.setFrameShape(QFrame.StyledPanel)
-        self.contentContainer.setFrameShadow(QFrame.Raised)
+        self.contentContainer.setFrameShape(QFrame.NoFrame)
+        self.contentContainer.setFrameShadow(QFrame.Plain)
         self.verticalLayout_8 = QVBoxLayout(self.contentContainer)
         self.verticalLayout_8.setSpacing(0)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
@@ -404,24 +406,182 @@ class Ui_MainWindow(object):
         font2 = QFont()
         font2.setKerning(True)
         self.stackedWidget.setFont(font2)
-        self.stackedWidget.setStyleSheet(u"color:#dedede;")
+        self.stackedWidget.setStyleSheet(u"QFrame{\n"
+"	background-color:#323232;\n"
+"}")
         self.classificationPage = QWidget()
         self.classificationPage.setObjectName(u"classificationPage")
-        self.label = QLabel(self.classificationPage)
-        self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(440, 330, 111, 16))
+        self.classificationPage.setStyleSheet(u"QLabel{font-size:30px;}")
+        self.gridLayoutClassification = QGridLayout(self.classificationPage)
+        self.gridLayoutClassification.setObjectName(u"gridLayoutClassification")
+        self.gridLayoutClassification.setContentsMargins(0, 0, 0, 0)
+        self.classificationFrameV = QFrame(self.classificationPage)
+        self.classificationFrameV.setObjectName(u"classificationFrameV")
+        self.horizontalLayoutClassification = QHBoxLayout(self.classificationFrameV)
+        self.horizontalLayoutClassification.setSpacing(0)
+        self.horizontalLayoutClassification.setObjectName(u"horizontalLayoutClassification")
+        self.horizontalLayoutClassification.setContentsMargins(0, 0, 0, 0)
+        self.horizontalSpacerClassification2 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayoutClassification.addItem(self.horizontalSpacerClassification2)
+
+        self.classificationFrameH = QFrame(self.classificationFrameV)
+        self.classificationFrameH.setObjectName(u"classificationFrameH")
+        self.classificationFrameH.setMinimumSize(QSize(0, 0))
+        self.classificationFrameH.setStyleSheet(u"")
+        self.verticalLayoutClassification = QVBoxLayout(self.classificationFrameH)
+        self.verticalLayoutClassification.setSpacing(0)
+        self.verticalLayoutClassification.setObjectName(u"verticalLayoutClassification")
+        self.verticalLayoutClassification.setContentsMargins(0, 0, 0, 0)
+        self.verticalSpacerClassification1 = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayoutClassification.addItem(self.verticalSpacerClassification1)
+
+        self.classificationFrame = QFrame(self.classificationFrameH)
+        self.classificationFrame.setObjectName(u"classificationFrame")
+        self.classificationFrame.setMinimumSize(QSize(880, 660))
+        self.classificationFrame.setStyleSheet(u"")
+        self.classificationLabel1 = QLabel(self.classificationFrame)
+        self.classificationLabel1.setObjectName(u"classificationLabel1")
+        self.classificationLabel1.setGeometry(QRect(40, 30, 200, 200))
+
+        self.verticalLayoutClassification.addWidget(self.classificationFrame)
+
+        self.verticalSpacerClassification2 = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayoutClassification.addItem(self.verticalSpacerClassification2)
+
+
+        self.horizontalLayoutClassification.addWidget(self.classificationFrameH)
+
+        self.horizontalSpacerClassification1 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayoutClassification.addItem(self.horizontalSpacerClassification1)
+
+
+        self.gridLayoutClassification.addWidget(self.classificationFrameV, 0, 0, 1, 1)
+
         self.stackedWidget.addWidget(self.classificationPage)
         self.extractPage = QWidget()
         self.extractPage.setObjectName(u"extractPage")
-        self.label_2 = QLabel(self.extractPage)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setGeometry(QRect(420, 310, 54, 16))
+        self.gridLayoutExtract = QGridLayout(self.extractPage)
+        self.gridLayoutExtract.setObjectName(u"gridLayoutExtract")
+        self.gridLayoutExtract.setContentsMargins(0, 0, 0, 0)
+        self.extractFrameV = QFrame(self.extractPage)
+        self.extractFrameV.setObjectName(u"extractFrameV")
+        self.horizontalLayout_2 = QHBoxLayout(self.extractFrameV)
+        self.horizontalLayout_2.setSpacing(0)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.horizontalSpacerExtract2 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacerExtract2)
+
+        self.extractFrameH = QFrame(self.extractFrameV)
+        self.extractFrameH.setObjectName(u"extractFrameH")
+        self.extractFrameH.setMinimumSize(QSize(0, 0))
+        self.extractFrameH.setStyleSheet(u"")
+        self.verticalLayout = QVBoxLayout(self.extractFrameH)
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalSpacerExtract1 = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacerExtract1)
+
+        self.extractFrame = QFrame(self.extractFrameH)
+        self.extractFrame.setObjectName(u"extractFrame")
+        self.extractFrame.setMinimumSize(QSize(880, 660))
+        self.extractFrame.setStyleSheet(u"QLabel#axialLabel, QLabel#coronalLabel, QLabel#saggitalLabel{\n"
+"	border: 3px solid white;\n"
+"	background-color:black;\n"
+"}")
+        self.axialLabel = QLabel(self.extractFrame)
+        self.axialLabel.setObjectName(u"axialLabel")
+        self.axialLabel.setGeometry(QRect(200, 100, 200, 200))
+        self.axialLabel.setAlignment(Qt.AlignCenter)
+        self.saggitalLabel = QLabel(self.extractFrame)
+        self.saggitalLabel.setObjectName(u"saggitalLabel")
+        self.saggitalLabel.setGeometry(QRect(500, 100, 200, 200))
+        self.saggitalLabel.setAlignment(Qt.AlignCenter)
+        self.coronalLabel = QLabel(self.extractFrame)
+        self.coronalLabel.setObjectName(u"coronalLabel")
+        self.coronalLabel.setGeometry(QRect(500, 400, 200, 200))
+        self.coronalLabel.setAlignment(Qt.AlignCenter)
+        self.selectButton = QPushButton(self.extractFrame)
+        self.selectButton.setObjectName(u"selectButton")
+        self.selectButton.setGeometry(QRect(240, 460, 121, 61))
+        self.selectButton.setStyleSheet(u"font-size:13pt;")
+
+        self.verticalLayout.addWidget(self.extractFrame)
+
+        self.verticalSpacerExtract2 = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacerExtract2)
+
+
+        self.horizontalLayout_2.addWidget(self.extractFrameH)
+
+        self.horizontalSpacerExtract1 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacerExtract1)
+
+
+        self.gridLayoutExtract.addWidget(self.extractFrameV, 0, 0, 1, 1)
+
         self.stackedWidget.addWidget(self.extractPage)
         self.hintPage = QWidget()
         self.hintPage.setObjectName(u"hintPage")
-        self.label_3 = QLabel(self.hintPage)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setGeometry(QRect(580, 320, 54, 16))
+        self.hintPage.setStyleSheet(u"QLabel{font-size:30px;}")
+        self.gridLayoutHint = QGridLayout(self.hintPage)
+        self.gridLayoutHint.setObjectName(u"gridLayoutHint")
+        self.gridLayoutHint.setContentsMargins(0, 0, 0, 0)
+        self.hintFrameV = QFrame(self.hintPage)
+        self.hintFrameV.setObjectName(u"hintFrameV")
+        self.horizontalLayoutHint = QHBoxLayout(self.hintFrameV)
+        self.horizontalLayoutHint.setSpacing(0)
+        self.horizontalLayoutHint.setObjectName(u"horizontalLayoutHint")
+        self.horizontalLayoutHint.setContentsMargins(0, 0, 0, 0)
+        self.horizontalSpacerHint2 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayoutHint.addItem(self.horizontalSpacerHint2)
+
+        self.hintFrameH = QFrame(self.hintFrameV)
+        self.hintFrameH.setObjectName(u"hintFrameH")
+        self.hintFrameH.setMinimumSize(QSize(0, 0))
+        self.hintFrameH.setStyleSheet(u"")
+        self.verticalLayoutHint = QVBoxLayout(self.hintFrameH)
+        self.verticalLayoutHint.setSpacing(0)
+        self.verticalLayoutHint.setObjectName(u"verticalLayoutHint")
+        self.verticalLayoutHint.setContentsMargins(0, 0, 0, 0)
+        self.verticalSpacerHint1 = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayoutHint.addItem(self.verticalSpacerHint1)
+
+        self.hintFrame = QFrame(self.hintFrameH)
+        self.hintFrame.setObjectName(u"hintFrame")
+        self.hintFrame.setMinimumSize(QSize(880, 660))
+        self.hintFrame.setStyleSheet(u"")
+        self.hintLabel1 = QLabel(self.hintFrame)
+        self.hintLabel1.setObjectName(u"hintLabel1")
+        self.hintLabel1.setGeometry(QRect(40, 30, 200, 200))
+
+        self.verticalLayoutHint.addWidget(self.hintFrame)
+
+        self.verticalSpacerHint2 = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayoutHint.addItem(self.verticalSpacerHint2)
+
+
+        self.horizontalLayoutHint.addWidget(self.hintFrameH)
+
+        self.horizontalSpacerHint1 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayoutHint.addItem(self.horizontalSpacerHint1)
+
+
+        self.gridLayoutHint.addWidget(self.hintFrameV, 0, 0, 1, 1)
+
         self.stackedWidget.addWidget(self.hintPage)
 
         self.verticalLayout_8.addWidget(self.stackedWidget)
@@ -433,13 +593,13 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.contentFrame)
 
 
-        self.verticalLayout.addWidget(self.background)
+        self.gridLayout.addWidget(self.background, 0, 0, 1, 1)
 
         MainWindow.setCentralWidget(self.styleSheet)
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -461,8 +621,11 @@ class Ui_MainWindow(object):
         self.settingLabel.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.lineLabel.setText("")
         self.topLabel.setText(QCoreApplication.translate("MainWindow", u"\u57fa\u4e8e\u5bf9\u6bd4\u5b66\u4e60\u7684\u8111\u7ed3\u6784\u78c1\u5171\u632f\u5f71\u50cf\u7279\u5f81\u63d0\u53d6\u7cfb\u7edf", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"classification", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"extract", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Hint", None))
+        self.classificationLabel1.setText(QCoreApplication.translate("MainWindow", u"classification", None))
+        self.axialLabel.setText("")
+        self.saggitalLabel.setText("")
+        self.coronalLabel.setText("")
+        self.selectButton.setText(QCoreApplication.translate("MainWindow", u"\u9009\u62e9\u56fe\u50cf", None))
+        self.hintLabel1.setText(QCoreApplication.translate("MainWindow", u"hint", None))
     # retranslateUi
 

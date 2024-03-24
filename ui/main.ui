@@ -12,8 +12,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>960</width>
-    <height>540</height>
+    <width>1280</width>
+    <height>720</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -21,9 +21,9 @@
   </property>
   <widget class="QWidget" name="styleSheet">
    <property name="styleSheet">
-    <string notr="true">QWidget#styleSheet{
+    <string notr="true">QFrame#background{
 	color: #dedede;
-	background-color:#383838;
+	background-color:#1b1b1b;
 }
 QFrame#leftFrame{
 	background-color:#1b1b1b;
@@ -35,7 +35,7 @@ QFrame#extraFrame{
 	background-color:#282828;
 }
 QFrame#contentFrame{
-	background-color:#323232;
+	background-color:#1b1b1b;
 }
 QLabel#topLabel{
 	background-color:#1b1b1b;
@@ -49,12 +49,12 @@ QLabel#settingLabel{
 }
 QLabel#lineLabel{
 	background-color:#dedede;
+}
+QLabel{
+	color:#dedede;
 }</string>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="spacing">
-     <number>0</number>
-    </property>
+   <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -67,7 +67,7 @@ QLabel#lineLabel{
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <item>
+    <item row="0" column="0">
      <widget class="QFrame" name="background">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="spacing">
@@ -864,10 +864,10 @@ font-weight:600;</string>
           <item>
            <widget class="QFrame" name="contentContainer">
             <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
+             <enum>QFrame::NoFrame</enum>
             </property>
             <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
+             <enum>QFrame::Plain</enum>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_8">
              <property name="spacing">
@@ -893,55 +893,525 @@ font-weight:600;</string>
                 </font>
                </property>
                <property name="styleSheet">
-                <string notr="true">color:#dedede;</string>
+                <string notr="true">QFrame{
+	background-color:#323232;
+}</string>
                </property>
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="classificationPage">
-                <widget class="QLabel" name="label">
-                 <property name="geometry">
-                  <rect>
-                   <x>440</x>
-                   <y>330</y>
-                   <width>111</width>
-                   <height>16</height>
-                  </rect>
+                <property name="styleSheet">
+                 <string notr="true">QLabel{font-size:30px;}</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayoutClassification">
+                 <property name="leftMargin">
+                  <number>0</number>
                  </property>
-                 <property name="text">
-                  <string>classification</string>
+                 <property name="topMargin">
+                  <number>0</number>
                  </property>
-                </widget>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QFrame" name="classificationFrameV">
+                   <layout class="QHBoxLayout" name="horizontalLayoutClassification">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <spacer name="horizontalSpacerClassification2">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Expanding</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item>
+                     <widget class="QFrame" name="classificationFrameH">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayoutClassification">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <spacer name="verticalSpacerClassification1">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>0</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                       <item>
+                        <widget class="QFrame" name="classificationFrame">
+                         <property name="minimumSize">
+                          <size>
+                           <width>880</width>
+                           <height>660</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true"/>
+                         </property>
+                         <widget class="QLabel" name="classificationLabel">
+                          <property name="geometry">
+                           <rect>
+                            <x>40</x>
+                            <y>30</y>
+                            <width>200</width>
+                            <height>200</height>
+                           </rect>
+                          </property>
+                          <property name="text">
+                           <string>classification</string>
+                          </property>
+                         </widget>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="verticalSpacerClassification2">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>0</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacerClassification1">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Expanding</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
                <widget class="QWidget" name="extractPage">
-                <widget class="QLabel" name="label_2">
-                 <property name="geometry">
-                  <rect>
-                   <x>420</x>
-                   <y>310</y>
-                   <width>54</width>
-                   <height>16</height>
-                  </rect>
+                <layout class="QGridLayout" name="gridLayoutExtract">
+                 <property name="leftMargin">
+                  <number>0</number>
                  </property>
-                 <property name="text">
-                  <string>extract</string>
+                 <property name="topMargin">
+                  <number>0</number>
                  </property>
-                </widget>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QFrame" name="extractFrameV">
+                   <layout class="QHBoxLayout" name="horizontalLayout_2">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <spacer name="horizontalSpacerExtract2">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Expanding</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item>
+                     <widget class="QFrame" name="extractFrameH">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <spacer name="verticalSpacerExtract1">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>0</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                       <item>
+                        <widget class="QFrame" name="extractFrame">
+                         <property name="minimumSize">
+                          <size>
+                           <width>880</width>
+                           <height>660</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">QLabel#axialLabel, QLabel#coronalLabel, QLabel#saggitalLabel{
+	border: 3px solid white;
+	background-color:black;
+}</string>
+                         </property>
+                         <widget class="QLabel" name="axialLabel">
+                          <property name="geometry">
+                           <rect>
+                            <x>200</x>
+                            <y>100</y>
+                            <width>200</width>
+                            <height>200</height>
+                           </rect>
+                          </property>
+                          <property name="text">
+                           <string/>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignCenter</set>
+                          </property>
+                         </widget>
+                         <widget class="QLabel" name="saggitalLabel">
+                          <property name="geometry">
+                           <rect>
+                            <x>500</x>
+                            <y>100</y>
+                            <width>200</width>
+                            <height>200</height>
+                           </rect>
+                          </property>
+                          <property name="text">
+                           <string/>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignCenter</set>
+                          </property>
+                         </widget>
+                         <widget class="QLabel" name="coronalLabel">
+                          <property name="geometry">
+                           <rect>
+                            <x>500</x>
+                            <y>400</y>
+                            <width>200</width>
+                            <height>200</height>
+                           </rect>
+                          </property>
+                          <property name="text">
+                           <string/>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignCenter</set>
+                          </property>
+                         </widget>
+                         <widget class="QPushButton" name="selectButton">
+                          <property name="geometry">
+                           <rect>
+                            <x>240</x>
+                            <y>460</y>
+                            <width>121</width>
+                            <height>61</height>
+                           </rect>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">font-size:13pt;</string>
+                          </property>
+                          <property name="text">
+                           <string>选择图像</string>
+                          </property>
+                         </widget>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="verticalSpacerExtract2">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>0</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacerExtract1">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Expanding</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
                <widget class="QWidget" name="hintPage">
-                <widget class="QLabel" name="label_3">
-                 <property name="geometry">
-                  <rect>
-                   <x>580</x>
-                   <y>320</y>
-                   <width>54</width>
-                   <height>16</height>
-                  </rect>
+                <property name="styleSheet">
+                 <string notr="true">QLabel{font-size:30px;}</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayoutHint">
+                 <property name="leftMargin">
+                  <number>0</number>
                  </property>
-                 <property name="text">
-                  <string>Hint</string>
+                 <property name="topMargin">
+                  <number>0</number>
                  </property>
-                </widget>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QFrame" name="hintFrameV">
+                   <layout class="QHBoxLayout" name="horizontalLayoutHint">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <spacer name="horizontalSpacerHint2">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Expanding</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item>
+                     <widget class="QFrame" name="hintFrameH">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayoutHint">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <spacer name="verticalSpacerHint1">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>0</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                       <item>
+                        <widget class="QFrame" name="hintFrame">
+                         <property name="minimumSize">
+                          <size>
+                           <width>880</width>
+                           <height>660</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true"/>
+                         </property>
+                         <widget class="QLabel" name="hintLabel">
+                          <property name="geometry">
+                           <rect>
+                            <x>40</x>
+                            <y>30</y>
+                            <width>200</width>
+                            <height>200</height>
+                           </rect>
+                          </property>
+                          <property name="text">
+                           <string>hint</string>
+                          </property>
+                         </widget>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="verticalSpacerHint2">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>0</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacerHint1">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Expanding</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </widget>
              </item>

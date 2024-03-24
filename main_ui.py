@@ -1,16 +1,31 @@
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow
-from PySide6.QtGui import QIcon
-from PySide6.QtCore import Slot, QPropertyAnimation, QEasingCurve, QEvent, QObject
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PySide6.QtGui import QIcon, QImage, QPixmap
+from PySide6.QtCore import Qt, Slot, QPropertyAnimation, QEasingCurve, QEvent, QObject
 from ui.Ui_main import Ui_MainWindow
+
+import nibabel as nib
+import numpy as np
+import os
+
+from util import Util
 
 
 class EventFilter(QObject):
     group = {}
     selected = 'extract'
+    page = {}
     
     def set_group(self, group):
         self.group = group
+        
+    
+    def set_page(self, page):
+        self.page = page
+    
+        
+    def set_stackedWidget(self, widget):
+        self.stackedWidget = widget
     
     
     # 事件过滤器
@@ -44,11 +59,13 @@ class EventFilter(QObject):
                 else:
                     for widget in self.group[item]:
                         widget.setStyleSheet("")
+            self.stackedWidget.setCurrentWidget(self.page[group_name])
         return super().eventFilter(watched, event)
 
 class MainWindow(QMainWindow):
     settingOpen = False
     infoOpen = False
+    lastest_dir = '.'
     
     def __init__(self):
         # 初始化
@@ -67,9 +84,16 @@ class MainWindow(QMainWindow):
         self.ui.infoButton.clicked.connect(self.switch_info)
         
         # 设置界面按钮
+        self.ui.stackedWidget.setCurrentWidget(self.ui.extractPage)
         group = {"extract":[self.ui.extractButton, self.ui.extractLabel], "classification":[self.ui.classificationButton, self.ui.classificationLabel], "hint":[self.ui.hintButton, self.ui.hintLabel]}
+        page = {"extract":self.ui.extractPage, "classification":self.ui.classificationPage, "hint":self.ui.hintPage}
         self.eventFilter = EventFilter()
+        self.eventFilter.set_page(page)
         self.eventFilter.set_group(group)
+        self.eventFilter.set_stackedWidget(self.ui.stackedWidget)
+        
+        # 特征提取界面
+        self.ui.selectButton.clicked.connect(self.select_file)
         
         for item in group:
             for widget in group[item]:
@@ -114,6 +138,20 @@ class MainWindow(QMainWindow):
             self.animation.setEasingCurve(QEasingCurve.InOutQuart)
             self.animation.start()
         self.infoOpen = not self.infoOpen
+        
+        
+    @Slot()
+    def select_file(self):
+        img_path, _ = QFileDialog.getOpenFileName(self, "选择脑结构磁共振图像", self.lastest_dir, "MRI (*.nii *.gz)")
+        if img_path:
+            self.lastest_dir = os.path.dirname(img_path)
+            
+            nii_img = nib.load(img_path).get_fdata()
+            x, y, z = Util.from_3d_img_get_central_xyz(nii_img)
+            saggital_pixmap, coronal_pixmap, axial_pixmap = Util.from_3d_img_get_pixmap(nii_img, x, y, z)
+            self.ui.saggitalLabel.setPixmap(saggital_pixmap)
+            self.ui.coronalLabel.setPixmap(coronal_pixmap)
+            self.ui.axialLabel.setPixmap(axial_pixmap)
 
 if __name__ == "__main__":
     sys.argv += ['-platform', 'windows:darkmode=2']
