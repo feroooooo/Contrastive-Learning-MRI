@@ -31,7 +31,7 @@ args['size'] = 100
 # 数据路径
 args['data_dir'] = "E:/Data/ADNI/adni-fnirt-corrected"
 # 是否使用采样器
-args['use_sampler'] = False
+args['use_sampler'] = True
 args['use_cuda'] = True
 
 device = torch.device("cuda" if torch.cuda.is_available() and args['use_cuda'] else "cpu")
@@ -161,14 +161,14 @@ if __name__ == "__main__":
     from monai.transforms import Compose, RandRotate90, RandFlip, NormalizeIntensity, Resize, RandAdjustContrast, RandGaussianNoise, RandAffine
     
     transform = Compose([
-        RandRotate90(prob=args['prob'], spatial_axes=[1, 2]),
-        # RandRotate90(prob=args['prob'], spatial_axes=[0, 1]),
-        # RandRotate90(prob=args['prob'], spatial_axes=[0, 2]),
-        RandFlip(prob=args['prob'], spatial_axis=0),
-        # RandFlip(prob=args['prob'], spatial_axis=1),
-        # RandFlip(prob=args['prob'], spatial_axis=2),
+        RandRotate90(prob=0.5, spatial_axes=[1, 2]),
+        # RandRotate90(prob=0.5, spatial_axes=[0, 1]),
+        # RandRotate90(prob=0.5, spatial_axes=[0, 2]),
+        RandFlip(prob=0.5, spatial_axis=0),
+        # RandFlip(prob=0.5, spatial_axis=1),
+        # RandFlip(prob=0.5, spatial_axis=2),
         
-        RandAdjustContrast(prob=args['prob'], gamma=(0.7, 1.3)),
+        RandAdjustContrast(prob=args['prob'], gamma=(0.5, 1.5)),
         RandGaussianNoise(prob=args['prob']),
         # RandAffine(prob=args['prob'], translate_range=10, scale_range=(0.9, 1.1), rotate_range=45),
         
