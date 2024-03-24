@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.6.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -17,7 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
     QLabel, QMainWindow, QPushButton, QSizePolicy,
-    QSpacerItem, QStackedWidget, QVBoxLayout, QWidget)
+    QSpacerItem, QSpinBox, QStackedWidget, QVBoxLayout,
+    QWidget)
 import ui.resource_rc
 
 class Ui_MainWindow(object):
@@ -512,6 +513,33 @@ class Ui_MainWindow(object):
         self.selectButton.setObjectName(u"selectButton")
         self.selectButton.setGeometry(QRect(240, 460, 121, 61))
         self.selectButton.setStyleSheet(u"font-size:13pt;")
+        self.label = QLabel(self.extractFrame)
+        self.label.setObjectName(u"label")
+        self.label.setGeometry(QRect(170, 560, 54, 16))
+        self.spinBox_x = QSpinBox(self.extractFrame)
+        self.spinBox_x.setObjectName(u"spinBox_x")
+        self.spinBox_x.setGeometry(QRect(190, 410, 42, 22))
+        self.spinBox_x.setMinimum(1)
+        self.spinBox_x.setMaximum(1)
+        self.spinBox_y = QSpinBox(self.extractFrame)
+        self.spinBox_y.setObjectName(u"spinBox_y")
+        self.spinBox_y.setGeometry(QRect(270, 410, 42, 22))
+        self.spinBox_y.setMinimum(1)
+        self.spinBox_y.setMaximum(1)
+        self.spinBox_z = QSpinBox(self.extractFrame)
+        self.spinBox_z.setObjectName(u"spinBox_z")
+        self.spinBox_z.setGeometry(QRect(350, 410, 42, 22))
+        self.spinBox_z.setMinimum(1)
+        self.spinBox_z.setMaximum(1)
+        self.label_z = QLabel(self.extractFrame)
+        self.label_z.setObjectName(u"label_z")
+        self.label_z.setGeometry(QRect(170, 412, 16, 16))
+        self.label_y = QLabel(self.extractFrame)
+        self.label_y.setObjectName(u"label_y")
+        self.label_y.setGeometry(QRect(250, 412, 16, 16))
+        self.label_5 = QLabel(self.extractFrame)
+        self.label_5.setObjectName(u"label_5")
+        self.label_5.setGeometry(QRect(330, 412, 16, 16))
 
         self.verticalLayout.addWidget(self.extractFrame)
 
@@ -626,6 +654,10 @@ class Ui_MainWindow(object):
         self.saggitalLabel.setText("")
         self.coronalLabel.setText("")
         self.selectButton.setText(QCoreApplication.translate("MainWindow", u"\u9009\u62e9\u56fe\u50cf", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"\u5f53\u524d\u56fe\u50cf\uff1a", None))
+        self.label_z.setText(QCoreApplication.translate("MainWindow", u"x\uff1a", None))
+        self.label_y.setText(QCoreApplication.translate("MainWindow", u"y\uff1a", None))
+        self.label_5.setText(QCoreApplication.translate("MainWindow", u"z\uff1a", None))
         self.hintLabel1.setText(QCoreApplication.translate("MainWindow", u"hint", None))
     # retranslateUi
 

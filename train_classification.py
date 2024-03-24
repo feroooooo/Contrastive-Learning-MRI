@@ -162,11 +162,11 @@ if __name__ == "__main__":
     
     transform = Compose([
         RandRotate90(prob=0.5, spatial_axes=[1, 2]),
-        # RandRotate90(prob=0.5, spatial_axes=[0, 1]),
-        # RandRotate90(prob=0.5, spatial_axes=[0, 2]),
+        RandRotate90(prob=0.5, spatial_axes=[0, 1]),
+        RandRotate90(prob=0.5, spatial_axes=[0, 2]),
         RandFlip(prob=0.5, spatial_axis=0),
-        # RandFlip(prob=0.5, spatial_axis=1),
-        # RandFlip(prob=0.5, spatial_axis=2),
+        RandFlip(prob=0.5, spatial_axis=1),
+        RandFlip(prob=0.5, spatial_axis=2),
         
         RandAdjustContrast(prob=args['prob'], gamma=(0.5, 1.5)),
         RandGaussianNoise(prob=args['prob']),

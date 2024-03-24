@@ -148,6 +148,12 @@ class MainWindow(QMainWindow):
             
             nii_img = nib.load(img_path).get_fdata()
             x, y, z = Util.from_3d_img_get_central_xyz(nii_img)
+            print(x, y, z)
+            
+            self.ui.spinBox_x.setMaximum(nii_img.shape[0] + 1)
+            self.ui.spinBox_y.setMaximum(nii_img.shape[1] + 1)
+            self.ui.spinBox_z.setMaximum(nii_img.shape[2] + 1)
+            
             saggital_pixmap, coronal_pixmap, axial_pixmap = Util.from_3d_img_get_pixmap(nii_img, x, y, z)
             self.ui.saggitalLabel.setPixmap(saggital_pixmap)
             self.ui.coronalLabel.setPixmap(coronal_pixmap)

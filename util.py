@@ -1,4 +1,6 @@
 import numpy as np
+import math
+
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QPixmap
 
@@ -26,9 +28,9 @@ class Util:
     
     @staticmethod
     def from_3d_img_get_central_xyz(nii_img):
-        x = 45
-        y = 45
-        z = 45
+        x = math.floor(nii_img.shape[0] / 2)
+        y = math.floor(nii_img.shape[1] / 2)
+        z = math.floor(nii_img.shape[2] / 2)
         return x, y, z
     
     
@@ -39,15 +41,12 @@ class Util:
 
         saggital_img = np.rot90(nii_img[x, :, :][:, ::-1], k=3)
         saggital_img = np.ascontiguousarray(saggital_img)
-        print(saggital_img.shape)
         
         coronal_img = np.flipud(nii_img[:, y, :].T)
         coronal_img = np.ascontiguousarray(coronal_img)
-        print(coronal_img.shape)
         
         axial_img = np.flipud(nii_img[:, :, z].T)
         axial_img = np.ascontiguousarray(axial_img)
-        print(axial_img.shape)
 
         targetWidth = 200
         targetHeight = 200
