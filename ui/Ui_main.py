@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.1
+## Created by: Qt User Interface Compiler version 6.6.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -27,6 +27,9 @@ class Ui_MainWindow(object):
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(1280, 720)
         MainWindow.setMinimumSize(QSize(1280, 720))
+        font = QFont()
+        font.setPointSize(12)
+        MainWindow.setFont(font)
         self.styleSheet = QWidget(MainWindow)
         self.styleSheet.setObjectName(u"styleSheet")
         self.styleSheet.setStyleSheet(u"QFrame#background{\n"
@@ -251,10 +254,10 @@ class Ui_MainWindow(object):
         sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(self.topLabel_2.sizePolicy().hasHeightForWidth())
         self.topLabel_2.setSizePolicy(sizePolicy4)
-        font = QFont()
-        font.setPointSize(16)
-        font.setBold(True)
-        self.topLabel_2.setFont(font)
+        font1 = QFont()
+        font1.setPointSize(16)
+        font1.setBold(True)
+        self.topLabel_2.setFont(font1)
         self.topLabel_2.setStyleSheet(u"font-size:16pt;font-weight:bold;letter-spacing:2px;")
 
         self.verticalLayout_10.addWidget(self.topLabel_2, 0, Qt.AlignHCenter)
@@ -385,11 +388,11 @@ class Ui_MainWindow(object):
         self.topLabel.setSizePolicy(sizePolicy3)
         self.topLabel.setMinimumSize(QSize(0, 60))
         self.topLabel.setMaximumSize(QSize(16777215, 60))
-        font1 = QFont()
-        font1.setFamilies([u"Microsoft YaHei UI"])
-        font1.setPointSize(16)
-        font1.setBold(True)
-        self.topLabel.setFont(font1)
+        font2 = QFont()
+        font2.setFamilies([u"Microsoft YaHei UI"])
+        font2.setPointSize(16)
+        font2.setBold(True)
+        self.topLabel.setFont(font2)
         self.topLabel.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout_4.addWidget(self.topLabel)
@@ -404,9 +407,9 @@ class Ui_MainWindow(object):
         self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
         self.stackedWidget = QStackedWidget(self.contentContainer)
         self.stackedWidget.setObjectName(u"stackedWidget")
-        font2 = QFont()
-        font2.setKerning(True)
-        self.stackedWidget.setFont(font2)
+        font3 = QFont()
+        font3.setKerning(True)
+        self.stackedWidget.setFont(font3)
         self.stackedWidget.setStyleSheet(u"QFrame{\n"
 "	background-color:#323232;\n"
 "}")
@@ -494,52 +497,124 @@ class Ui_MainWindow(object):
         self.extractFrame.setObjectName(u"extractFrame")
         self.extractFrame.setMinimumSize(QSize(880, 660))
         self.extractFrame.setStyleSheet(u"QLabel#axialLabel, QLabel#coronalLabel, QLabel#saggitalLabel{\n"
-"	border: 3px solid white;\n"
+"	border: 2px solid #dedede;\n"
 "	background-color:black;\n"
+"}\n"
+"QLabel#axial_text_label, QLabel#saggital_text_label, QLabel#coronal_text_label{\n"
+"	border: 2px solid #dedede;\n"
+"	background-color:#1b1b1b;\n"
+"}\n"
+"QPushButton{\n"
+"	background-color:#dedede;\n"
+"	color:#1b1b1b;\n"
+"	border-radius:20px;\n"
+"	font-size:12pt;\n"
+"	letter-spacing:2px;\n"
+"	font-weight:400;\n"
+"}\n"
+"QPushButton:hover{\n"
+"	background-color:#f1f1f1;\n"
+"}\n"
+"QSpinBox{\n"
+"	background-color:#dedede;\n"
+"	font-size:14pt;\n"
 "}")
         self.axialLabel = QLabel(self.extractFrame)
         self.axialLabel.setObjectName(u"axialLabel")
-        self.axialLabel.setGeometry(QRect(200, 100, 200, 200))
+        self.axialLabel.setGeometry(QRect(50, 60, 250, 250))
         self.axialLabel.setAlignment(Qt.AlignCenter)
         self.saggitalLabel = QLabel(self.extractFrame)
         self.saggitalLabel.setObjectName(u"saggitalLabel")
-        self.saggitalLabel.setGeometry(QRect(500, 100, 200, 200))
+        self.saggitalLabel.setGeometry(QRect(350, 60, 250, 250))
         self.saggitalLabel.setAlignment(Qt.AlignCenter)
         self.coronalLabel = QLabel(self.extractFrame)
         self.coronalLabel.setObjectName(u"coronalLabel")
-        self.coronalLabel.setGeometry(QRect(500, 400, 200, 200))
+        self.coronalLabel.setGeometry(QRect(350, 388, 250, 250))
         self.coronalLabel.setAlignment(Qt.AlignCenter)
         self.selectButton = QPushButton(self.extractFrame)
         self.selectButton.setObjectName(u"selectButton")
-        self.selectButton.setGeometry(QRect(240, 460, 121, 61))
-        self.selectButton.setStyleSheet(u"font-size:13pt;")
-        self.label = QLabel(self.extractFrame)
-        self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(170, 560, 54, 16))
+        self.selectButton.setGeometry(QRect(120, 520, 121, 41))
+        self.selectButton.setCursor(QCursor(Qt.PointingHandCursor))
+        self.label_name = QLabel(self.extractFrame)
+        self.label_name.setObjectName(u"label_name")
+        self.label_name.setGeometry(QRect(50, 590, 250, 51))
+        self.label_name.setFont(font)
+        self.label_name.setScaledContents(True)
+        self.label_name.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.label_name.setWordWrap(True)
         self.spinBox_x = QSpinBox(self.extractFrame)
         self.spinBox_x.setObjectName(u"spinBox_x")
-        self.spinBox_x.setGeometry(QRect(190, 410, 42, 22))
+        self.spinBox_x.setGeometry(QRect(120, 348, 60, 30))
+        font4 = QFont()
+        font4.setPointSize(14)
+        self.spinBox_x.setFont(font4)
+        self.spinBox_x.setAlignment(Qt.AlignCenter)
         self.spinBox_x.setMinimum(1)
         self.spinBox_x.setMaximum(1)
         self.spinBox_y = QSpinBox(self.extractFrame)
         self.spinBox_y.setObjectName(u"spinBox_y")
-        self.spinBox_y.setGeometry(QRect(270, 410, 42, 22))
+        self.spinBox_y.setGeometry(QRect(120, 398, 60, 30))
+        self.spinBox_y.setFont(font4)
+        self.spinBox_y.setAlignment(Qt.AlignCenter)
         self.spinBox_y.setMinimum(1)
         self.spinBox_y.setMaximum(1)
         self.spinBox_z = QSpinBox(self.extractFrame)
         self.spinBox_z.setObjectName(u"spinBox_z")
-        self.spinBox_z.setGeometry(QRect(350, 410, 42, 22))
+        self.spinBox_z.setGeometry(QRect(120, 448, 60, 30))
+        self.spinBox_z.setAlignment(Qt.AlignCenter)
         self.spinBox_z.setMinimum(1)
         self.spinBox_z.setMaximum(1)
-        self.label_z = QLabel(self.extractFrame)
-        self.label_z.setObjectName(u"label_z")
-        self.label_z.setGeometry(QRect(170, 412, 16, 16))
+        self.label_x = QLabel(self.extractFrame)
+        self.label_x.setObjectName(u"label_x")
+        self.label_x.setGeometry(QRect(71, 340, 30, 40))
+        font5 = QFont()
+        font5.setPointSize(20)
+        self.label_x.setFont(font5)
         self.label_y = QLabel(self.extractFrame)
         self.label_y.setObjectName(u"label_y")
-        self.label_y.setGeometry(QRect(250, 412, 16, 16))
-        self.label_5 = QLabel(self.extractFrame)
-        self.label_5.setObjectName(u"label_5")
-        self.label_5.setGeometry(QRect(330, 412, 16, 16))
+        self.label_y.setGeometry(QRect(70, 390, 30, 40))
+        self.label_y.setFont(font5)
+        self.label_z = QLabel(self.extractFrame)
+        self.label_z.setObjectName(u"label_z")
+        self.label_z.setGeometry(QRect(70, 440, 30, 40))
+        self.label_z.setFont(font5)
+        self.extractButton_2 = QPushButton(self.extractFrame)
+        self.extractButton_2.setObjectName(u"extractButton_2")
+        self.extractButton_2.setGeometry(QRect(680, 140, 121, 41))
+        self.extractButton_2.setCursor(QCursor(Qt.PointingHandCursor))
+        self.saveButton = QPushButton(self.extractFrame)
+        self.saveButton.setObjectName(u"saveButton")
+        self.saveButton.setGeometry(QRect(680, 480, 121, 41))
+        self.saveButton.setCursor(QCursor(Qt.PointingHandCursor))
+        self.axial_text_label = QLabel(self.extractFrame)
+        self.axial_text_label.setObjectName(u"axial_text_label")
+        self.axial_text_label.setGeometry(QRect(50, 22, 250, 40))
+        self.axial_text_label.setFont(font)
+        self.axial_text_label.setAlignment(Qt.AlignCenter)
+        self.saggital_text_label = QLabel(self.extractFrame)
+        self.saggital_text_label.setObjectName(u"saggital_text_label")
+        self.saggital_text_label.setGeometry(QRect(350, 22, 250, 40))
+        self.saggital_text_label.setFont(font)
+        self.saggital_text_label.setAlignment(Qt.AlignCenter)
+        self.coronal_text_label = QLabel(self.extractFrame)
+        self.coronal_text_label.setObjectName(u"coronal_text_label")
+        self.coronal_text_label.setGeometry(QRect(350, 350, 250, 40))
+        self.coronal_text_label.setFont(font)
+        self.coronal_text_label.setAlignment(Qt.AlignCenter)
+        self.label_x_range = QLabel(self.extractFrame)
+        self.label_x_range.setObjectName(u"label_x_range")
+        self.label_x_range.setGeometry(QRect(200, 342, 101, 40))
+        font6 = QFont()
+        font6.setPointSize(18)
+        self.label_x_range.setFont(font6)
+        self.label_y_range = QLabel(self.extractFrame)
+        self.label_y_range.setObjectName(u"label_y_range")
+        self.label_y_range.setGeometry(QRect(200, 392, 101, 40))
+        self.label_y_range.setFont(font6)
+        self.label_z_range = QLabel(self.extractFrame)
+        self.label_z_range.setObjectName(u"label_z_range")
+        self.label_z_range.setGeometry(QRect(200, 442, 101, 40))
+        self.label_z_range.setFont(font6)
 
         self.verticalLayout.addWidget(self.extractFrame)
 
@@ -654,10 +729,18 @@ class Ui_MainWindow(object):
         self.saggitalLabel.setText("")
         self.coronalLabel.setText("")
         self.selectButton.setText(QCoreApplication.translate("MainWindow", u"\u9009\u62e9\u56fe\u50cf", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"\u5f53\u524d\u56fe\u50cf\uff1a", None))
-        self.label_z.setText(QCoreApplication.translate("MainWindow", u"x\uff1a", None))
+        self.label_name.setText(QCoreApplication.translate("MainWindow", u"\u5f53\u524d\u56fe\u50cf\uff1a", None))
+        self.label_x.setText(QCoreApplication.translate("MainWindow", u"x\uff1a", None))
         self.label_y.setText(QCoreApplication.translate("MainWindow", u"y\uff1a", None))
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"z\uff1a", None))
+        self.label_z.setText(QCoreApplication.translate("MainWindow", u"z\uff1a", None))
+        self.extractButton_2.setText(QCoreApplication.translate("MainWindow", u"\u63d0\u53d6\u7279\u5f81", None))
+        self.saveButton.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58\u6587\u4ef6", None))
+        self.axial_text_label.setText(QCoreApplication.translate("MainWindow", u"\u8f74\u72b6\u4f4d\uff08Axial\uff09", None))
+        self.saggital_text_label.setText(QCoreApplication.translate("MainWindow", u"\u77e2\u72b6\u4f4d\uff08Saggital\uff09", None))
+        self.coronal_text_label.setText(QCoreApplication.translate("MainWindow", u"\u51a0\u72b6\u4f4d\uff08Coronal\uff09", None))
+        self.label_x_range.setText(QCoreApplication.translate("MainWindow", u"\uff080~1\uff09", None))
+        self.label_y_range.setText(QCoreApplication.translate("MainWindow", u"\uff080~1\uff09", None))
+        self.label_z_range.setText(QCoreApplication.translate("MainWindow", u"\uff080~1\uff09", None))
         self.hintLabel1.setText(QCoreApplication.translate("MainWindow", u"hint", None))
     # retranslateUi
 

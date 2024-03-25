@@ -48,8 +48,8 @@ class Util:
         axial_img = np.flipud(nii_img[:, :, z].T)
         axial_img = np.ascontiguousarray(axial_img)
 
-        targetWidth = 200
-        targetHeight = 200
+        targetWidth = 250
+        targetHeight = 250
         
         h, w = saggital_img.shape
         saggital_pixmap = QPixmap.fromImage(QImage(saggital_img.data, w, h, w, QImage.Format_Grayscale8)).scaled(targetWidth, targetHeight, Qt.KeepAspectRatio, Qt.SmoothTransformation)

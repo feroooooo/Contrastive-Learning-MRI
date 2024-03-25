@@ -66,6 +66,8 @@ class MainWindow(QMainWindow):
     settingOpen = False
     infoOpen = False
     lastest_dir = '.'
+    img_name = ''
+    nii_img = None
     
     def __init__(self):
         # 初始化
@@ -94,6 +96,17 @@ class MainWindow(QMainWindow):
         
         # 特征提取界面
         self.ui.selectButton.clicked.connect(self.select_file)
+        self.ui.saveButton.clicked.connect(self.save_vector)
+        
+        self.ui.spinBox_x.valueChanged.connect(self.refresh_pixmap)
+        self.ui.spinBox_y.valueChanged.connect(self.refresh_pixmap)
+        self.ui.spinBox_z.valueChanged.connect(self.refresh_pixmap)
+        
+        self.ui.label_name.setText("")
+        self.ui.label_x_range.setText("")
+        self.ui.label_y_range.setText("")
+        self.ui.label_z_range.setText("")
+        
         
         for item in group:
             for widget in group[item]:
@@ -145,19 +158,45 @@ class MainWindow(QMainWindow):
         img_path, _ = QFileDialog.getOpenFileName(self, "选择脑结构磁共振图像", self.lastest_dir, "MRI (*.nii *.gz)")
         if img_path:
             self.lastest_dir = os.path.dirname(img_path)
+            self.img_name = os.path.basename(img_path)
+            
+            self.ui.label_name.setText("当前图像：" + self.img_name)
             
             nii_img = nib.load(img_path).get_fdata()
+            self.nii_img = nii_img
+            
             x, y, z = Util.from_3d_img_get_central_xyz(nii_img)
-            print(x, y, z)
             
-            self.ui.spinBox_x.setMaximum(nii_img.shape[0] + 1)
-            self.ui.spinBox_y.setMaximum(nii_img.shape[1] + 1)
-            self.ui.spinBox_z.setMaximum(nii_img.shape[2] + 1)
+            # 初始化spinbox
+            self.ui.spinBox_x.setMaximum(nii_img.shape[0])
+            self.ui.spinBox_y.setMaximum(nii_img.shape[1])
+            self.ui.spinBox_z.setMaximum(nii_img.shape[2])
+            self.ui.spinBox_x.setValue(x + 1)
+            self.ui.spinBox_y.setValue(y + 1)
+            self.ui.spinBox_z.setValue(z + 1)
+            self.ui.label_x_range.setText(f"(1~{nii_img.shape[0]})")
+            self.ui.label_y_range.setText(f"(1~{nii_img.shape[1]})")
+            self.ui.label_z_range.setText(f"(1~{nii_img.shape[2]})")
+
             
-            saggital_pixmap, coronal_pixmap, axial_pixmap = Util.from_3d_img_get_pixmap(nii_img, x, y, z)
+    @Slot()
+    def refresh_pixmap(self):
+        if isinstance(self.nii_img, np.ndarray):
+            saggital_pixmap, coronal_pixmap, axial_pixmap = Util.from_3d_img_get_pixmap(self.nii_img, self.ui.spinBox_x.value() - 1, self.ui.spinBox_y.value() - 1, self.ui.spinBox_z.value() - 1)
             self.ui.saggitalLabel.setPixmap(saggital_pixmap)
             self.ui.coronalLabel.setPixmap(coronal_pixmap)
             self.ui.axialLabel.setPixmap(axial_pixmap)
+        print("refresh")
+            
+    
+    @Slot()
+    def save_vector(self):
+        fileName, fileType = QFileDialog.getSaveFileName(self, "保存特征数据", os.path.join(self.lastest_dir, self.img_name[:self.img_name.find('.')]), "特征文件 (*.vector)")
+        if fileName:
+            print(f"保存的文件路径是：{fileName}")
+            print(fileType)
+        print("save")
+
 
 if __name__ == "__main__":
     sys.argv += ['-platform', 'windows:darkmode=2']
