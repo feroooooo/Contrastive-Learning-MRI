@@ -78,7 +78,7 @@ class ExtractThread(QThread):
         if isinstance(self.nii_img, np.ndarray):
             vector = self.predictor.extract(self.nii_img)
             # 模拟耗时
-            time.sleep(2)
+            # time.sleep(2)
             self.signal.emit(vector)
         else:
             # 无图像返回零
@@ -225,7 +225,7 @@ class MainWindow(QMainWindow):
             self.ui.saggitalLabel.setPixmap(saggital_pixmap)
             self.ui.coronalLabel.setPixmap(coronal_pixmap)
             self.ui.axialLabel.setPixmap(axial_pixmap)
-        print("refresh")
+        # print("refresh")
             
     
     @Slot()

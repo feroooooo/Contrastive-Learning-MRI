@@ -64,7 +64,7 @@ class Util:
     
     @staticmethod
     def add_wrap_to_str(string):
-        max_len = 25
+        max_len = 22
         if len(string) <= max_len:
             return string
         new_str = ""

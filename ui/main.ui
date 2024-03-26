@@ -1234,8 +1234,8 @@ QLabel#extract_condition_label{
                          <widget class="QPushButton" name="selectButton">
                           <property name="geometry">
                            <rect>
-                            <x>120</x>
-                            <y>500</y>
+                            <x>115</x>
+                            <y>350</y>
                             <width>121</width>
                             <height>41</height>
                            </rect>
@@ -1251,9 +1251,9 @@ QLabel#extract_condition_label{
                           <property name="geometry">
                            <rect>
                             <x>50</x>
-                            <y>560</y>
+                            <y>580</y>
                             <width>250</width>
-                            <height>81</height>
+                            <height>60</height>
                            </rect>
                           </property>
                           <property name="font">
@@ -1281,7 +1281,7 @@ QLabel#extract_condition_label{
                           <property name="geometry">
                            <rect>
                             <x>120</x>
-                            <y>348</y>
+                            <y>414</y>
                             <width>60</width>
                             <height>30</height>
                            </rect>
@@ -1305,7 +1305,7 @@ QLabel#extract_condition_label{
                           <property name="geometry">
                            <rect>
                             <x>120</x>
-                            <y>398</y>
+                            <y>459</y>
                             <width>60</width>
                             <height>30</height>
                            </rect>
@@ -1329,7 +1329,7 @@ QLabel#extract_condition_label{
                           <property name="geometry">
                            <rect>
                             <x>120</x>
-                            <y>448</y>
+                            <y>504</y>
                             <width>60</width>
                             <height>30</height>
                            </rect>
@@ -1348,7 +1348,7 @@ QLabel#extract_condition_label{
                           <property name="geometry">
                            <rect>
                             <x>71</x>
-                            <y>340</y>
+                            <y>406</y>
                             <width>30</width>
                             <height>40</height>
                            </rect>
@@ -1366,7 +1366,7 @@ QLabel#extract_condition_label{
                           <property name="geometry">
                            <rect>
                             <x>70</x>
-                            <y>390</y>
+                            <y>451</y>
                             <width>30</width>
                             <height>40</height>
                            </rect>
@@ -1384,7 +1384,7 @@ QLabel#extract_condition_label{
                           <property name="geometry">
                            <rect>
                             <x>70</x>
-                            <y>440</y>
+                            <y>496</y>
                             <width>30</width>
                             <height>40</height>
                            </rect>
@@ -1497,7 +1497,7 @@ QLabel#extract_condition_label{
                           <property name="geometry">
                            <rect>
                             <x>200</x>
-                            <y>342</y>
+                            <y>408</y>
                             <width>101</width>
                             <height>40</height>
                            </rect>
@@ -1508,14 +1508,14 @@ QLabel#extract_condition_label{
                            </font>
                           </property>
                           <property name="text">
-                           <string>（0~1）</string>
+                           <string>（待定）</string>
                           </property>
                          </widget>
                          <widget class="QLabel" name="label_y_range">
                           <property name="geometry">
                            <rect>
                             <x>200</x>
-                            <y>392</y>
+                            <y>453</y>
                             <width>101</width>
                             <height>40</height>
                            </rect>
@@ -1526,14 +1526,14 @@ QLabel#extract_condition_label{
                            </font>
                           </property>
                           <property name="text">
-                           <string>（0~1）</string>
+                           <string>（待定）</string>
                           </property>
                          </widget>
                          <widget class="QLabel" name="label_z_range">
                           <property name="geometry">
                            <rect>
                             <x>200</x>
-                            <y>442</y>
+                            <y>498</y>
                             <width>101</width>
                             <height>40</height>
                            </rect>
@@ -1544,7 +1544,7 @@ QLabel#extract_condition_label{
                            </font>
                           </property>
                           <property name="text">
-                           <string>（0~1）</string>
+                           <string>（待定）</string>
                           </property>
                          </widget>
                          <widget class="QLabel" name="extract_condition_label">
@@ -1572,7 +1572,7 @@ QLabel#extract_condition_label{
                           <property name="geometry">
                            <rect>
                             <x>135</x>
-                            <y>566</y>
+                            <y>553</y>
                             <width>81</width>
                             <height>21</height>
                            </rect>
@@ -1603,7 +1603,7 @@ QLabel#extract_condition_label{
                           <property name="geometry">
                            <rect>
                             <x>50</x>
-                            <y>586</y>
+                            <y>584</y>
                             <width>250</width>
                             <height>48</height>
                            </rect>

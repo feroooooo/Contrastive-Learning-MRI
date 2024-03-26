@@ -18,7 +18,7 @@ logging.basicConfig(filename=os.path.join(writer.log_dir, 'training.log'), level
 
 # 超参数以及其它配置信息
 args = {}
-args['model'] = 'simple'
+args['model'] = 'resnet'
 args['epoch_num'] = 100
 args['batch_size'] = 16
 args['learning_rate'] = 0.0001
