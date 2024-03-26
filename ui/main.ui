@@ -1178,6 +1178,9 @@ QPushButton:hover{
 QSpinBox{
 	background-color:#dedede;
 	font-size:14pt;
+}
+QLabel#extract_condition_label{
+	border-bottom:2px solid #dedede;
 }</string>
                          </property>
                          <widget class="QLabel" name="axialLabel">
@@ -1232,7 +1235,7 @@ QSpinBox{
                           <property name="geometry">
                            <rect>
                             <x>120</x>
-                            <y>520</y>
+                            <y>500</y>
                             <width>121</width>
                             <height>41</height>
                            </rect>
@@ -1244,28 +1247,31 @@ QSpinBox{
                            <string>选择图像</string>
                           </property>
                          </widget>
-                         <widget class="QLabel" name="label_name">
+                         <widget class="QLabel" name="label_name_contrainer">
                           <property name="geometry">
                            <rect>
                             <x>50</x>
-                            <y>590</y>
+                            <y>560</y>
                             <width>250</width>
-                            <height>51</height>
+                            <height>81</height>
                            </rect>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>12</pointsize>
+                            <pointsize>13</pointsize>
                            </font>
                           </property>
+                          <property name="styleSheet">
+                           <string notr="true">background-color:#1b1b1b;border-radius:30px;</string>
+                          </property>
                           <property name="text">
-                           <string>当前图像：</string>
+                           <string/>
                           </property>
                           <property name="scaledContents">
                            <bool>true</bool>
                           </property>
                           <property name="alignment">
-                           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                           <set>Qt::AlignBottom|Qt::AlignHCenter</set>
                           </property>
                           <property name="wordWrap">
                            <bool>true</bool>
@@ -1392,7 +1398,7 @@ QSpinBox{
                            <string>z：</string>
                           </property>
                          </widget>
-                         <widget class="QPushButton" name="extractButton_2">
+                         <widget class="QPushButton" name="start_extract_button">
                           <property name="geometry">
                            <rect>
                             <x>680</x>
@@ -1498,7 +1504,7 @@ QSpinBox{
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>18</pointsize>
+                            <pointsize>17</pointsize>
                            </font>
                           </property>
                           <property name="text">
@@ -1516,7 +1522,7 @@ QSpinBox{
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>18</pointsize>
+                            <pointsize>17</pointsize>
                            </font>
                           </property>
                           <property name="text">
@@ -1534,11 +1540,94 @@ QSpinBox{
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>18</pointsize>
+                            <pointsize>17</pointsize>
                            </font>
                           </property>
                           <property name="text">
                            <string>（0~1）</string>
+                          </property>
+                         </widget>
+                         <widget class="QLabel" name="extract_condition_label">
+                          <property name="geometry">
+                           <rect>
+                            <x>675</x>
+                            <y>305</y>
+                            <width>131</width>
+                            <height>41</height>
+                           </rect>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>16</pointsize>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string>提取中...</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignCenter</set>
+                          </property>
+                         </widget>
+                         <widget class="QLabel" name="label_name_label">
+                          <property name="geometry">
+                           <rect>
+                            <x>135</x>
+                            <y>566</y>
+                            <width>81</width>
+                            <height>21</height>
+                           </rect>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>13</pointsize>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">background-color:transparent;</string>
+                          </property>
+                          <property name="text">
+                           <string>当前图像</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>true</bool>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignCenter</set>
+                          </property>
+                          <property name="wordWrap">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                         <widget class="QLabel" name="label_name">
+                          <property name="geometry">
+                           <rect>
+                            <x>50</x>
+                            <y>586</y>
+                            <width>250</width>
+                            <height>48</height>
+                           </rect>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>13</pointsize>
+                           </font>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">background-color:transparent;</string>
+                          </property>
+                          <property name="text">
+                           <string>mri_get_sdhjksa_fsm_
+stdn_0001_gz.nii</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>true</bool>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignCenter</set>
+                          </property>
+                          <property name="wordWrap">
+                           <bool>true</bool>
                           </property>
                          </widget>
                         </widget>

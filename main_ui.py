@@ -1,14 +1,16 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PySide6.QtGui import QIcon, QImage, QPixmap
-from PySide6.QtCore import Qt, Slot, QPropertyAnimation, QEasingCurve, QEvent, QObject
+from PySide6.QtCore import Qt, Slot, QPropertyAnimation, QEasingCurve, QEvent, QObject, QThread, Signal
 from ui.Ui_main import Ui_MainWindow
 
 import nibabel as nib
 import numpy as np
 import os
+import time
 
 from util import Util
+from predict import Predictor
 
 
 class EventFilter(QObject):
@@ -62,6 +64,32 @@ class EventFilter(QObject):
             self.stackedWidget.setCurrentWidget(self.page[group_name])
         return super().eventFilter(watched, event)
 
+
+# 特征提取线程
+class ExtractThread(QThread):
+    signal = Signal(np.ndarray)
+    
+    
+    def __init__(self, predictor: Predictor):
+        super().__init__()
+        self.predictor = predictor
+    
+    def run(self):
+        if isinstance(self.nii_img, np.ndarray):
+            vector = self.predictor.extract(self.nii_img)
+            # 模拟耗时
+            time.sleep(2)
+            self.signal.emit(vector)
+        else:
+            # 无图像返回零
+            self.signal.emit(np.ones(0))
+            
+    
+    # 设置需要提取的图像
+    def set_img(self, nii_img):
+        self.nii_img = nii_img
+
+
 class MainWindow(QMainWindow):
     settingOpen = False
     infoOpen = False
@@ -74,6 +102,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        
+        self.predictor = Predictor()
         
         # 关闭设置界面
         self.ui.extraFrame.setMaximumSize(0, 16777215)
@@ -98,15 +128,21 @@ class MainWindow(QMainWindow):
         self.ui.selectButton.clicked.connect(self.select_file)
         self.ui.saveButton.clicked.connect(self.save_vector)
         
+        self.ui.extract_condition_label.setVisible(False)
+        self.ui.start_extract_button.setVisible(False)
+        self.ui.saveButton.setVisible(False)
+        self.extract_thread = ExtractThread(self.predictor)
+        self.extract_thread.signal.connect(self.get_vector)
+        self.ui.start_extract_button.clicked.connect(self.start_extract)
+        
         self.ui.spinBox_x.valueChanged.connect(self.refresh_pixmap)
         self.ui.spinBox_y.valueChanged.connect(self.refresh_pixmap)
         self.ui.spinBox_z.valueChanged.connect(self.refresh_pixmap)
         
-        self.ui.label_name.setText("")
+        self.ui.label_name.setText("未选择")
         self.ui.label_x_range.setText("")
         self.ui.label_y_range.setText("")
         self.ui.label_z_range.setText("")
-        
         
         for item in group:
             for widget in group[item]:
@@ -160,7 +196,7 @@ class MainWindow(QMainWindow):
             self.lastest_dir = os.path.dirname(img_path)
             self.img_name = os.path.basename(img_path)
             
-            self.ui.label_name.setText("当前图像：" + self.img_name)
+            self.ui.label_name.setText(Util.add_wrap_to_str(self.img_name))
             
             nii_img = nib.load(img_path).get_fdata()
             self.nii_img = nii_img
@@ -177,6 +213,9 @@ class MainWindow(QMainWindow):
             self.ui.label_x_range.setText(f"(1~{nii_img.shape[0]})")
             self.ui.label_y_range.setText(f"(1~{nii_img.shape[1]})")
             self.ui.label_z_range.setText(f"(1~{nii_img.shape[2]})")
+            self.refresh_pixmap()
+            
+            self.ui.start_extract_button.setVisible(True)
 
             
     @Slot()
@@ -192,11 +231,36 @@ class MainWindow(QMainWindow):
     @Slot()
     def save_vector(self):
         fileName, fileType = QFileDialog.getSaveFileName(self, "保存特征数据", os.path.join(self.lastest_dir, self.img_name[:self.img_name.find('.')]), "特征文件 (*.vector)")
-        if fileName:
-            print(f"保存的文件路径是：{fileName}")
-            print(fileType)
-        print("save")
+        if fileName and isinstance(self.vector, np.ndarray):
+            Util.save_file(self.vector, fileName)
+        
+        
+    @Slot()
+    def start_extract(self):
+        print("start extract")
+        self.ui.start_extract_button.setEnabled(False)
+        self.ui.selectButton.setEnabled(False)
+        self.ui.saveButton.setVisible(False)
+        self.ui.extract_condition_label.setText("提取中...")
+        self.ui.extract_condition_label.setVisible(True)
+        self.extract_thread.set_img(self.nii_img)
+        self.extract_thread.start()
 
+    
+    @Slot(np.ndarray)
+    def get_vector(self, vector):
+        print("finish extract")
+        if vector.shape[0] != 0:
+            self.vector = vector
+            self.ui.start_extract_button.setEnabled(True)
+            self.ui.selectButton.setEnabled(True)
+            self.ui.extract_condition_label.setText("提取完成")
+            self.ui.saveButton.setVisible(True)
+        else:
+            self.ui.start_extract_button.setEnabled(True)
+            self.ui.selectButton.setEnabled(True)
+            self.ui.extract_condition_label.setText("未加载图像")
+        
 
 if __name__ == "__main__":
     sys.argv += ['-platform', 'windows:darkmode=2']

@@ -60,3 +60,22 @@ class Util:
 
         
         return saggital_pixmap, coronal_pixmap, axial_pixmap
+    
+    
+    @staticmethod
+    def add_wrap_to_str(string):
+        max_len = 25
+        if len(string) <= max_len:
+            return string
+        new_str = ""
+        for i in range (0, len(string), max_len):
+            new_str += string[i:i + max_len] + '\n'
+        new_str = new_str[:-1]
+        return new_str
+    
+    
+    @staticmethod
+    def save_file(vector, fileName):
+        print(f"vector dimension: {vector.shape}")
+        print(f"save path: {fileName}")
+        np.savetxt(fileName, vector, fmt='%f')
