@@ -1,5 +1,7 @@
 import numpy as np
 import math
+from matplotlib import colormaps
+from scipy.ndimage import zoom
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QPixmap
@@ -63,6 +65,34 @@ class Util:
     
     
     @staticmethod
+    def from_3d_rgb_img_get_pixmap(nii_img, x, y, z):
+        nii_img = nii_img
+        nii_img = Util.img_from_0_1_to_0_255(Util.normalize_image_0_to_1(nii_img))
+
+        saggital_img = nii_img[x, :, :, :]
+        saggital_img = np.ascontiguousarray(saggital_img)
+        
+        coronal_img = nii_img[:, y, :, :]
+        coronal_img = np.ascontiguousarray(coronal_img)
+        
+        axial_img = nii_img[:, :, z, :]
+        axial_img = np.ascontiguousarray(axial_img)
+
+        targetWidth = 250
+        targetHeight = 250
+        
+        h, w, c = saggital_img.shape
+        saggital_pixmap = QPixmap.fromImage(QImage(saggital_img.data, w, h, c * w, QImage.Format_RGB888)).scaled(targetWidth, targetHeight, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        h, w, c = coronal_img.shape
+        coronal_pixmap = QPixmap.fromImage(QImage(coronal_img.data, w, h, c * w, QImage.Format_RGB888)).scaled(targetWidth, targetHeight, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        h, w, c = axial_img.shape
+        axial_pixmap = QPixmap.fromImage(QImage(axial_img.data, w, h, c * w, QImage.Format_RGB888)).scaled(targetWidth, targetHeight, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        
+        return saggital_pixmap, coronal_pixmap, axial_pixmap
+    
+    
+    @staticmethod
     def add_wrap_to_str(string):
         max_len = 22
         if len(string) <= max_len:
@@ -79,3 +109,29 @@ class Util:
         print(f"vector dimension: {vector.shape}")
         print(f"save path: {fileName}")
         np.savetxt(fileName, vector, fmt='%f')
+    
+        
+    @staticmethod   
+    def overlap(image:np.ndarray, attention_map:np.ndarray, alpha=0.7):
+        # 缩放热力图适应原图
+        zoom_factors = np.array((image.shape[0], image.shape[1], image.shape[2])) / np.array(attention_map.shape)
+        attention_map = zoom(attention_map, zoom_factors, order=3, mode="reflect")  # order=3 代表三次样条插值
+        
+        # 归一化
+        image = Util.normalize_image_0_to_1(image)
+        attention_map = Util.normalize_image_0_to_1(attention_map)
+        
+        # 处理热力图
+        cmap = colormaps['jet']  # 你可以选择其他颜色映射
+        attention_map_colored = cmap(attention_map)
+        attention_map_colored[..., -1] = attention_map
+        attention_map = attention_map_colored
+        
+        # 将灰度图转换为 RGB
+        image_rgb = np.stack([image] * 3, axis=-1)
+        # 提取 RGBA 热力图的颜色和 alpha 通道
+        color_layer = attention_map[..., :3]
+        alpha_layer = attention_map[..., 3:]
+        # 使用热力图的 alpha 通道来混合原图和热力图的颜色
+        overlap_image = (alpha * alpha_layer) * color_layer + (1 - (alpha_layer * alpha)) * image_rgb
+        return overlap_image

@@ -17,6 +17,11 @@ class EventFilter(QObject):
     group = {}
     selected = 'extract'
     page = {}
+    extracted = False
+    extracting = False
+    classifing = False
+    classified = False
+    loaded = False
     
     def set_group(self, group):
         self.group = group
@@ -26,8 +31,8 @@ class EventFilter(QObject):
         self.page = page
     
         
-    def set_stackedWidget(self, widget):
-        self.stackedWidget = widget
+    def set_ui(self, ui:Ui_MainWindow):
+        self.ui = ui
     
     
     # 事件过滤器
@@ -61,7 +66,30 @@ class EventFilter(QObject):
                 else:
                     for widget in self.group[item]:
                         widget.setStyleSheet("")
-            self.stackedWidget.setCurrentWidget(self.page[group_name])
+            self.ui.stackedWidget.setCurrentWidget(self.page[group_name])
+            # 特征提取和分类共用界面，处理不共用部分
+            if group_name == "extract":
+                self.ui.start_classification_button.setVisible(False)
+                self.ui.heatmap_checkBox.setVisible(False)
+                self.ui.classification_condition_label.setVisible(False)
+                if self.loaded:
+                    self.ui.start_extract_button.setVisible(True)
+                    if self.extracting:
+                        self.ui.extract_condition_label.setVisible(True)
+                    elif self.extracted:
+                        self.ui.saveButton.setVisible(True)
+                        self.ui.extract_condition_label.setVisible(True)
+            elif group_name == "classification":
+                self.ui.start_extract_button.setVisible(False)
+                self.ui.saveButton.setVisible(False)
+                self.ui.extract_condition_label.setVisible(False)
+                if self.loaded:
+                    self.ui.start_classification_button.setVisible(True)
+                    if self.classifing:
+                        self.ui.classification_condition_label.setVisible(True)
+                    elif self.classified:
+                        self.ui.classification_condition_label.setVisible(True)
+                        self.ui.heatmap_checkBox.setVisible(True)
         return super().eventFilter(watched, event)
 
 
@@ -69,6 +97,9 @@ class EventFilter(QObject):
 class ExtractThread(QThread):
     signal = Signal(np.ndarray)
     
+    # 设置需要提取的图像
+    def set_img(self, nii_img):
+        self.nii_img = nii_img
     
     def __init__(self, predictor: Predictor):
         super().__init__()
@@ -78,16 +109,34 @@ class ExtractThread(QThread):
         if isinstance(self.nii_img, np.ndarray):
             vector = self.predictor.extract(self.nii_img)
             # 模拟耗时
-            # time.sleep(2)
+            time.sleep(5)
             self.signal.emit(vector)
         else:
             # 无图像返回零
             self.signal.emit(np.ones(0))
             
+
+# 分类预测线程
+class ClassifyThread(QThread):
+    signal = Signal(tuple)
     
     # 设置需要提取的图像
     def set_img(self, nii_img):
         self.nii_img = nii_img
+    
+    def __init__(self, predictor: Predictor):
+        super().__init__()
+        self.predictor = predictor
+    
+    def run(self):
+        if isinstance(self.nii_img, np.ndarray):
+            pred = self.predictor.classify(self.nii_img)
+            # 模拟耗时
+            time.sleep(5)
+            self.signal.emit(pred)
+        else:
+            # 无图像返回零
+            self.signal.emit("")
 
 
 class MainWindow(QMainWindow):
@@ -96,6 +145,7 @@ class MainWindow(QMainWindow):
     lastest_dir = '.'
     img_name = ''
     nii_img = None
+    attention_map = None
     
     def __init__(self):
         # 初始化
@@ -117,12 +167,12 @@ class MainWindow(QMainWindow):
         
         # 设置界面按钮
         self.ui.stackedWidget.setCurrentWidget(self.ui.extractPage)
-        group = {"extract":[self.ui.extractButton, self.ui.extractLabel], "classification":[self.ui.classificationButton, self.ui.classificationLabel], "hint":[self.ui.hintButton, self.ui.hintLabel]}
-        page = {"extract":self.ui.extractPage, "classification":self.ui.classificationPage, "hint":self.ui.hintPage}
+        group = {"extract":[self.ui.extractButton, self.ui.extractLabel], "classification":[self.ui.classificationButton, self.ui.classificationLabel], "batch":[self.ui.batchButton, self.ui.batchLabel], "hint":[self.ui.hintButton, self.ui.hintLabel]}
+        page = {"extract":self.ui.extractPage, "classification":self.ui.extractPage, "batch": self.ui.batchPage, "hint":self.ui.hintPage}
         self.eventFilter = EventFilter()
         self.eventFilter.set_page(page)
         self.eventFilter.set_group(group)
-        self.eventFilter.set_stackedWidget(self.ui.stackedWidget)
+        self.eventFilter.set_ui(self.ui)
         
         # 特征提取界面
         self.ui.selectButton.clicked.connect(self.select_file)
@@ -135,14 +185,23 @@ class MainWindow(QMainWindow):
         self.extract_thread.signal.connect(self.get_vector)
         self.ui.start_extract_button.clicked.connect(self.start_extract)
         
+        self.ui.classification_condition_label.setVisible(False)
+        self.ui.start_classification_button.setVisible(False)
+        self.ui.heatmap_checkBox.setVisible(False)
+        self.classify_thread = ClassifyThread(self.predictor)
+        self.classify_thread.signal.connect(self.get_prediction)
+        self.ui.start_classification_button.clicked.connect(self.start_classify)
+        
         self.ui.spinBox_x.valueChanged.connect(self.refresh_pixmap)
         self.ui.spinBox_y.valueChanged.connect(self.refresh_pixmap)
         self.ui.spinBox_z.valueChanged.connect(self.refresh_pixmap)
         
+        self.ui.heatmap_checkBox.stateChanged.connect(self.change_heatmap)
+        
         self.ui.label_name.setText("未选择")
-        self.ui.label_x_range.setText("")
-        self.ui.label_y_range.setText("")
-        self.ui.label_z_range.setText("")
+        # self.ui.label_x_range.setText("")
+        # self.ui.label_y_range.setText("")
+        # self.ui.label_z_range.setText("")
         
         for item in group:
             for widget in group[item]:
@@ -215,7 +274,19 @@ class MainWindow(QMainWindow):
             self.ui.label_z_range.setText(f"(1~{nii_img.shape[2]})")
             self.refresh_pixmap()
             
-            self.ui.start_extract_button.setVisible(True)
+            self.eventFilter.loaded = True
+            self.eventFilter.extracted = False
+            
+            if self.eventFilter.selected == "extract":
+                self.ui.start_extract_button.setVisible(True)
+                self.ui.start_classification_button.setVisible(False)
+            else:
+                self.ui.start_extract_button.setVisible(False)
+                self.ui.start_classification_button.setVisible(True)
+            self.ui.extract_condition_label.setVisible(False)
+            self.ui.saveButton.setVisible(False)
+            self.ui.heatmap_checkBox.setVisible(False)
+            self.ui.classification_condition_label.setVisible(False)
 
             
     @Slot()
@@ -238,6 +309,7 @@ class MainWindow(QMainWindow):
     @Slot()
     def start_extract(self):
         print("start extract")
+        self.eventFilter.extracting = True
         self.ui.start_extract_button.setEnabled(False)
         self.ui.selectButton.setEnabled(False)
         self.ui.saveButton.setVisible(False)
@@ -245,22 +317,65 @@ class MainWindow(QMainWindow):
         self.ui.extract_condition_label.setVisible(True)
         self.extract_thread.set_img(self.nii_img)
         self.extract_thread.start()
+        
+        
+    @Slot()
+    def start_classify(self):
+        print("start classify")
+        self.eventFilter.classifing = True
+        self.ui.start_classification_button.setEnabled(False)
+        self.ui.selectButton.setEnabled(False)
+        self.ui.heatmap_checkBox.setVisible(False)
+        self.ui.classification_condition_label.setText("预测中...")
+        self.ui.classification_condition_label.setVisible(True)
+        self.classify_thread.set_img(self.nii_img)
+        self.classify_thread.start()
 
     
     @Slot(np.ndarray)
     def get_vector(self, vector):
         print("finish extract")
+        self.ui.start_extract_button.setEnabled(True)
+        self.ui.selectButton.setEnabled(True)
+        self.eventFilter.extracting = False
+        self.eventFilter.extracted = True
         if vector.shape[0] != 0:
             self.vector = vector
-            self.ui.start_extract_button.setEnabled(True)
-            self.ui.selectButton.setEnabled(True)
             self.ui.extract_condition_label.setText("提取完成")
-            self.ui.saveButton.setVisible(True)
+            if self.eventFilter.selected == "extract":
+                self.ui.saveButton.setVisible(True)
         else:
-            self.ui.start_extract_button.setEnabled(True)
-            self.ui.selectButton.setEnabled(True)
             self.ui.extract_condition_label.setText("未加载图像")
-        
+            
+    
+    @Slot(tuple)
+    def get_prediction(self, result):
+        print("finish classify")
+        prediction = result[0]
+        alpha = 0.7
+        self.attention_map = Util.overlap(self.nii_img, result[1], alpha)
+        self.ui.start_classification_button.setEnabled(True)
+        self.ui.selectButton.setEnabled(True)
+        self.eventFilter.classifing = False
+        self.eventFilter.classified = True
+        if prediction != "":
+            self.prediction = prediction
+            self.ui.classification_condition_label.setText("结果：" + prediction)
+            if self.eventFilter.selected == "classification":
+                self.ui.heatmap_checkBox.setVisible(True)
+        else:
+            self.ui.classification_condition_label.setText("未加载图像")
+
+
+    @Slot()
+    def change_heatmap(self):
+        if self.ui.heatmap_checkBox.isChecked():
+            if isinstance(self.nii_img, np.ndarray):
+                saggital_pixmap, coronal_pixmap, axial_pixmap = Util.from_3d_rgb_img_get_pixmap(self.attention_map, self.ui.spinBox_x.value() - 1, self.ui.spinBox_y.value() - 1, self.ui.spinBox_z.value() - 1)
+                self.ui.saggitalLabel.setPixmap(saggital_pixmap)
+                self.ui.coronalLabel.setPixmap(coronal_pixmap)
+                self.ui.axialLabel.setPixmap(axial_pixmap)
+
 
 if __name__ == "__main__":
     sys.argv += ['-platform', 'windows:darkmode=2']

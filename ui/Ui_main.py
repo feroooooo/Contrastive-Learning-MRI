@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.1
+## Created by: Qt User Interface Compiler version 6.6.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
-    QLabel, QMainWindow, QPushButton, QSizePolicy,
-    QSpacerItem, QSpinBox, QStackedWidget, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
+    QHBoxLayout, QLabel, QMainWindow, QPushButton,
+    QSizePolicy, QSpacerItem, QSpinBox, QStackedWidget,
+    QVBoxLayout, QWidget)
 import ui.resource_rc
 
 class Ui_MainWindow(object):
@@ -160,6 +160,20 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_6.addWidget(self.classificationButton, 0, Qt.AlignLeft)
 
+        self.batchButton = QPushButton(self.buttonFrame)
+        self.batchButton.setObjectName(u"batchButton")
+        sizePolicy2.setHeightForWidth(self.batchButton.sizePolicy().hasHeightForWidth())
+        self.batchButton.setSizePolicy(sizePolicy2)
+        self.batchButton.setMinimumSize(QSize(60, 60))
+        self.batchButton.setMaximumSize(QSize(60, 60))
+        self.batchButton.setCursor(QCursor(Qt.PointingHandCursor))
+        icon2 = QIcon()
+        icon2.addFile(u":/resource/img/batch.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.batchButton.setIcon(icon2)
+        self.batchButton.setIconSize(QSize(24, 24))
+
+        self.verticalLayout_6.addWidget(self.batchButton, 0, Qt.AlignLeft)
+
         self.hintButton = QPushButton(self.buttonFrame)
         self.hintButton.setObjectName(u"hintButton")
         sizePolicy2.setHeightForWidth(self.hintButton.sizePolicy().hasHeightForWidth())
@@ -167,9 +181,9 @@ class Ui_MainWindow(object):
         self.hintButton.setMinimumSize(QSize(60, 60))
         self.hintButton.setMaximumSize(QSize(60, 60))
         self.hintButton.setCursor(QCursor(Qt.PointingHandCursor))
-        icon2 = QIcon()
-        icon2.addFile(u":/resource/img/hint.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.hintButton.setIcon(icon2)
+        icon3 = QIcon()
+        icon3.addFile(u":/resource/img/hint.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.hintButton.setIcon(icon3)
         self.hintButton.setIconSize(QSize(24, 24))
 
         self.verticalLayout_6.addWidget(self.hintButton, 0, Qt.AlignLeft)
@@ -191,9 +205,9 @@ class Ui_MainWindow(object):
         self.infoButton.setMaximumSize(QSize(60, 40))
         self.infoButton.setCursor(QCursor(Qt.PointingHandCursor))
         self.infoButton.setStyleSheet(u"background-color:transparent;")
-        icon3 = QIcon()
-        icon3.addFile(u":/resource/img/list.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.infoButton.setIcon(icon3)
+        icon4 = QIcon()
+        icon4.addFile(u":/resource/img/list.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.infoButton.setIcon(icon4)
         self.infoButton.setIconSize(QSize(28, 28))
 
         self.verticalLayout_7.addWidget(self.infoButton)
@@ -206,9 +220,9 @@ class Ui_MainWindow(object):
         self.settingButton.setMaximumSize(QSize(60, 40))
         self.settingButton.setCursor(QCursor(Qt.PointingHandCursor))
         self.settingButton.setStyleSheet(u"background-color:transparent;")
-        icon4 = QIcon()
-        icon4.addFile(u":/resource/img/setting.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.settingButton.setIcon(icon4)
+        icon5 = QIcon()
+        icon5.addFile(u":/resource/img/setting.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.settingButton.setIcon(icon5)
         self.settingButton.setIconSize(QSize(28, 28))
         self.settingButton.setAutoRepeat(False)
 
@@ -297,6 +311,16 @@ class Ui_MainWindow(object):
         self.classificationLabel.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.verticalLayout_11.addWidget(self.classificationLabel)
+
+        self.batchLabel = QLabel(self.upFrame)
+        self.batchLabel.setObjectName(u"batchLabel")
+        sizePolicy1.setHeightForWidth(self.batchLabel.sizePolicy().hasHeightForWidth())
+        self.batchLabel.setSizePolicy(sizePolicy1)
+        self.batchLabel.setMinimumSize(QSize(0, 60))
+        self.batchLabel.setMaximumSize(QSize(16777215, 60))
+        self.batchLabel.setCursor(QCursor(Qt.PointingHandCursor))
+
+        self.verticalLayout_11.addWidget(self.batchLabel)
 
         self.hintLabel = QLabel(self.upFrame)
         self.hintLabel.setObjectName(u"hintLabel")
@@ -413,59 +437,59 @@ class Ui_MainWindow(object):
         self.stackedWidget.setStyleSheet(u"QFrame{\n"
 "	background-color:#323232;\n"
 "}")
-        self.classificationPage = QWidget()
-        self.classificationPage.setObjectName(u"classificationPage")
-        self.classificationPage.setStyleSheet(u"QLabel{font-size:30px;}")
-        self.gridLayoutClassification = QGridLayout(self.classificationPage)
+        self.batchPage = QWidget()
+        self.batchPage.setObjectName(u"batchPage")
+        self.batchPage.setStyleSheet(u"QLabel{font-size:30px;}")
+        self.gridLayoutClassification = QGridLayout(self.batchPage)
         self.gridLayoutClassification.setObjectName(u"gridLayoutClassification")
         self.gridLayoutClassification.setContentsMargins(0, 0, 0, 0)
-        self.classificationFrameV = QFrame(self.classificationPage)
-        self.classificationFrameV.setObjectName(u"classificationFrameV")
-        self.horizontalLayoutClassification = QHBoxLayout(self.classificationFrameV)
+        self.batchFrameV = QFrame(self.batchPage)
+        self.batchFrameV.setObjectName(u"batchFrameV")
+        self.horizontalLayoutClassification = QHBoxLayout(self.batchFrameV)
         self.horizontalLayoutClassification.setSpacing(0)
         self.horizontalLayoutClassification.setObjectName(u"horizontalLayoutClassification")
         self.horizontalLayoutClassification.setContentsMargins(0, 0, 0, 0)
-        self.horizontalSpacerClassification2 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacerBatch2 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.horizontalLayoutClassification.addItem(self.horizontalSpacerClassification2)
+        self.horizontalLayoutClassification.addItem(self.horizontalSpacerBatch2)
 
-        self.classificationFrameH = QFrame(self.classificationFrameV)
-        self.classificationFrameH.setObjectName(u"classificationFrameH")
-        self.classificationFrameH.setMinimumSize(QSize(0, 0))
-        self.classificationFrameH.setStyleSheet(u"")
-        self.verticalLayoutClassification = QVBoxLayout(self.classificationFrameH)
+        self.batchFrameH = QFrame(self.batchFrameV)
+        self.batchFrameH.setObjectName(u"batchFrameH")
+        self.batchFrameH.setMinimumSize(QSize(0, 0))
+        self.batchFrameH.setStyleSheet(u"")
+        self.verticalLayoutClassification = QVBoxLayout(self.batchFrameH)
         self.verticalLayoutClassification.setSpacing(0)
         self.verticalLayoutClassification.setObjectName(u"verticalLayoutClassification")
         self.verticalLayoutClassification.setContentsMargins(0, 0, 0, 0)
-        self.verticalSpacerClassification1 = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacerBatch1 = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
-        self.verticalLayoutClassification.addItem(self.verticalSpacerClassification1)
+        self.verticalLayoutClassification.addItem(self.verticalSpacerBatch1)
 
-        self.classificationFrame = QFrame(self.classificationFrameH)
-        self.classificationFrame.setObjectName(u"classificationFrame")
-        self.classificationFrame.setMinimumSize(QSize(880, 660))
-        self.classificationFrame.setStyleSheet(u"")
-        self.classificationLabel1 = QLabel(self.classificationFrame)
-        self.classificationLabel1.setObjectName(u"classificationLabel1")
-        self.classificationLabel1.setGeometry(QRect(40, 30, 200, 200))
+        self.batchFrame = QFrame(self.batchFrameH)
+        self.batchFrame.setObjectName(u"batchFrame")
+        self.batchFrame.setMinimumSize(QSize(880, 660))
+        self.batchFrame.setStyleSheet(u"")
+        self.batch_label_temp = QLabel(self.batchFrame)
+        self.batch_label_temp.setObjectName(u"batch_label_temp")
+        self.batch_label_temp.setGeometry(QRect(40, 30, 200, 200))
 
-        self.verticalLayoutClassification.addWidget(self.classificationFrame)
+        self.verticalLayoutClassification.addWidget(self.batchFrame)
 
-        self.verticalSpacerClassification2 = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacerBatch2 = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
-        self.verticalLayoutClassification.addItem(self.verticalSpacerClassification2)
-
-
-        self.horizontalLayoutClassification.addWidget(self.classificationFrameH)
-
-        self.horizontalSpacerClassification1 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayoutClassification.addItem(self.horizontalSpacerClassification1)
+        self.verticalLayoutClassification.addItem(self.verticalSpacerBatch2)
 
 
-        self.gridLayoutClassification.addWidget(self.classificationFrameV, 0, 0, 1, 1)
+        self.horizontalLayoutClassification.addWidget(self.batchFrameH)
 
-        self.stackedWidget.addWidget(self.classificationPage)
+        self.horizontalSpacerBatch1 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayoutClassification.addItem(self.horizontalSpacerBatch1)
+
+
+        self.gridLayoutClassification.addWidget(self.batchFrameV, 0, 0, 1, 1)
+
+        self.stackedWidget.addWidget(self.batchPage)
         self.extractPage = QWidget()
         self.extractPage.setObjectName(u"extractPage")
         self.gridLayoutExtract = QGridLayout(self.extractPage)
@@ -519,8 +543,12 @@ class Ui_MainWindow(object):
 "	background-color:#dedede;\n"
 "	font-size:14pt;\n"
 "}\n"
-"QLabel#extract_condition_label{\n"
+"QLabel#extract_condition_label, QLabel#classification_condition_label{\n"
 "	border-bottom:2px solid #dedede;\n"
+"}\n"
+"QCheckBox{\n"
+"	color:#dedede;\n"
+"	font-size:12pt;\n"
 "}")
         self.axialLabel = QLabel(self.extractFrame)
         self.axialLabel.setObjectName(u"axialLabel")
@@ -647,6 +675,18 @@ class Ui_MainWindow(object):
         self.label_name.setScaledContents(True)
         self.label_name.setAlignment(Qt.AlignCenter)
         self.label_name.setWordWrap(True)
+        self.start_classification_button = QPushButton(self.extractFrame)
+        self.start_classification_button.setObjectName(u"start_classification_button")
+        self.start_classification_button.setGeometry(QRect(680, 140, 121, 41))
+        self.start_classification_button.setCursor(QCursor(Qt.PointingHandCursor))
+        self.classification_condition_label = QLabel(self.extractFrame)
+        self.classification_condition_label.setObjectName(u"classification_condition_label")
+        self.classification_condition_label.setGeometry(QRect(675, 305, 131, 41))
+        self.classification_condition_label.setFont(font8)
+        self.classification_condition_label.setAlignment(Qt.AlignCenter)
+        self.heatmap_checkBox = QCheckBox(self.extractFrame)
+        self.heatmap_checkBox.setObjectName(u"heatmap_checkBox")
+        self.heatmap_checkBox.setGeometry(QRect(690, 490, 101, 20))
 
         self.verticalLayout.addWidget(self.extractFrame)
 
@@ -697,9 +737,9 @@ class Ui_MainWindow(object):
         self.hintFrame.setObjectName(u"hintFrame")
         self.hintFrame.setMinimumSize(QSize(880, 660))
         self.hintFrame.setStyleSheet(u"")
-        self.hintLabel1 = QLabel(self.hintFrame)
-        self.hintLabel1.setObjectName(u"hintLabel1")
-        self.hintLabel1.setGeometry(QRect(40, 30, 200, 200))
+        self.hintLabel_temp = QLabel(self.hintFrame)
+        self.hintLabel_temp.setObjectName(u"hintLabel_temp")
+        self.hintLabel_temp.setGeometry(QRect(40, 30, 200, 200))
 
         self.verticalLayoutHint.addWidget(self.hintFrame)
 
@@ -745,18 +785,20 @@ class Ui_MainWindow(object):
         self.iconLabel.setText("")
         self.extractButton.setText("")
         self.classificationButton.setText("")
+        self.batchButton.setText("")
         self.hintButton.setText("")
         self.infoButton.setText("")
         self.settingButton.setText("")
         self.topLabel_2.setText(QCoreApplication.translate("MainWindow", u"MRI", None))
         self.extractLabel.setText(QCoreApplication.translate("MainWindow", u"\u7279\u5f81\u63d0\u53d6", None))
         self.classificationLabel.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u50cf\u5206\u7c7b", None))
+        self.batchLabel.setText(QCoreApplication.translate("MainWindow", u"\u6279\u91cf\u5904\u7406", None))
         self.hintLabel.setText(QCoreApplication.translate("MainWindow", u"\u76f8\u5173\u8bf4\u660e", None))
         self.label_4.setText("")
         self.settingLabel.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.lineLabel.setText("")
         self.topLabel.setText(QCoreApplication.translate("MainWindow", u"\u57fa\u4e8e\u5bf9\u6bd4\u5b66\u4e60\u7684\u8111\u7ed3\u6784\u78c1\u5171\u632f\u5f71\u50cf\u7279\u5f81\u63d0\u53d6\u7cfb\u7edf", None))
-        self.classificationLabel1.setText(QCoreApplication.translate("MainWindow", u"classification", None))
+        self.batch_label_temp.setText(QCoreApplication.translate("MainWindow", u"batch", None))
         self.axialLabel.setText("")
         self.saggitalLabel.setText("")
         self.coronalLabel.setText("")
@@ -770,13 +812,16 @@ class Ui_MainWindow(object):
         self.axial_text_label.setText(QCoreApplication.translate("MainWindow", u"\u8f74\u72b6\u4f4d\uff08Axial\uff09", None))
         self.saggital_text_label.setText(QCoreApplication.translate("MainWindow", u"\u77e2\u72b6\u4f4d\uff08Saggital\uff09", None))
         self.coronal_text_label.setText(QCoreApplication.translate("MainWindow", u"\u51a0\u72b6\u4f4d\uff08Coronal\uff09", None))
-        self.label_x_range.setText(QCoreApplication.translate("MainWindow", u"\uff080~1\uff09", None))
-        self.label_y_range.setText(QCoreApplication.translate("MainWindow", u"\uff080~1\uff09", None))
-        self.label_z_range.setText(QCoreApplication.translate("MainWindow", u"\uff080~1\uff09", None))
+        self.label_x_range.setText(QCoreApplication.translate("MainWindow", u"\uff08\u5f85\u5b9a\uff09", None))
+        self.label_y_range.setText(QCoreApplication.translate("MainWindow", u"\uff08\u5f85\u5b9a\uff09", None))
+        self.label_z_range.setText(QCoreApplication.translate("MainWindow", u"\uff08\u5f85\u5b9a\uff09", None))
         self.extract_condition_label.setText(QCoreApplication.translate("MainWindow", u"\u63d0\u53d6\u4e2d...", None))
         self.label_name_label.setText(QCoreApplication.translate("MainWindow", u"\u5f53\u524d\u56fe\u50cf", None))
         self.label_name.setText(QCoreApplication.translate("MainWindow", u"mri_get_sdhjksa_fsm_\n"
 "stdn_0001_gz.nii", None))
-        self.hintLabel1.setText(QCoreApplication.translate("MainWindow", u"hint", None))
+        self.start_classification_button.setText(QCoreApplication.translate("MainWindow", u"\u9884\u6d4b\u5206\u7c7b", None))
+        self.classification_condition_label.setText(QCoreApplication.translate("MainWindow", u"\u9884\u6d4b\u4e2d...", None))
+        self.heatmap_checkBox.setText(QCoreApplication.translate("MainWindow", u"\u5c55\u793a\u70ed\u529b\u56fe", None))
+        self.hintLabel_temp.setText(QCoreApplication.translate("MainWindow", u"hint", None))
     # retranslateUi
 

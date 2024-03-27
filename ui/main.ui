@@ -305,6 +305,44 @@ QLabel{
               </widget>
              </item>
              <item alignment="Qt::AlignLeft">
+              <widget class="QPushButton" name="batchButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>60</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>60</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="cursor">
+                <cursorShape>PointingHandCursor</cursorShape>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="resource.qrc">
+                 <normaloff>:/resource/img/batch.png</normaloff>:/resource/img/batch.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item alignment="Qt::AlignLeft">
               <widget class="QPushButton" name="hintButton">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -645,6 +683,34 @@ QLabel{
               </widget>
              </item>
              <item>
+              <widget class="QLabel" name="batchLabel">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="cursor">
+                <cursorShape>PointingHandCursor</cursorShape>
+               </property>
+               <property name="text">
+                <string>批量处理</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QLabel" name="hintLabel">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -905,7 +971,7 @@ font-weight:600;</string>
                <property name="currentIndex">
                 <number>1</number>
                </property>
-               <widget class="QWidget" name="classificationPage">
+               <widget class="QWidget" name="batchPage">
                 <property name="styleSheet">
                  <string notr="true">QLabel{font-size:30px;}</string>
                 </property>
@@ -923,7 +989,7 @@ font-weight:600;</string>
                   <number>0</number>
                  </property>
                  <item row="0" column="0">
-                  <widget class="QFrame" name="classificationFrameV">
+                  <widget class="QFrame" name="batchFrameV">
                    <layout class="QHBoxLayout" name="horizontalLayoutClassification">
                     <property name="spacing">
                      <number>0</number>
@@ -941,7 +1007,7 @@ font-weight:600;</string>
                      <number>0</number>
                     </property>
                     <item>
-                     <spacer name="horizontalSpacerClassification2">
+                     <spacer name="horizontalSpacerBatch2">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
@@ -957,7 +1023,7 @@ font-weight:600;</string>
                      </spacer>
                     </item>
                     <item>
-                     <widget class="QFrame" name="classificationFrameH">
+                     <widget class="QFrame" name="batchFrameH">
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
@@ -984,7 +1050,7 @@ font-weight:600;</string>
                         <number>0</number>
                        </property>
                        <item>
-                        <spacer name="verticalSpacerClassification1">
+                        <spacer name="verticalSpacerBatch1">
                          <property name="orientation">
                           <enum>Qt::Vertical</enum>
                          </property>
@@ -997,7 +1063,7 @@ font-weight:600;</string>
                         </spacer>
                        </item>
                        <item>
-                        <widget class="QFrame" name="classificationFrame">
+                        <widget class="QFrame" name="batchFrame">
                          <property name="minimumSize">
                           <size>
                            <width>880</width>
@@ -1007,7 +1073,7 @@ font-weight:600;</string>
                          <property name="styleSheet">
                           <string notr="true"/>
                          </property>
-                         <widget class="QLabel" name="classificationLabel">
+                         <widget class="QLabel" name="batch_label_temp">
                           <property name="geometry">
                            <rect>
                             <x>40</x>
@@ -1017,13 +1083,13 @@ font-weight:600;</string>
                            </rect>
                           </property>
                           <property name="text">
-                           <string>classification</string>
+                           <string>batch</string>
                           </property>
                          </widget>
                         </widget>
                        </item>
                        <item>
-                        <spacer name="verticalSpacerClassification2">
+                        <spacer name="verticalSpacerBatch2">
                          <property name="orientation">
                           <enum>Qt::Vertical</enum>
                          </property>
@@ -1039,7 +1105,7 @@ font-weight:600;</string>
                      </widget>
                     </item>
                     <item>
-                     <spacer name="horizontalSpacerClassification1">
+                     <spacer name="horizontalSpacerBatch1">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
@@ -1179,8 +1245,12 @@ QSpinBox{
 	background-color:#dedede;
 	font-size:14pt;
 }
-QLabel#extract_condition_label{
+QLabel#extract_condition_label, QLabel#classification_condition_label{
 	border-bottom:2px solid #dedede;
+}
+QCheckBox{
+	color:#dedede;
+	font-size:12pt;
 }</string>
                          </property>
                          <widget class="QLabel" name="axialLabel">
@@ -1630,6 +1700,56 @@ stdn_0001_gz.nii</string>
                            <bool>true</bool>
                           </property>
                          </widget>
+                         <widget class="QPushButton" name="start_classification_button">
+                          <property name="geometry">
+                           <rect>
+                            <x>680</x>
+                            <y>140</y>
+                            <width>121</width>
+                            <height>41</height>
+                           </rect>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>PointingHandCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>预测分类</string>
+                          </property>
+                         </widget>
+                         <widget class="QLabel" name="classification_condition_label">
+                          <property name="geometry">
+                           <rect>
+                            <x>675</x>
+                            <y>305</y>
+                            <width>131</width>
+                            <height>41</height>
+                           </rect>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>16</pointsize>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string>预测中...</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignCenter</set>
+                          </property>
+                         </widget>
+                         <widget class="QCheckBox" name="heatmap_checkBox">
+                          <property name="geometry">
+                           <rect>
+                            <x>690</x>
+                            <y>490</y>
+                            <width>101</width>
+                            <height>20</height>
+                           </rect>
+                          </property>
+                          <property name="text">
+                           <string>展示热力图</string>
+                          </property>
+                         </widget>
                         </widget>
                        </item>
                        <item>
@@ -1771,7 +1891,7 @@ stdn_0001_gz.nii</string>
                          <property name="styleSheet">
                           <string notr="true"/>
                          </property>
-                         <widget class="QLabel" name="hintLabel">
+                         <widget class="QLabel" name="hintLabel_temp">
                           <property name="geometry">
                            <rect>
                             <x>40</x>
