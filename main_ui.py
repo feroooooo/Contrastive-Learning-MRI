@@ -79,6 +79,8 @@ class EventFilter(QObject):
                     elif self.extracted:
                         self.ui.saveButton.setVisible(True)
                         self.ui.extract_condition_label.setVisible(True)
+                self.ui.heatmap_checkBox.setChecked(not self.ui.heatmap_checkBox.isChecked())
+                self.ui.heatmap_checkBox.setChecked(not self.ui.heatmap_checkBox.isChecked())
             elif group_name == "classification":
                 self.ui.start_extract_button.setVisible(False)
                 self.ui.saveButton.setVisible(False)
@@ -90,6 +92,8 @@ class EventFilter(QObject):
                     elif self.classified:
                         self.ui.classification_condition_label.setVisible(True)
                         self.ui.heatmap_checkBox.setVisible(True)
+                self.ui.heatmap_checkBox.setChecked(not self.ui.heatmap_checkBox.isChecked())
+                self.ui.heatmap_checkBox.setChecked(not self.ui.heatmap_checkBox.isChecked())
         return super().eventFilter(watched, event)
 
 
@@ -109,7 +113,7 @@ class ExtractThread(QThread):
         if isinstance(self.nii_img, np.ndarray):
             vector = self.predictor.extract(self.nii_img)
             # 模拟耗时
-            time.sleep(5)
+            # time.sleep(5)
             self.signal.emit(vector)
         else:
             # 无图像返回零
@@ -132,7 +136,7 @@ class ClassifyThread(QThread):
         if isinstance(self.nii_img, np.ndarray):
             pred = self.predictor.classify(self.nii_img)
             # 模拟耗时
-            time.sleep(5)
+            # time.sleep(5)
             self.signal.emit(pred)
         else:
             # 无图像返回零
@@ -291,11 +295,18 @@ class MainWindow(QMainWindow):
             
     @Slot()
     def refresh_pixmap(self):
-        if isinstance(self.nii_img, np.ndarray):
-            saggital_pixmap, coronal_pixmap, axial_pixmap = Util.from_3d_img_get_pixmap(self.nii_img, self.ui.spinBox_x.value() - 1, self.ui.spinBox_y.value() - 1, self.ui.spinBox_z.value() - 1)
-            self.ui.saggitalLabel.setPixmap(saggital_pixmap)
-            self.ui.coronalLabel.setPixmap(coronal_pixmap)
-            self.ui.axialLabel.setPixmap(axial_pixmap)
+        if self.ui.heatmap_checkBox.isChecked() and self.eventFilter.selected == "classification":
+            if isinstance(self.nii_img, np.ndarray):
+                saggital_pixmap, coronal_pixmap, axial_pixmap = Util.from_3d_rgb_img_get_pixmap(self.attention_map, self.ui.spinBox_x.value() - 1, self.ui.spinBox_y.value() - 1, self.ui.spinBox_z.value() - 1)
+                self.ui.saggitalLabel.setPixmap(saggital_pixmap)
+                self.ui.coronalLabel.setPixmap(coronal_pixmap)
+                self.ui.axialLabel.setPixmap(axial_pixmap)
+        else:
+            if isinstance(self.nii_img, np.ndarray):
+                saggital_pixmap, coronal_pixmap, axial_pixmap = Util.from_3d_img_get_pixmap(self.nii_img, self.ui.spinBox_x.value() - 1, self.ui.spinBox_y.value() - 1, self.ui.spinBox_z.value() - 1)
+                self.ui.saggitalLabel.setPixmap(saggital_pixmap)
+                self.ui.coronalLabel.setPixmap(coronal_pixmap)
+                self.ui.axialLabel.setPixmap(axial_pixmap)
         # print("refresh")
             
     
@@ -323,6 +334,7 @@ class MainWindow(QMainWindow):
     def start_classify(self):
         print("start classify")
         self.eventFilter.classifing = True
+        self.ui.heatmap_checkBox.setChecked(False)
         self.ui.start_classification_button.setEnabled(False)
         self.ui.selectButton.setEnabled(False)
         self.ui.heatmap_checkBox.setVisible(False)
@@ -369,12 +381,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def change_heatmap(self):
-        if self.ui.heatmap_checkBox.isChecked():
-            if isinstance(self.nii_img, np.ndarray):
-                saggital_pixmap, coronal_pixmap, axial_pixmap = Util.from_3d_rgb_img_get_pixmap(self.attention_map, self.ui.spinBox_x.value() - 1, self.ui.spinBox_y.value() - 1, self.ui.spinBox_z.value() - 1)
-                self.ui.saggitalLabel.setPixmap(saggital_pixmap)
-                self.ui.coronalLabel.setPixmap(coronal_pixmap)
-                self.ui.axialLabel.setPixmap(axial_pixmap)
+        self.refresh_pixmap()
 
 
 if __name__ == "__main__":

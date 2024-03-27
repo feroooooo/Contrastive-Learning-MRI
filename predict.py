@@ -10,10 +10,11 @@ class Predictor:
     def __init__(self) -> None:
         self.model_classification = VoxVGG(3)
         self.model_classification = medcam.inject(self.model_classification, output_dir='attention_maps', backend='gcam', save_maps=False, return_attention=True, layer='auto')
+        # 输出固定为128维，与参数无关（最后的MLP被去掉）
         self.model_simclr = VoxVGG_SimCLR(256)
         self.model_simclr.backbone.last_fc = torch.nn.Identity()
-        # self.model_classification = self.load_model_classification(self.model_classification, "./weights/checkpoint_classification_vgg.pth")
-        # self.model_simclr = self.load_model_simclr(self.model_simclr, "./weights/checkpoint_simclr_vgg.pth")        
+        self.model_classification = self.load_model_classification(self.model_classification, "./weights/checkpoint_classification_vgg.pth")
+        self.model_simclr = self.load_model_simclr(self.model_simclr, "./weights/checkpoint_simclr_vgg.pth")        
         
     
     def load_model_classification(self, model:nn.Module, weights_path):

@@ -18,6 +18,9 @@ class Util:
         min_val = np.min(image)
         max_val = np.max(image)
         
+        if min_val == max_val:
+            return image
+        
         # 应用最大-最小归一化
         normalized_image = (image - min_val) / (max_val - min_val)
         
@@ -41,7 +44,7 @@ class Util:
         nii_img = nii_img
         nii_img = Util.img_from_0_1_to_0_255(Util.normalize_image_0_to_1(nii_img))
 
-        saggital_img = np.rot90(nii_img[x, :, :][:, ::-1], k=3)
+        saggital_img = np.rot90(nii_img[x, :, :][:, ::-1], k=-1)
         saggital_img = np.ascontiguousarray(saggital_img)
         
         coronal_img = np.flipud(nii_img[:, y, :].T)
@@ -69,13 +72,13 @@ class Util:
         nii_img = nii_img
         nii_img = Util.img_from_0_1_to_0_255(Util.normalize_image_0_to_1(nii_img))
 
-        saggital_img = nii_img[x, :, :, :]
+        saggital_img = np.rot90(nii_img[x, :, :, :][:, ::-1, :], k=-1)
         saggital_img = np.ascontiguousarray(saggital_img)
         
-        coronal_img = nii_img[:, y, :, :]
+        coronal_img = np.flipud(np.transpose(nii_img[:, y, :, :], (1, 0, 2)))
         coronal_img = np.ascontiguousarray(coronal_img)
         
-        axial_img = nii_img[:, :, z, :]
+        axial_img =  np.flipud(np.transpose(nii_img[:, :, z, :], (1, 0, 2)))
         axial_img = np.ascontiguousarray(axial_img)
 
         targetWidth = 250
