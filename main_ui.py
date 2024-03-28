@@ -296,7 +296,7 @@ class MainWindow(QMainWindow):
     @Slot()
     def refresh_pixmap(self):
         if self.ui.heatmap_checkBox.isChecked() and self.eventFilter.selected == "classification":
-            if isinstance(self.nii_img, np.ndarray):
+            if isinstance(self.nii_img, np.ndarray) and isinstance(self.attention_map, np.ndarray):
                 saggital_pixmap, coronal_pixmap, axial_pixmap = Util.from_3d_rgb_img_get_pixmap(self.attention_map, self.ui.spinBox_x.value() - 1, self.ui.spinBox_y.value() - 1, self.ui.spinBox_z.value() - 1)
                 self.ui.saggitalLabel.setPixmap(saggital_pixmap)
                 self.ui.coronalLabel.setPixmap(coronal_pixmap)
