@@ -1,5 +1,5 @@
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PySide6.QtGui import QIcon, QImage, QPixmap
 from PySide6.QtCore import Qt, Slot, QPropertyAnimation, QEasingCurve, QEvent, QObject, QThread, Signal
 from ui.Ui_main import Ui_MainWindow
@@ -8,6 +8,7 @@ import nibabel as nib
 import numpy as np
 import os
 import time
+import json
 
 from util import Util
 from predict import Predictor
@@ -146,7 +147,7 @@ class ClassifyThread(QThread):
 class MainWindow(QMainWindow):
     settingOpen = False
     infoOpen = False
-    lastest_dir = '.'
+    lastest_dir = './'
     img_name = ''
     nii_img = None
     attention_map = None
@@ -206,6 +207,19 @@ class MainWindow(QMainWindow):
         # self.ui.label_x_range.setText("")
         # self.ui.label_y_range.setText("")
         # self.ui.label_z_range.setText("")
+        
+        # 设置
+        self.ui.setting_save_button.clicked.connect(self.save_config)
+        self.load_config()
+        self.lastest_dir = self.ui.default_input_dir_lineEdit.text()
+        self.ui.pushButton_input.clicked.connect(self.select_dir)
+        self.ui.pushButton_output.clicked.connect(self.select_dir)
+        
+        # 批量处理
+        self.ui.pushButton_batch_read.clicked.connect(self.read_batch_image)
+        self.ui.batch_label_num.setVisible(False)
+        self.ui.pushButton_batch_extract.setVisible(False)
+        self.ui.pushButton_batch_predict.setVisible(False)
         
         for item in group:
             for widget in group[item]:
@@ -382,6 +396,86 @@ class MainWindow(QMainWindow):
     @Slot()
     def change_heatmap(self):
         self.refresh_pixmap()
+        
+        
+    @Slot()
+    def save_config(self):
+        file_path = "./system_config.json"
+        config = {}
+        config['default_input_dir'] = self.ui.default_input_dir_lineEdit.text()
+        config['default_output_dir'] = self.ui.default_output_dir_lineEdit.text()
+        with open(file_path, 'w', encoding='utf-8') as file:
+            json.dump(config, file, ensure_ascii=False, indent=4)
+            
+        messageBox = QMessageBox()
+        messageBox.setWindowTitle("提示")
+        messageBox.setText('<div style="text-align:center; vertical-align:middle;">保存成功。</div>')
+        messageBox.exec()
+        # QMessageBox.information(self, '信息', '保存成功。')
+    
+    
+    def load_config(self):
+        # 文件路径
+        file_path = './system_config.json'
+
+        # 检查文件是否存在
+        if os.path.exists(file_path):
+            # 打开并读取文件
+            with open(file_path, 'r', encoding='utf-8') as file:
+                config = json.load(file)
+            # 输出数据或进行其他处理
+            print(config)
+            self.ui.default_input_dir_lineEdit.setText(config['default_input_dir'])
+            self.ui.default_output_dir_lineEdit.setText(config['default_output_dir'])
+            self.ui.lineEdit_input.setText(config['default_input_dir'])
+            self.ui.lineEdit_output.setText(config['default_output_dir'])
+            self.default_input_dir = config['default_input_dir']
+            self.default_output_dir = config['default_output_dir']
+        else:
+            print('no config file')
+    
+    
+    @Slot()
+    def select_dir(self):
+        is_input = self.sender().objectName() == "pushButton_input"
+        if is_input:
+            if os.path.exists(self.ui.lineEdit_input.text()):
+                default_dir = self.ui.lineEdit_input.text()
+            else:
+                default_dir = self.default_input_dir
+        else:
+            if os.path.exists(self.ui.lineEdit_output.text()):
+                default_dir = self.ui.lineEdit_output.text()
+            else:
+                default_dir = self.default_output_dir
+        print(default_dir)
+        directory_path = QFileDialog.getExistingDirectory(self, "选择输入路径",  default_dir, options=QFileDialog.ShowDirsOnly)
+        if directory_path:
+            print(f"选择的目录是: {directory_path}")
+            if is_input:
+                self.ui.lineEdit_input.setText(directory_path)
+            else:
+                self.ui.lineEdit_output.setText(directory_path)
+
+
+    @Slot()
+    def read_batch_image(self):
+        if not os.path.exists(self.ui.lineEdit_input.text()):
+            messageBox = QMessageBox()
+            messageBox.setWindowTitle("提示")
+            messageBox.setText('<div style="text-align:center; vertical-align:middle;">输入路径错误！</div>')
+            messageBox.exec()
+            return
+        extensions = ('.gz', '.nii')
+        image_files = []
+        for root, dirs, files in os.walk(self.ui.lineEdit_input.text()):
+            for file in files:
+                if file.endswith(extensions):
+                    image_files.append(os.path.join(root, file))
+        self.ui.batch_label_num.setText(f"图像数量：{len(image_files)}")
+        self.ui.batch_label_num.setVisible(True)
+        self.ui.pushButton_batch_extract.setVisible(True)
+        self.ui.pushButton_batch_predict.setVisible(True)
 
 
 if __name__ == "__main__":

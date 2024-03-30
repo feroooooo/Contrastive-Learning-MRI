@@ -874,6 +874,112 @@ font-weight:600;</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+	font-size:12pt;
+}
+QLineEdit{
+	background-color:#dedede;
+	border:0px;
+	padding: 0 5px;
+	border-radius:5px;
+}
+QPushButton{
+	background-color:#dedede;
+	color:#1b1b1b;
+	border-radius:10px;
+	font-size:11pt;
+	letter-spacing:2px;
+	font-weight:400;
+}
+QPushButton:hover{
+	background-color:#f1f1f1;
+}</string>
+            </property>
+            <widget class="QLabel" name="default_input_dir_label">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>10</y>
+               <width>211</width>
+               <height>30</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>默认输入目录：</string>
+             </property>
+            </widget>
+            <widget class="QLineEdit" name="default_input_dir_lineEdit">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>45</y>
+               <width>201</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="default_output_dir_label">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>80</y>
+               <width>211</width>
+               <height>30</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>默认输出目录：</string>
+             </property>
+            </widget>
+            <widget class="QLineEdit" name="default_output_dir_lineEdit">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>115</y>
+               <width>201</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="setting_save_button">
+             <property name="geometry">
+              <rect>
+               <x>80</x>
+               <y>180</y>
+               <width>75</width>
+               <height>30</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>11</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="text">
+              <string>保存</string>
+             </property>
+            </widget>
            </widget>
           </item>
          </layout>
@@ -969,7 +1075,7 @@ font-weight:600;</string>
 }</string>
                </property>
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="batchPage">
                 <property name="styleSheet">
@@ -1071,19 +1177,258 @@ font-weight:600;</string>
                           </size>
                          </property>
                          <property name="styleSheet">
-                          <string notr="true"/>
+                          <string notr="true">QLabel{
+	font-size:16pt;
+}
+QProgressBar{
+	color:#dedede;
+	font-size:12pt;
+}
+QLineEdit{
+	background-color:#dedede;
+	border:0px;
+	padding: 0 5px;
+	border-radius:5px;
+}
+QPushButton{
+	background-color:#dedede;
+	color:#1b1b1b;
+	border-radius:15px;
+	font-size:11pt;
+	letter-spacing:2px;
+	font-weight:400;
+}
+QPushButton:hover{
+	background-color:#f1f1f1;
+}
+QPushButton#pushButton_output, QPushButton#pushButton_input{
+	border-radius:10px;
+}</string>
                          </property>
-                         <widget class="QLabel" name="batch_label_temp">
+                         <widget class="QLabel" name="input_dir_label">
                           <property name="geometry">
                            <rect>
-                            <x>40</x>
-                            <y>30</y>
-                            <width>200</width>
-                            <height>200</height>
+                            <x>100</x>
+                            <y>60</y>
+                            <width>211</width>
+                            <height>41</height>
                            </rect>
                           </property>
                           <property name="text">
-                           <string>batch</string>
+                           <string>待处理图像所在目录：</string>
+                          </property>
+                         </widget>
+                         <widget class="QPushButton" name="pushButton_input">
+                          <property name="geometry">
+                           <rect>
+                            <x>680</x>
+                            <y>110</y>
+                            <width>75</width>
+                            <height>30</height>
+                           </rect>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>11</pointsize>
+                            <bold>false</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>PointingHandCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>选择</string>
+                          </property>
+                         </widget>
+                         <widget class="QLineEdit" name="lineEdit_input">
+                          <property name="geometry">
+                           <rect>
+                            <x>100</x>
+                            <y>110</y>
+                            <width>571</width>
+                            <height>30</height>
+                           </rect>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>13</pointsize>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string/>
+                          </property>
+                          <property name="placeholderText">
+                           <string>输入目录</string>
+                          </property>
+                         </widget>
+                         <widget class="QLabel" name="output_dir_label">
+                          <property name="geometry">
+                           <rect>
+                            <x>100</x>
+                            <y>150</y>
+                            <width>211</width>
+                            <height>41</height>
+                           </rect>
+                          </property>
+                          <property name="text">
+                           <string>输出目录：</string>
+                          </property>
+                         </widget>
+                         <widget class="QLineEdit" name="lineEdit_output">
+                          <property name="geometry">
+                           <rect>
+                            <x>100</x>
+                            <y>200</y>
+                            <width>571</width>
+                            <height>30</height>
+                           </rect>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>13</pointsize>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string/>
+                          </property>
+                          <property name="placeholderText">
+                           <string>输出目录</string>
+                          </property>
+                         </widget>
+                         <widget class="QPushButton" name="pushButton_output">
+                          <property name="geometry">
+                           <rect>
+                            <x>680</x>
+                            <y>200</y>
+                            <width>75</width>
+                            <height>30</height>
+                           </rect>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>11</pointsize>
+                            <bold>false</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>PointingHandCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>选择</string>
+                          </property>
+                         </widget>
+                         <widget class="QPushButton" name="pushButton_batch_extract">
+                          <property name="geometry">
+                           <rect>
+                            <x>380</x>
+                            <y>380</y>
+                            <width>111</width>
+                            <height>41</height>
+                           </rect>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>11</pointsize>
+                            <bold>false</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>PointingHandCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>特征提取</string>
+                          </property>
+                         </widget>
+                         <widget class="QPushButton" name="pushButton_batch_predict">
+                          <property name="geometry">
+                           <rect>
+                            <x>380</x>
+                            <y>450</y>
+                            <width>111</width>
+                            <height>41</height>
+                           </rect>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>11</pointsize>
+                            <bold>false</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>PointingHandCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>分类预测</string>
+                          </property>
+                         </widget>
+                         <widget class="QProgressBar" name="progressBar_batch">
+                          <property name="geometry">
+                           <rect>
+                            <x>100</x>
+                            <y>560</y>
+                            <width>701</width>
+                            <height>23</height>
+                           </rect>
+                          </property>
+                          <property name="value">
+                           <number>24</number>
+                          </property>
+                         </widget>
+                         <widget class="QLabel" name="batch_label_condition">
+                          <property name="geometry">
+                           <rect>
+                            <x>370</x>
+                            <y>510</y>
+                            <width>131</width>
+                            <height>31</height>
+                           </rect>
+                          </property>
+                          <property name="text">
+                           <string>处理中...</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignCenter</set>
+                          </property>
+                         </widget>
+                         <widget class="QLabel" name="batch_label_num">
+                          <property name="geometry">
+                           <rect>
+                            <x>340</x>
+                            <y>310</y>
+                            <width>191</width>
+                            <height>31</height>
+                           </rect>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">font-size:13pt;</string>
+                          </property>
+                          <property name="text">
+                           <string>图像数量：3600</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignCenter</set>
+                          </property>
+                         </widget>
+                         <widget class="QPushButton" name="pushButton_batch_read">
+                          <property name="geometry">
+                           <rect>
+                            <x>380</x>
+                            <y>260</y>
+                            <width>111</width>
+                            <height>41</height>
+                           </rect>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>11</pointsize>
+                            <bold>false</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>PointingHandCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>读取图像</string>
                           </property>
                          </widget>
                         </widget>
@@ -1889,19 +2234,45 @@ stdn_0001_gz.nii</string>
                           </size>
                          </property>
                          <property name="styleSheet">
-                          <string notr="true"/>
+                          <string notr="true">QLabel#operator_content_label{
+	font-size:13pt;
+	line-height:20px;
+}
+QLabel#operator_title_label{
+	font-size:16pt;
+	font-weight:bold;
+}</string>
                          </property>
-                         <widget class="QLabel" name="hintLabel_temp">
+                         <widget class="QLabel" name="operator_title_label">
                           <property name="geometry">
                            <rect>
-                            <x>40</x>
+                            <x>50</x>
                             <y>30</y>
-                            <width>200</width>
-                            <height>200</height>
+                            <width>101</width>
+                            <height>41</height>
                            </rect>
                           </property>
                           <property name="text">
-                           <string>hint</string>
+                           <string>操作说明</string>
+                          </property>
+                         </widget>
+                         <widget class="QLabel" name="operator_content_label">
+                          <property name="geometry">
+                           <rect>
+                            <x>50</x>
+                            <y>80</y>
+                            <width>781</width>
+                            <height>461</height>
+                           </rect>
+                          </property>
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='line-height: 125%;'&gt;&lt;b&gt;特征提取界面：&lt;/b&gt;用于将脑结构磁共振图像转换为向量形式，供下游任务使用。点击选择图像按钮选择要提取特征的图像（nii或gz格式），加载图像后可在界面进行预览，通过选择x，y，z来观察不同的切片。点击提取特征按钮进行特征提取，等待提取完成。提取完成后点击保存文件按钮将以vector文件格式将向量形式的特征保存。&lt;/p&gt;&lt;p style='line-height: 125%;'&gt;&lt;b&gt;图像分类界面：&lt;/b&gt;加载图像操作同上。点击预测分类按钮可对图像进行分类，结果包括NC（正常对照）、MCI（轻度认知障碍）、AD（认知障碍）。分类完成后，通过勾选展示热力图复选框可观察模型对图像各部分关注程度的热力图。&lt;/p&gt;&lt;p style='line-height: 125%;'&gt;&lt;b&gt;批量处理界面：&lt;/b&gt;通过设置输入和输出目录，可进行批量特征提取和分类。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                          </property>
+                          <property name="wordWrap">
+                           <bool>true</bool>
                           </property>
                          </widget>
                         </widget>

@@ -16,9 +16,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
-    QHBoxLayout, QLabel, QMainWindow, QPushButton,
-    QSizePolicy, QSpacerItem, QSpinBox, QStackedWidget,
-    QVBoxLayout, QWidget)
+    QHBoxLayout, QLabel, QLineEdit, QMainWindow,
+    QProgressBar, QPushButton, QSizePolicy, QSpacerItem,
+    QSpinBox, QStackedWidget, QVBoxLayout, QWidget)
 import ui.resource_rc
 
 class Ui_MainWindow(object):
@@ -394,6 +394,48 @@ class Ui_MainWindow(object):
         sizePolicy6.setVerticalStretch(0)
         sizePolicy6.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
         self.frame.setSizePolicy(sizePolicy6)
+        self.frame.setStyleSheet(u"QLabel{\n"
+"	font-size:12pt;\n"
+"}\n"
+"QLineEdit{\n"
+"	background-color:#dedede;\n"
+"	border:0px;\n"
+"	padding: 0 5px;\n"
+"	border-radius:5px;\n"
+"}\n"
+"QPushButton{\n"
+"	background-color:#dedede;\n"
+"	color:#1b1b1b;\n"
+"	border-radius:10px;\n"
+"	font-size:11pt;\n"
+"	letter-spacing:2px;\n"
+"	font-weight:400;\n"
+"}\n"
+"QPushButton:hover{\n"
+"	background-color:#f1f1f1;\n"
+"}")
+        self.default_input_dir_label = QLabel(self.frame)
+        self.default_input_dir_label.setObjectName(u"default_input_dir_label")
+        self.default_input_dir_label.setGeometry(QRect(20, 10, 211, 30))
+        self.default_input_dir_lineEdit = QLineEdit(self.frame)
+        self.default_input_dir_lineEdit.setObjectName(u"default_input_dir_lineEdit")
+        self.default_input_dir_lineEdit.setGeometry(QRect(20, 45, 201, 25))
+        self.default_input_dir_lineEdit.setFont(font)
+        self.default_output_dir_label = QLabel(self.frame)
+        self.default_output_dir_label.setObjectName(u"default_output_dir_label")
+        self.default_output_dir_label.setGeometry(QRect(20, 80, 211, 30))
+        self.default_output_dir_lineEdit = QLineEdit(self.frame)
+        self.default_output_dir_lineEdit.setObjectName(u"default_output_dir_lineEdit")
+        self.default_output_dir_lineEdit.setGeometry(QRect(20, 115, 201, 25))
+        self.default_output_dir_lineEdit.setFont(font)
+        self.setting_save_button = QPushButton(self.frame)
+        self.setting_save_button.setObjectName(u"setting_save_button")
+        self.setting_save_button.setGeometry(QRect(80, 180, 75, 30))
+        font2 = QFont()
+        font2.setPointSize(11)
+        font2.setBold(False)
+        self.setting_save_button.setFont(font2)
+        self.setting_save_button.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.verticalLayout_3.addWidget(self.frame)
 
@@ -412,11 +454,11 @@ class Ui_MainWindow(object):
         self.topLabel.setSizePolicy(sizePolicy3)
         self.topLabel.setMinimumSize(QSize(0, 60))
         self.topLabel.setMaximumSize(QSize(16777215, 60))
-        font2 = QFont()
-        font2.setFamilies([u"Microsoft YaHei UI"])
-        font2.setPointSize(16)
-        font2.setBold(True)
-        self.topLabel.setFont(font2)
+        font3 = QFont()
+        font3.setFamilies([u"Microsoft YaHei UI"])
+        font3.setPointSize(16)
+        font3.setBold(True)
+        self.topLabel.setFont(font3)
         self.topLabel.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout_4.addWidget(self.topLabel)
@@ -431,9 +473,9 @@ class Ui_MainWindow(object):
         self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
         self.stackedWidget = QStackedWidget(self.contentContainer)
         self.stackedWidget.setObjectName(u"stackedWidget")
-        font3 = QFont()
-        font3.setKerning(True)
-        self.stackedWidget.setFont(font3)
+        font4 = QFont()
+        font4.setKerning(True)
+        self.stackedWidget.setFont(font4)
         self.stackedWidget.setStyleSheet(u"QFrame{\n"
 "	background-color:#323232;\n"
 "}")
@@ -468,10 +510,87 @@ class Ui_MainWindow(object):
         self.batchFrame = QFrame(self.batchFrameH)
         self.batchFrame.setObjectName(u"batchFrame")
         self.batchFrame.setMinimumSize(QSize(880, 660))
-        self.batchFrame.setStyleSheet(u"")
-        self.batch_label_temp = QLabel(self.batchFrame)
-        self.batch_label_temp.setObjectName(u"batch_label_temp")
-        self.batch_label_temp.setGeometry(QRect(40, 30, 200, 200))
+        self.batchFrame.setStyleSheet(u"QLabel{\n"
+"	font-size:16pt;\n"
+"}\n"
+"QProgressBar{\n"
+"	color:#dedede;\n"
+"	font-size:12pt;\n"
+"}\n"
+"QLineEdit{\n"
+"	background-color:#dedede;\n"
+"	border:0px;\n"
+"	padding: 0 5px;\n"
+"	border-radius:5px;\n"
+"}\n"
+"QPushButton{\n"
+"	background-color:#dedede;\n"
+"	color:#1b1b1b;\n"
+"	border-radius:15px;\n"
+"	font-size:11pt;\n"
+"	letter-spacing:2px;\n"
+"	font-weight:400;\n"
+"}\n"
+"QPushButton:hover{\n"
+"	background-color:#f1f1f1;\n"
+"}\n"
+"QPushButton#pushButton_output, QPushButton#pushButton_input{\n"
+"	border-radius:10px;\n"
+"}")
+        self.input_dir_label = QLabel(self.batchFrame)
+        self.input_dir_label.setObjectName(u"input_dir_label")
+        self.input_dir_label.setGeometry(QRect(100, 60, 211, 41))
+        self.pushButton_input = QPushButton(self.batchFrame)
+        self.pushButton_input.setObjectName(u"pushButton_input")
+        self.pushButton_input.setGeometry(QRect(680, 110, 75, 30))
+        self.pushButton_input.setFont(font2)
+        self.pushButton_input.setCursor(QCursor(Qt.PointingHandCursor))
+        self.lineEdit_input = QLineEdit(self.batchFrame)
+        self.lineEdit_input.setObjectName(u"lineEdit_input")
+        self.lineEdit_input.setGeometry(QRect(100, 110, 571, 30))
+        font5 = QFont()
+        font5.setPointSize(13)
+        self.lineEdit_input.setFont(font5)
+        self.output_dir_label = QLabel(self.batchFrame)
+        self.output_dir_label.setObjectName(u"output_dir_label")
+        self.output_dir_label.setGeometry(QRect(100, 150, 211, 41))
+        self.lineEdit_output = QLineEdit(self.batchFrame)
+        self.lineEdit_output.setObjectName(u"lineEdit_output")
+        self.lineEdit_output.setGeometry(QRect(100, 200, 571, 30))
+        self.lineEdit_output.setFont(font5)
+        self.pushButton_output = QPushButton(self.batchFrame)
+        self.pushButton_output.setObjectName(u"pushButton_output")
+        self.pushButton_output.setGeometry(QRect(680, 200, 75, 30))
+        self.pushButton_output.setFont(font2)
+        self.pushButton_output.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pushButton_batch_extract = QPushButton(self.batchFrame)
+        self.pushButton_batch_extract.setObjectName(u"pushButton_batch_extract")
+        self.pushButton_batch_extract.setGeometry(QRect(380, 380, 111, 41))
+        self.pushButton_batch_extract.setFont(font2)
+        self.pushButton_batch_extract.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pushButton_batch_predict = QPushButton(self.batchFrame)
+        self.pushButton_batch_predict.setObjectName(u"pushButton_batch_predict")
+        self.pushButton_batch_predict.setGeometry(QRect(380, 450, 111, 41))
+        self.pushButton_batch_predict.setFont(font2)
+        self.pushButton_batch_predict.setCursor(QCursor(Qt.PointingHandCursor))
+        self.progressBar_batch = QProgressBar(self.batchFrame)
+        self.progressBar_batch.setObjectName(u"progressBar_batch")
+        self.progressBar_batch.setGeometry(QRect(100, 560, 701, 23))
+        self.progressBar_batch.setValue(24)
+        self.batch_label_condition = QLabel(self.batchFrame)
+        self.batch_label_condition.setObjectName(u"batch_label_condition")
+        self.batch_label_condition.setGeometry(QRect(370, 510, 131, 31))
+        self.batch_label_condition.setAlignment(Qt.AlignCenter)
+        self.batch_label_num = QLabel(self.batchFrame)
+        self.batch_label_num.setObjectName(u"batch_label_num")
+        self.batch_label_num.setGeometry(QRect(340, 310, 191, 31))
+        self.batch_label_num.setStyleSheet(u"font-size:13pt;")
+        self.batch_label_num.setAlignment(Qt.AlignCenter)
+        self.pushButton_batch_read = QPushButton(self.batchFrame)
+        self.pushButton_batch_read.setObjectName(u"pushButton_batch_read")
+        self.pushButton_batch_read.setGeometry(QRect(380, 260, 111, 41))
+        self.pushButton_batch_read.setFont(font2)
+        self.pushButton_batch_read.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.verticalLayoutClassification.addWidget(self.batchFrame)
 
@@ -569,9 +688,7 @@ class Ui_MainWindow(object):
         self.label_name_contrainer = QLabel(self.extractFrame)
         self.label_name_contrainer.setObjectName(u"label_name_contrainer")
         self.label_name_contrainer.setGeometry(QRect(50, 580, 250, 60))
-        font4 = QFont()
-        font4.setPointSize(13)
-        self.label_name_contrainer.setFont(font4)
+        self.label_name_contrainer.setFont(font5)
         self.label_name_contrainer.setStyleSheet(u"background-color:#1b1b1b;border-radius:30px;")
         self.label_name_contrainer.setScaledContents(True)
         self.label_name_contrainer.setAlignment(Qt.AlignBottom|Qt.AlignHCenter)
@@ -579,16 +696,16 @@ class Ui_MainWindow(object):
         self.spinBox_x = QSpinBox(self.extractFrame)
         self.spinBox_x.setObjectName(u"spinBox_x")
         self.spinBox_x.setGeometry(QRect(120, 414, 60, 30))
-        font5 = QFont()
-        font5.setPointSize(14)
-        self.spinBox_x.setFont(font5)
+        font6 = QFont()
+        font6.setPointSize(14)
+        self.spinBox_x.setFont(font6)
         self.spinBox_x.setAlignment(Qt.AlignCenter)
         self.spinBox_x.setMinimum(1)
         self.spinBox_x.setMaximum(1)
         self.spinBox_y = QSpinBox(self.extractFrame)
         self.spinBox_y.setObjectName(u"spinBox_y")
         self.spinBox_y.setGeometry(QRect(120, 459, 60, 30))
-        self.spinBox_y.setFont(font5)
+        self.spinBox_y.setFont(font6)
         self.spinBox_y.setAlignment(Qt.AlignCenter)
         self.spinBox_y.setMinimum(1)
         self.spinBox_y.setMaximum(1)
@@ -601,17 +718,17 @@ class Ui_MainWindow(object):
         self.label_x = QLabel(self.extractFrame)
         self.label_x.setObjectName(u"label_x")
         self.label_x.setGeometry(QRect(71, 406, 30, 40))
-        font6 = QFont()
-        font6.setPointSize(20)
-        self.label_x.setFont(font6)
+        font7 = QFont()
+        font7.setPointSize(20)
+        self.label_x.setFont(font7)
         self.label_y = QLabel(self.extractFrame)
         self.label_y.setObjectName(u"label_y")
         self.label_y.setGeometry(QRect(70, 451, 30, 40))
-        self.label_y.setFont(font6)
+        self.label_y.setFont(font7)
         self.label_z = QLabel(self.extractFrame)
         self.label_z.setObjectName(u"label_z")
         self.label_z.setGeometry(QRect(70, 496, 30, 40))
-        self.label_z.setFont(font6)
+        self.label_z.setFont(font7)
         self.start_extract_button = QPushButton(self.extractFrame)
         self.start_extract_button.setObjectName(u"start_extract_button")
         self.start_extract_button.setGeometry(QRect(680, 140, 121, 41))
@@ -638,31 +755,31 @@ class Ui_MainWindow(object):
         self.label_x_range = QLabel(self.extractFrame)
         self.label_x_range.setObjectName(u"label_x_range")
         self.label_x_range.setGeometry(QRect(200, 408, 101, 40))
-        font7 = QFont()
-        font7.setPointSize(17)
-        self.label_x_range.setFont(font7)
+        font8 = QFont()
+        font8.setPointSize(17)
+        self.label_x_range.setFont(font8)
         self.label_y_range = QLabel(self.extractFrame)
         self.label_y_range.setObjectName(u"label_y_range")
         self.label_y_range.setGeometry(QRect(200, 453, 101, 40))
-        self.label_y_range.setFont(font7)
+        self.label_y_range.setFont(font8)
         self.label_z_range = QLabel(self.extractFrame)
         self.label_z_range.setObjectName(u"label_z_range")
         self.label_z_range.setGeometry(QRect(200, 498, 101, 40))
-        self.label_z_range.setFont(font7)
+        self.label_z_range.setFont(font8)
         self.extract_condition_label = QLabel(self.extractFrame)
         self.extract_condition_label.setObjectName(u"extract_condition_label")
         self.extract_condition_label.setGeometry(QRect(675, 305, 131, 41))
-        font8 = QFont()
-        font8.setPointSize(16)
-        self.extract_condition_label.setFont(font8)
+        font9 = QFont()
+        font9.setPointSize(16)
+        self.extract_condition_label.setFont(font9)
         self.extract_condition_label.setAlignment(Qt.AlignCenter)
         self.label_name_label = QLabel(self.extractFrame)
         self.label_name_label.setObjectName(u"label_name_label")
         self.label_name_label.setGeometry(QRect(135, 553, 81, 21))
-        font9 = QFont()
-        font9.setPointSize(13)
-        font9.setBold(True)
-        self.label_name_label.setFont(font9)
+        font10 = QFont()
+        font10.setPointSize(13)
+        font10.setBold(True)
+        self.label_name_label.setFont(font10)
         self.label_name_label.setStyleSheet(u"background-color:transparent;")
         self.label_name_label.setScaledContents(True)
         self.label_name_label.setAlignment(Qt.AlignCenter)
@@ -670,7 +787,7 @@ class Ui_MainWindow(object):
         self.label_name = QLabel(self.extractFrame)
         self.label_name.setObjectName(u"label_name")
         self.label_name.setGeometry(QRect(50, 584, 250, 48))
-        self.label_name.setFont(font4)
+        self.label_name.setFont(font5)
         self.label_name.setStyleSheet(u"background-color:transparent;")
         self.label_name.setScaledContents(True)
         self.label_name.setAlignment(Qt.AlignCenter)
@@ -682,7 +799,7 @@ class Ui_MainWindow(object):
         self.classification_condition_label = QLabel(self.extractFrame)
         self.classification_condition_label.setObjectName(u"classification_condition_label")
         self.classification_condition_label.setGeometry(QRect(675, 305, 131, 41))
-        self.classification_condition_label.setFont(font8)
+        self.classification_condition_label.setFont(font9)
         self.classification_condition_label.setAlignment(Qt.AlignCenter)
         self.heatmap_checkBox = QCheckBox(self.extractFrame)
         self.heatmap_checkBox.setObjectName(u"heatmap_checkBox")
@@ -736,10 +853,22 @@ class Ui_MainWindow(object):
         self.hintFrame = QFrame(self.hintFrameH)
         self.hintFrame.setObjectName(u"hintFrame")
         self.hintFrame.setMinimumSize(QSize(880, 660))
-        self.hintFrame.setStyleSheet(u"")
-        self.hintLabel_temp = QLabel(self.hintFrame)
-        self.hintLabel_temp.setObjectName(u"hintLabel_temp")
-        self.hintLabel_temp.setGeometry(QRect(40, 30, 200, 200))
+        self.hintFrame.setStyleSheet(u"QLabel#operator_content_label{\n"
+"	font-size:13pt;\n"
+"	line-height:20px;\n"
+"}\n"
+"QLabel#operator_title_label{\n"
+"	font-size:16pt;\n"
+"	font-weight:bold;\n"
+"}")
+        self.operator_title_label = QLabel(self.hintFrame)
+        self.operator_title_label.setObjectName(u"operator_title_label")
+        self.operator_title_label.setGeometry(QRect(50, 30, 101, 41))
+        self.operator_content_label = QLabel(self.hintFrame)
+        self.operator_content_label.setObjectName(u"operator_content_label")
+        self.operator_content_label.setGeometry(QRect(50, 80, 781, 461))
+        self.operator_content_label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.operator_content_label.setWordWrap(True)
 
         self.verticalLayoutHint.addWidget(self.hintFrame)
 
@@ -774,7 +903,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -797,8 +926,25 @@ class Ui_MainWindow(object):
         self.label_4.setText("")
         self.settingLabel.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.lineLabel.setText("")
+        self.default_input_dir_label.setText(QCoreApplication.translate("MainWindow", u"\u9ed8\u8ba4\u8f93\u5165\u76ee\u5f55\uff1a", None))
+        self.default_input_dir_lineEdit.setText("")
+        self.default_output_dir_label.setText(QCoreApplication.translate("MainWindow", u"\u9ed8\u8ba4\u8f93\u51fa\u76ee\u5f55\uff1a", None))
+        self.default_output_dir_lineEdit.setText("")
+        self.setting_save_button.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58", None))
         self.topLabel.setText(QCoreApplication.translate("MainWindow", u"\u57fa\u4e8e\u5bf9\u6bd4\u5b66\u4e60\u7684\u8111\u7ed3\u6784\u78c1\u5171\u632f\u5f71\u50cf\u7279\u5f81\u63d0\u53d6\u7cfb\u7edf", None))
-        self.batch_label_temp.setText(QCoreApplication.translate("MainWindow", u"batch", None))
+        self.input_dir_label.setText(QCoreApplication.translate("MainWindow", u"\u5f85\u5904\u7406\u56fe\u50cf\u6240\u5728\u76ee\u5f55\uff1a", None))
+        self.pushButton_input.setText(QCoreApplication.translate("MainWindow", u"\u9009\u62e9", None))
+        self.lineEdit_input.setText("")
+        self.lineEdit_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u8f93\u5165\u76ee\u5f55", None))
+        self.output_dir_label.setText(QCoreApplication.translate("MainWindow", u"\u8f93\u51fa\u76ee\u5f55\uff1a", None))
+        self.lineEdit_output.setText("")
+        self.lineEdit_output.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u8f93\u51fa\u76ee\u5f55", None))
+        self.pushButton_output.setText(QCoreApplication.translate("MainWindow", u"\u9009\u62e9", None))
+        self.pushButton_batch_extract.setText(QCoreApplication.translate("MainWindow", u"\u7279\u5f81\u63d0\u53d6", None))
+        self.pushButton_batch_predict.setText(QCoreApplication.translate("MainWindow", u"\u5206\u7c7b\u9884\u6d4b", None))
+        self.batch_label_condition.setText(QCoreApplication.translate("MainWindow", u"\u5904\u7406\u4e2d...", None))
+        self.batch_label_num.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u50cf\u6570\u91cf\uff1a3600", None))
+        self.pushButton_batch_read.setText(QCoreApplication.translate("MainWindow", u"\u8bfb\u53d6\u56fe\u50cf", None))
         self.axialLabel.setText("")
         self.saggitalLabel.setText("")
         self.coronalLabel.setText("")
@@ -822,6 +968,8 @@ class Ui_MainWindow(object):
         self.start_classification_button.setText(QCoreApplication.translate("MainWindow", u"\u9884\u6d4b\u5206\u7c7b", None))
         self.classification_condition_label.setText(QCoreApplication.translate("MainWindow", u"\u9884\u6d4b\u4e2d...", None))
         self.heatmap_checkBox.setText(QCoreApplication.translate("MainWindow", u"\u5c55\u793a\u70ed\u529b\u56fe", None))
-        self.hintLabel_temp.setText(QCoreApplication.translate("MainWindow", u"hint", None))
+        self.operator_title_label.setText(QCoreApplication.translate("MainWindow", u"\u64cd\u4f5c\u8bf4\u660e", None))
+        self.operator_content_label.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p style='line-height: 125%;'><b>\u7279\u5f81\u63d0\u53d6\u754c\u9762\uff1a</b>\u7528\u4e8e\u5c06\u8111\u7ed3\u6784\u78c1\u5171\u632f\u56fe\u50cf\u8f6c\u6362\u4e3a\u5411\u91cf\u5f62\u5f0f\uff0c\u4f9b\u4e0b\u6e38\u4efb\u52a1\u4f7f\u7528\u3002\u70b9\u51fb\u9009\u62e9\u56fe\u50cf\u6309\u94ae\u9009\u62e9\u8981\u63d0\u53d6\u7279\u5f81\u7684\u56fe\u50cf\uff08nii\u6216gz\u683c\u5f0f\uff09\uff0c\u52a0\u8f7d\u56fe\u50cf\u540e\u53ef\u5728\u754c\u9762\u8fdb\u884c\u9884\u89c8\uff0c\u901a\u8fc7\u9009\u62e9x\uff0cy\uff0cz\u6765\u89c2\u5bdf\u4e0d\u540c\u7684\u5207\u7247\u3002\u70b9\u51fb\u63d0\u53d6\u7279\u5f81\u6309\u94ae\u8fdb\u884c\u7279\u5f81\u63d0\u53d6\uff0c\u7b49\u5f85\u63d0\u53d6\u5b8c\u6210\u3002\u63d0\u53d6\u5b8c\u6210\u540e\u70b9\u51fb\u4fdd\u5b58\u6587\u4ef6\u6309\u94ae\u5c06\u4ee5vector\u6587\u4ef6\u683c\u5f0f\u5c06\u5411\u91cf\u5f62\u5f0f\u7684\u7279\u5f81\u4fdd\u5b58\u3002</p><p style='line-height: 125%;'><b>\u56fe\u50cf\u5206\u7c7b\u754c\u9762\uff1a</b>\u52a0\u8f7d\u56fe\u50cf\u64cd\u4f5c\u540c"
+                        "\u4e0a\u3002\u70b9\u51fb\u9884\u6d4b\u5206\u7c7b\u6309\u94ae\u53ef\u5bf9\u56fe\u50cf\u8fdb\u884c\u5206\u7c7b\uff0c\u7ed3\u679c\u5305\u62ecNC\uff08\u6b63\u5e38\u5bf9\u7167\uff09\u3001MCI\uff08\u8f7b\u5ea6\u8ba4\u77e5\u969c\u788d\uff09\u3001AD\uff08\u8ba4\u77e5\u969c\u788d\uff09\u3002\u5206\u7c7b\u5b8c\u6210\u540e\uff0c\u901a\u8fc7\u52fe\u9009\u5c55\u793a\u70ed\u529b\u56fe\u590d\u9009\u6846\u53ef\u89c2\u5bdf\u6a21\u578b\u5bf9\u56fe\u50cf\u5404\u90e8\u5206\u5173\u6ce8\u7a0b\u5ea6\u7684\u70ed\u529b\u56fe\u3002</p><p style='line-height: 125%;'><b>\u6279\u91cf\u5904\u7406\u754c\u9762\uff1a</b>\u901a\u8fc7\u8bbe\u7f6e\u8f93\u5165\u548c\u8f93\u51fa\u76ee\u5f55\uff0c\u53ef\u8fdb\u884c\u6279\u91cf\u7279\u5f81\u63d0\u53d6\u548c\u5206\u7c7b\u3002</p></body></html>", None))
     # retranslateUi
 
