@@ -18,9 +18,9 @@ logging.basicConfig(filename=os.path.join(writer.log_dir, 'training.log'), level
 
 # 超参数以及其它配置信息
 args = {}
-args['model'] = 'vgg'
+args['model'] = 'resnet'
 args['epoch_num'] = 100
-args['batch_size'] = 16
+args['batch_size'] = 8
 args['learning_rate'] = 0.0001
 # 数据形式（single：每个被试图像唯一、split：每个被试图像不唯一，但对于某个被试，其图像只同时存在于一个集合、all：每个被试图像不唯一）
 args['data_type'] = 'single'
@@ -231,10 +231,12 @@ if __name__ == "__main__":
     if args['use_sampler']:
         # 类别不平衡
         all_labels = []
-        for _, label in train_dataset:
+        for idx, (_, label) in enumerate(train_dataset):
+            print(f'\r{idx + 1}/{len(train_dataset)}', end='')
             all_labels.append(label)
         all_labels = torch.tensor(all_labels)
         class_count = torch.tensor([(all_labels == t).sum() for t in torch.unique(all_labels, sorted=True)])
+        print('\rfinish initiate sampler')
 
         class_weights = 1. / class_count.float()  # 计算类权重
         samples_weights = class_weights[all_labels.long()]  # 每个样本的权重

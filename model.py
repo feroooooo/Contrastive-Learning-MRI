@@ -114,11 +114,11 @@ class VoxResNet(nn.Module):
         self.conv1b = nn.Conv3d(32, 32, kernel_size=3, padding=1)
         self.bn1b = nn.BatchNorm3d(32)
         # self.conv1c = nn.Conv3d(32, 64, kernel_size=3, stride=2, padding=56)
-        self.conv1c = nn.Conv3d(32, 64, kernel_size=3, stride=2, padding=2)
+        self.conv1c = nn.Conv3d(32, 64, kernel_size=3, stride=2, padding=1)
         # VoxRes Blocks
         self.voxres2 = self._voxres_block(64, 64)
         self.voxres3 = self._voxres_block(64, 64)
-        self.conv4 = nn.Conv3d(64, 64, kernel_size=3, stride=2, padding=2)
+        self.conv4 = nn.Conv3d(64, 64, kernel_size=3, stride=2, padding=1)
         self.voxres5 = self._voxres_block(64, 64)
         self.voxres6 = self._voxres_block(64, 64)
         self.conv7 = nn.Conv3d(64, 128, kernel_size=3, stride=2, padding=1)
@@ -126,7 +126,7 @@ class VoxResNet(nn.Module):
         self.voxres9 = self._voxres_block(128, 128)
         # Final Layers
         # self.pool10 = nn.AdaptiveAvgPool3d((1, 1, 1))
-        self.fc = nn.Linear(1024, 128)
+        self.fc = nn.Linear(128, 128)
         self.last_fc = nn.Linear(128, class_nums)
 
     def _voxres_block(self, in_channels, out_channels):
