@@ -211,7 +211,8 @@ class MainWindow(QMainWindow):
         # 设置
         self.ui.setting_save_button.clicked.connect(self.save_config)
         self.load_config()
-        self.lastest_dir = self.ui.default_input_dir_lineEdit.text()
+        if os.path.exists(self.ui.default_input_dir_lineEdit.text()):
+            self.lastest_dir = self.ui.default_input_dir_lineEdit.text()
         self.ui.pushButton_input.clicked.connect(self.select_dir)
         self.ui.pushButton_output.clicked.connect(self.select_dir)
         
