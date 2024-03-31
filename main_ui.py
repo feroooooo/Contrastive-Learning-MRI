@@ -9,6 +9,7 @@ import numpy as np
 import os
 import time
 import json
+import csv
 
 from util import Util
 from predict import Predictor
@@ -142,6 +143,78 @@ class ClassifyThread(QThread):
         else:
             # 无图像返回零
             self.signal.emit("")
+            
+            
+# 批量特征提取线程
+class BatchExtractThread(QThread):
+    signal = Signal(int)
+    
+    # 设置需要提取的图像
+    def set_paths(self, paths):
+        self.paths = paths
+        
+        
+    def set_output_dir(self, output_dir):
+        self.output_dir = output_dir
+    
+    def __init__(self, predictor: Predictor):
+        super().__init__()
+        self.predictor = predictor
+    
+    
+    def run(self):
+        try:
+            cnt = 0
+            for path in self.paths:
+                cnt += 1
+                nii_img = nib.load(path).get_fdata()
+                vector = self.predictor.extract(nii_img)
+                file_name = os.path.basename(path)
+                file_name = os.path.join(self.output_dir, file_name[:file_name.find('.')] + '.vector')
+                Util.save_file(vector, file_name)
+                self.signal.emit(cnt)
+        except:
+            print("error")
+            self.signal.emit(-1)
+            
+            
+# 批量特征提取线程
+class BatchClassifyThread(QThread):
+    signal = Signal(int)
+    
+    # 设置需要提取的图像
+    def set_paths(self, paths):
+        self.paths = paths
+        
+        
+    def set_output_dir(self, output_dir):
+        self.output_dir = output_dir
+    
+    def __init__(self, predictor: Predictor):
+        super().__init__()
+        self.predictor = predictor
+    
+    
+    def run(self):
+        try:
+            result = {}
+            cnt = 0
+            for path in self.paths:
+                cnt += 1
+                nii_img = nib.load(path).get_fdata()
+                pred = self.predictor.classify(nii_img)
+                result[path] = pred[0]
+                self.signal.emit(cnt)
+            file_path = os.path.join(self.output_dir, "prediction.csv")
+            with open(file_path, 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(['path', 'class'])
+                for key, value in result.items():
+                    writer.writerow([key, value])
+        
+        except Exception as e:
+            print(e)
+            self.signal.emit(-1)
 
 
 class MainWindow(QMainWindow):
@@ -221,6 +294,17 @@ class MainWindow(QMainWindow):
         self.ui.batch_label_num.setVisible(False)
         self.ui.pushButton_batch_extract.setVisible(False)
         self.ui.pushButton_batch_predict.setVisible(False)
+        self.ui.batch_label_condition.setVisible(False)
+        self.ui.progressBar_batch.setVisible(False)
+        
+        self.batch_extract_thread = BatchExtractThread(self.predictor)
+        self.ui.pushButton_batch_extract.clicked.connect(self.start_batch)
+        self.batch_extract_thread.signal.connect(self.get_process)
+        
+        self.batch_classify_thread = BatchClassifyThread(self.predictor)
+        self.ui.pushButton_batch_predict.clicked.connect(self.start_batch)
+        self.batch_classify_thread.signal.connect(self.get_process)
+        
         
         for item in group:
             for widget in group[item]:
@@ -473,10 +557,49 @@ class MainWindow(QMainWindow):
             for file in files:
                 if file.endswith(extensions):
                     image_files.append(os.path.join(root, file))
-        self.ui.batch_label_num.setText(f"图像数量：{len(image_files)}")
+        self.image_nums = len(image_files)
+        self.ui.batch_label_num.setText(f"图像数量：{self.image_nums}")
         self.ui.batch_label_num.setVisible(True)
         self.ui.pushButton_batch_extract.setVisible(True)
         self.ui.pushButton_batch_predict.setVisible(True)
+        self.ui.progressBar_batch.setVisible(False)
+        self.ui.batch_label_condition.setVisible(False)
+        self.batch_extract_thread.set_paths(image_files)
+        self.batch_classify_thread.set_paths(image_files)
+        self.ui.progressBar_batch.setRange(0, self.image_nums)
+        self.ui.progressBar_batch.setValue(0)
+
+        
+        
+    @Slot()
+    def start_batch(self):
+        self.ui.pushButton_batch_extract.setEnabled(False)
+        self.ui.pushButton_batch_predict.setEnabled(False)
+        self.ui.pushButton_batch_read.setEnabled(False)
+        if self.sender().objectName() == 'pushButton_batch_extract':
+            self.batch_extract_thread.set_output_dir(self.ui.lineEdit_output.text())
+            self.batch_extract_thread.start()
+            self.ui.batch_label_condition.setText("提取中...")
+        else:
+            self.batch_classify_thread.set_output_dir(self.ui.lineEdit_output.text())
+            self.batch_classify_thread.start()
+            self.ui.batch_label_condition.setText("分类中...")
+        self.ui.batch_label_condition.setVisible(True)
+        self.ui.progressBar_batch.setVisible(True)
+        
+    
+    @Slot(int)
+    def get_process(self, idx):
+        print(idx)
+        self.ui.progressBar_batch.setValue(idx)
+        if idx == self.image_nums:
+            if type(self.sender()) == BatchClassifyThread:
+                self.ui.batch_label_condition.setText("分类完成")
+            else:
+                self.ui.batch_label_condition.setText("提取完成")
+            self.ui.pushButton_batch_extract.setEnabled(True)
+            self.ui.pushButton_batch_predict.setEnabled(True)
+            self.ui.pushButton_batch_read.setEnabled(True)
 
 
 if __name__ == "__main__":
