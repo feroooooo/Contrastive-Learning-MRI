@@ -138,3 +138,18 @@ class Util:
         # 使用热力图的 alpha 通道来混合原图和热力图的颜色
         overlap_image = (alpha * alpha_layer) * color_layer + (1 - (alpha_layer * alpha)) * image_rgb
         return overlap_image
+    
+    
+    @staticmethod
+    def cal_paramters(model):
+        # 计算模型的总参数量
+        total_params = sum(p.numel() for p in model.parameters())
+
+        print(f'Total number of parameters: {total_params}')
+        # 计算可训练参数的总量
+        trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+        # 计算非可训练参数的总量
+        non_trainable_params = total_params - trainable_params
+
+        print(f'Total number of trainable parameters: {trainable_params}')
+        print(f'Total number of non-trainable parameters: {non_trainable_params}')

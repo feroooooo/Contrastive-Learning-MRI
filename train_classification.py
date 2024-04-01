@@ -9,6 +9,7 @@ import logging
 from mri_dataset import ADNIDataset
 from model import Simple3DCNN, VoxVGG, VoxResNet
 import yaml
+import numpy as np
 
 # TensorBoard
 writer = SummaryWriter()
@@ -18,7 +19,7 @@ logging.basicConfig(filename=os.path.join(writer.log_dir, 'training.log'), level
 
 # 超参数以及其它配置信息
 args = {}
-args['model'] = 'resnet'
+args['model'] = 'simple'
 args['epoch_num'] = 100
 args['batch_size'] = 8
 args['learning_rate'] = 0.0001
@@ -158,19 +159,27 @@ if __name__ == "__main__":
     color_print("Infomations:")
     # 初始化数据集
     # 数据增强
-    from monai.transforms import Compose, RandRotate90, RandFlip, NormalizeIntensity, Resize, RandAdjustContrast, RandGaussianNoise, RandAffine
+    from monai.transforms import Compose, RandRotate90, RandFlip, NormalizeIntensity, Resize, RandAdjustContrast, RandGaussianNoise, RandAffine, RandSpatialCrop
     
     transform = Compose([
+        # 随机裁剪
+        RandSpatialCrop(roi_size=(81, 99, 81), random_size=True),
+        
+        # 翻转和旋转
+        RandFlip(prob=0.5, spatial_axis=0),
         RandRotate90(prob=0.5, spatial_axes=[1, 2]),
         RandRotate90(prob=0.5, spatial_axes=[0, 1]),
         RandRotate90(prob=0.5, spatial_axes=[0, 2]),
-        RandFlip(prob=0.5, spatial_axis=0),
-        RandFlip(prob=0.5, spatial_axis=1),
-        RandFlip(prob=0.5, spatial_axis=2),
+        # RandFlip(prob=0.5, spatial_axis=1),
+        # RandFlip(prob=0.5, spatial_axis=2),
         
+        # RandRotate(range_x=(-15, 15), range_y=(-15, 15), range_z=(-15, 15), prob=0.5)
+        
+        # 随机对比度
         RandAdjustContrast(prob=args['prob'], gamma=(0.5, 1.5)),
+        # 随机高斯噪声
         RandGaussianNoise(prob=args['prob']),
-        # RandAffine(prob=args['prob'], translate_range=10, scale_range=(0.9, 1.1), rotate_range=45),
+        # RandAffine(prob=args['prob'], translate_range=10, scale_range=(0.9, 1.1), rotate_range=(0, 0, np.pi/15))
         
         Resize(spatial_size=[args['size'], args['size'], args['size']]),
         NormalizeIntensity(channel_wise=True),

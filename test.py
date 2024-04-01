@@ -60,3 +60,8 @@ net_voxvgg_test()
 net_voxvggsimclr_test()
 net_voxresnet_test()
 net_voxresnetsimclr_test()
+from util import Util
+Util.cal_paramters(VoxVGG(class_nums=3))
+Util.cal_paramters(VoxResNet(class_nums=3))
+Util.cal_paramters(Simple3DCNN(class_nums=3))
+Util.cal_paramters(Simple3DCNN_SimCLR(128))
