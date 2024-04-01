@@ -9,7 +9,8 @@ from data_augmentation import MRIAugmentation
 
 args = {}
 args['arch'] = 'vgg'
-args['weight_path'] = './weights/checkpoint_classification_vgg.pth'
+# args['weight_path'] = './weights/checkpoint_classification_vgg.pth'
+args['weight_path']= './checkpoint/checkpoint_eval.pth'
 args['data_dir'] = "E:/Data/ADNI/adni-fnirt-corrected"
 args['csv_train_path'] = "E:/Data/ADNI/single_train.csv"
 args['csv_validation_path'] = "E:/Data/ADNI/single_validation.csv"
