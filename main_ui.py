@@ -573,6 +573,12 @@ class MainWindow(QMainWindow):
         
     @Slot()
     def start_batch(self):
+        if not os.path.exists(self.ui.lineEdit_output.text()):
+            messageBox = QMessageBox()
+            messageBox.setWindowTitle("提示")
+            messageBox.setText('<div style="text-align:center; vertical-align:middle;">输出路径错误！</div>')
+            messageBox.exec()
+            return
         self.ui.pushButton_batch_extract.setEnabled(False)
         self.ui.pushButton_batch_predict.setEnabled(False)
         self.ui.pushButton_batch_read.setEnabled(False)
