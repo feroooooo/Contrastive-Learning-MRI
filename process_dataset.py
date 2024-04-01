@@ -123,7 +123,7 @@ def split_single_three(csv_path, output_dir):
 
     # 步骤3: 将分割后的数据集保存为新的CSV文件
     train.to_csv(os.path.join(output_dir, 'single_train.csv'), index=False)
-    validate.to_csv(os.path.join(output_dir, 'single_validate.csv'), index=False)
+    validate.to_csv(os.path.join(output_dir, 'single_validation.csv'), index=False)
     test.to_csv(os.path.join(output_dir, 'single_test.csv'), index=False)
 
 

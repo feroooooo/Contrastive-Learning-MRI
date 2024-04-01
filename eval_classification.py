@@ -5,24 +5,30 @@ from sklearn.metrics import balanced_accuracy_score, precision_recall_fscore_sup
 
 from mri_dataset import ADNIDataset
 from model import VoxVGG
+from data_augmentation import MRIAugmentation
 
 args = {}
 args['arch'] = 'vgg'
-args['weight_path'] = 'runs'
-args['data_dir'] = ''
-args['csv_train_path'] = ''
-args['csv_validation_path'] = ''
-args['csv_test_path'] = ''
-args['batch_size'] = '8'
+args['weight_path'] = './weights/checkpoint_classification_vgg.pth'
+args['data_dir'] = "E:/Data/ADNI/adni-fnirt-corrected"
+args['csv_train_path'] = "E:/Data/ADNI/single_train.csv"
+args['csv_validation_path'] = "E:/Data/ADNI/single_validation.csv"
+args['csv_test_path'] = "E:/Data/ADNI/single_test.csv"
+args['batch_size'] = 8
 
-pre_transform = None
+pre_transform = MRIAugmentation.get_pre_transforms()
 
 test_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path=args['csv_test_path'], transform=pre_transform)
+print(test_dataset.labels)
 loader = DataLoader(test_dataset, batch_size=args['batch_size'], shuffle=False)
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+weights = torch.load(args['weight_path'], map_location=device)
+
 model = VoxVGG(class_nums=3).to(device)
+model.load_state_dict(weights["model"], strict=False)
 criterion = nn.CrossEntropyLoss().to(device)
 
 model.eval()
@@ -32,7 +38,8 @@ all_preds = []
 all_targets = []
 
 with torch.no_grad():
-    for data, target in loader:
+    for idx, (data, target) in enumerate(loader):
+        print(f"{idx + 1}/ {len(loader)}")
         data, target = data.to(device), target.to(device)
         output = model(data)
 
@@ -42,7 +49,7 @@ with torch.no_grad():
         # 保存预测和目标值，以便后续计算指标
         all_preds.extend(pred.view(-1).cpu().numpy())
         all_targets.extend(target.view(-1).cpu().numpy())
-
+    
 # 计算平衡准确率
 balanced_acc = balanced_accuracy_score(all_targets, all_preds)
 

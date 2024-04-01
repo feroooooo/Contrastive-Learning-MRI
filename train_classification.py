@@ -217,7 +217,7 @@ if __name__ == "__main__":
         test_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/test label.csv", transform=pre_transform)
     elif args['data_type'] == 'single_split':
         train_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_train.csv", transform=transform)
-        validation_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_validate.csv", transform=pre_transform)
+        validation_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_validation.csv", transform=pre_transform)
         test_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_test.csv", transform=pre_transform)
     import copy
     train_eval_dataset = copy.deepcopy(train_dataset)
