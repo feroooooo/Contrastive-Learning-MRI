@@ -130,9 +130,9 @@ def split_single_three(csv_path, output_dir):
 
 if __name__ == '__main__':
     # csv_path = r"C:\Custom\DataSet\ADNI_预处理后\pheno_ADNI_longitudinal_new.csv"
-    csv_path = r"C:\Custom\DataSet\ADNI_预处理后\single_subject.csv"
-    data_dir = r'C:\Custom\DataSet\ADNI_预处理后\Image'
-    output_dir = r'C:\Custom\DataSet\ADNI_预处理后'
+    csv_path = r"E:\Data\ADNI\single_subject.csv"
+    data_dir = r'E:\Data\ADNI\adni-fnirt-corrected'
+    output_dir = r'E:\Data\ADNI'
     check_data(data_dir, csv_path)
     # split_dataset_subject(data_dir, csv_path, output_dir)
     split_single_three(csv_path, output_dir)

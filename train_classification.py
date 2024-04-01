@@ -19,12 +19,12 @@ logging.basicConfig(filename=os.path.join(writer.log_dir, 'training.log'), level
 
 # 超参数以及其它配置信息
 args = {}
-args['model'] = 'simple'
+args['model'] = 'resnet'
 args['epoch_num'] = 100
 args['batch_size'] = 8
 args['learning_rate'] = 0.0001
 # 数据形式（single：每个被试图像唯一、split：每个被试图像不唯一，但对于某个被试，其图像只同时存在于一个集合、all：每个被试图像不唯一）
-args['data_type'] = 'single'
+args['data_type'] = 'single_split'
 # 每个数据增强方法的概率
 args['prob'] = 1
 # 图像resize后的大小，三个维度相同
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     
     # 导入数据集
     # 先导入数据，再切分
-    if args['data_type'] == 'all' or 'single':
+    if args['data_type'] == 'all' or args['data_type'] == 'single':
         # 全部数据，不针对被试分割数据集，存在信息泄露
         if args['data_type'] == 'all':
             csv_path = r"E:/Data/ADNI/pheno_ADNI_longitudinal_new.csv"
@@ -215,6 +215,10 @@ if __name__ == "__main__":
         train_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/train label.csv", transform=transform)
         validation_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/validation label.csv", transform=pre_transform)
         test_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/test label.csv", transform=pre_transform)
+    elif args['data_type'] == 'single_split':
+        train_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_train.csv", transform=transform)
+        validation_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_validate.csv", transform=pre_transform)
+        test_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_test.csv", transform=pre_transform)
     import copy
     train_eval_dataset = copy.deepcopy(train_dataset)
     train_eval_dataset.transform = pre_transform
@@ -228,11 +232,11 @@ if __name__ == "__main__":
     logging.info(f"test size:{test_size}")
     logging.info(f"total size:{total_size}\n")
     print(f"train size:{train_size}")
-    # print(train_dataset.labels)
+    print(train_dataset.labels)
     print(f"validation size:{validation_size}")
-    # print(validation_dataset.labels)
+    print(validation_dataset.labels)
     print(f"test size:{test_size}")
-    # print(test_dataset.labels)
+    print(test_dataset.labels)
     print(f"total size:{total_size}\n")
     # 数据集导入完成
     
