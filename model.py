@@ -109,25 +109,25 @@ class VoxResNet(nn.Module):
     def __init__(self, class_nums):
         super(VoxResNet, self).__init__()
         # Initial Convolution Block
-        self.conv1a = nn.Conv3d(1, 32, kernel_size=3, padding=1)
+        self.conv1a = nn.Conv3d(1, 32, kernel_size=3, padding=0)
         self.bn1a = nn.BatchNorm3d(32)
-        self.conv1b = nn.Conv3d(32, 32, kernel_size=3, padding=1)
+        self.conv1b = nn.Conv3d(32, 32, kernel_size=3, padding=0)
         self.bn1b = nn.BatchNorm3d(32)
         # self.conv1c = nn.Conv3d(32, 64, kernel_size=3, stride=2, padding=56)
-        self.conv1c = nn.Conv3d(32, 64, kernel_size=3, stride=2, padding=1)
+        self.conv1c = nn.Conv3d(32, 64, kernel_size=3, stride=2, padding=0)
         # VoxRes Blocks
         self.voxres2 = self._voxres_block(64, 64)
         self.voxres3 = self._voxres_block(64, 64)
         self.conv4 = nn.Conv3d(64, 64, kernel_size=3, stride=2, padding=1)
         self.voxres5 = self._voxres_block(64, 64)
         self.voxres6 = self._voxres_block(64, 64)
-        self.conv7 = nn.Conv3d(64, 128, kernel_size=3, stride=2, padding=1)
-        self.voxres8 = self._voxres_block(128, 128)
-        self.voxres9 = self._voxres_block(128, 128)
+        # self.conv7 = nn.Conv3d(128, 256, kernel_size=3, stride=2, padding=0)
+        # self.voxres8 = self._voxres_block(256, 256)
+        # self.voxres9 = self._voxres_block(256, 256)
         # Final Layers
         # self.pool10 = nn.AdaptiveAvgPool3d((1, 1, 1))
         # self.fc = nn.Linear(128, 128)
-        self.last_fc = nn.Linear(1024, class_nums)
+        self.last_fc = nn.Linear(512, class_nums)
 
     def _voxres_block(self, in_channels, out_channels):
         layers = nn.Sequential(
@@ -156,12 +156,11 @@ class VoxResNet(nn.Module):
         x5 = self.voxres5(x4) + x4
         x = self.voxres6(x5) + x5
 
-        x7 = F.relu(self.conv7(x))
-        x8 = self.voxres8(x7) + x7
-        x = self.voxres9(x8) + x8
+        # x7 = F.relu(self.conv7(x))
+        # x8 = self.voxres8(x7) + x7
+        # x = self.voxres9(x8) + x8
         # 最大池化
-        print(x.shape)
-        x = F.max_pool3d(x, 6)
+        x = F.max_pool3d(x, 12)
         x = torch.flatten(x, 1)
         # x = self.pool10(x9).view(x9.size(0), -1)
         # x = F.relu(self.fc(x))
