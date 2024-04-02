@@ -1,5 +1,6 @@
 from model import Simple3DCNN, Simple3DCNN_SimCLR, VoxVGG, VoxVGG_SimCLR, VoxResNet, VoxResNet_SimCLR
 import torch
+from torchvision import models
 
 def net_simple_test():
     net = Simple3DCNN(class_nums=3)
@@ -65,3 +66,4 @@ Util.cal_paramters(VoxVGG(class_nums=3))
 Util.cal_paramters(VoxResNet(class_nums=3))
 Util.cal_paramters(Simple3DCNN(class_nums=3))
 Util.cal_paramters(Simple3DCNN_SimCLR(128))
+Util.cal_paramters(models.resnet50())

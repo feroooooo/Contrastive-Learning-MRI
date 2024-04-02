@@ -9,8 +9,8 @@ from data_augmentation import MRIAugmentation
 
 args = {}
 args['arch'] = 'vgg'
-# args['weight_path'] = './weights/checkpoint_classification_vgg.pth'
-args['weight_path']= './checkpoint/checkpoint_eval.pth'
+args['weight_path'] = './weights/checkpoint_classification_vgg.pth'
+# args['weight_path']= './runs/simclr_fintune_vgg/checkpoint_best.pth'
 args['data_dir'] = "E:/Data/ADNI/adni-fnirt-corrected"
 args['csv_train_path'] = "E:/Data/ADNI/single_train.csv"
 args['csv_validation_path'] = "E:/Data/ADNI/single_validation.csv"
@@ -40,7 +40,7 @@ all_targets = []
 
 with torch.no_grad():
     for idx, (data, target) in enumerate(loader):
-        print(f"{idx + 1}/ {len(loader)}")
+        print(f"\r{idx + 1}/ {len(loader)}", end="")
         data, target = data.to(device), target.to(device)
         output = model(data)
 
@@ -50,6 +50,7 @@ with torch.no_grad():
         # 保存预测和目标值，以便后续计算指标
         all_preds.extend(pred.view(-1).cpu().numpy())
         all_targets.extend(target.view(-1).cpu().numpy())
+    print("")
     
 # 计算平衡准确率
 balanced_acc = balanced_accuracy_score(all_targets, all_preds)
