@@ -9,8 +9,8 @@ from data_augmentation import MRIAugmentation
 
 args = {}
 args['arch'] = 'vgg'
-args['weight_path'] = './weights/checkpoint_classification_vgg.pth'
-# args['weight_path']= './runs/simclr_fintune_vgg/checkpoint_best.pth'
+# args['weight_path'] = './weights/checkpoint_classification_vgg.pth'
+args['weight_path']= './runs/simclr_fintune_vgg/checkpoint_best.pth'
 args['data_dir'] = "E:/Data/ADNI/adni-fnirt-corrected"
 args['csv_train_path'] = "E:/Data/ADNI/single_train.csv"
 args['csv_validation_path'] = "E:/Data/ADNI/single_validation.csv"
@@ -37,7 +37,8 @@ model.eval()
 # 初始化存储预测和真实标签的列表
 all_preds = []
 all_targets = []
-
+loss = 0
+correct = 0
 with torch.no_grad():
     for idx, (data, target) in enumerate(loader):
         print(f"\r{idx + 1}/ {len(loader)}", end="")
@@ -47,9 +48,17 @@ with torch.no_grad():
         # 获取最大概率的预测结果
         pred = output.argmax(dim=1)
         
+        loss += criterion(output, target).item() * data.size(0)
+        # pred = output.argmax(dim=1, keepdim=True)
+        correct += pred.eq(target.view_as(pred)).sum().item()
+        
         # 保存预测和目标值，以便后续计算指标
         all_preds.extend(pred.view(-1).cpu().numpy())
         all_targets.extend(target.view(-1).cpu().numpy())
+    
+    loss /= len(loader.dataset)
+
+    accuracy = correct / len(loader.dataset)
     print("")
     
 # 计算平衡准确率
@@ -62,9 +71,11 @@ precision, recall, f1, _ = precision_recall_fscore_support(all_targets, all_pred
 conf_matrix = confusion_matrix(all_targets, all_preds)
 
 # 打印结果
-print(f"平衡准确率: {balanced_acc}")
-print(f"宏精确率: {precision}")
-print(f"宏召回率: {recall}")
-print(f"宏F1分数: {f1}")
-print("混淆矩阵:")
+print(f"loss\t\t\t损失值:\t\t{loss}")
+print(f"accuracy\t\t准确率:\t\t{accuracy}")
+print(f"balanced accuracy\t平衡准确率:\t{balanced_acc}")
+print(f"precision\t\t宏精确率:\t{precision}")
+print(f"recall\t\t\t宏召回率:\t{recall}")
+print(f"f1 score\t\t宏F1分数:\t{f1}")
+print("confusion matrix\t混淆矩阵:")
 print(conf_matrix)
