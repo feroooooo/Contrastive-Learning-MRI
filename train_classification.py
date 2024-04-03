@@ -6,10 +6,12 @@ import time
 from torch.utils.data import DataLoader, random_split, WeightedRandomSampler
 from torch.utils.tensorboard import SummaryWriter
 import logging
-from mri_dataset import ADNIDataset
-from model import Simple3DCNN, VoxVGG, VoxResNet
 import yaml
 import numpy as np
+
+from mri_dataset import ADNIDataset
+from model import Simple3DCNN, VoxVGG, VoxResNet
+from data_augmentation import MRIAugmentation
 
 # TensorBoard
 writer = SummaryWriter()
@@ -26,7 +28,7 @@ args['learning_rate'] = 0.0001
 # 数据形式（single：每个被试图像唯一、split：每个被试图像不唯一，但对于某个被试，其图像只同时存在于一个集合、all：每个被试图像不唯一）
 args['data_type'] = 'single_split'
 # 每个数据增强方法的概率
-args['prob'] = 1
+# args['prob'] = 1
 # 图像resize后的大小，三个维度相同
 args['size'] = 100
 # 数据路径
@@ -52,6 +54,7 @@ step = 0
 def train(model, device, train_loader, optimizer, criterion, epoch):
     model.train()
     global step
+    print("")
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
@@ -110,6 +113,7 @@ def validate(model, device, validation_loader, criterion):
             'epoch': epoch,
         }
         torch.save(state, os.path.join(writer.log_dir, 'checkpoint_best.pth'))
+    torch.save(state, os.path.join(writer.log_dir, 'checkpoint_last.pth'))
     if best_loss > validation_loss:
         best_loss = validation_loss
     
@@ -132,12 +136,12 @@ def eval(model, device, loader, criterion, train=True):
 
     accuracy = correct / len(loader.dataset)
     if train:
-        print('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
+        print('Train:\t\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
         writer.add_scalar("average train loss", loss, epoch)
         writer.add_scalar("average train accuracy", accuracy, epoch)
         logging.info('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
     else:
-        print('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
+        print('Test:\t\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
         logging.info('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
         print('Saving model...\n')
         state = {
@@ -159,36 +163,38 @@ if __name__ == "__main__":
     color_print("Infomations:")
     # 初始化数据集
     # 数据增强
-    from monai.transforms import Compose, RandRotate90, RandFlip, NormalizeIntensity, Resize, RandAdjustContrast, RandGaussianNoise, RandAffine, RandSpatialCrop
+    transform = MRIAugmentation.get_augmentation_transforms()
+    pre_transform = MRIAugmentation.get_pre_transforms()
+    # from monai.transforms import Compose, RandRotate90, RandFlip, NormalizeIntensity, Resize, RandAdjustContrast, RandGaussianNoise, RandAffine, RandSpatialCrop
     
-    transform = Compose([
-        # 随机裁剪
-        RandSpatialCrop(roi_size=(81, 99, 81), random_size=True),
+    # transform = Compose([
+    #     # 随机裁剪
+    #     RandSpatialCrop(roi_size=(81, 99, 81), random_size=True),
         
-        # 翻转和旋转
-        RandFlip(prob=0.5, spatial_axis=0),
-        RandRotate90(prob=0.5, spatial_axes=[1, 2]),
-        RandRotate90(prob=0.5, spatial_axes=[0, 1]),
-        RandRotate90(prob=0.5, spatial_axes=[0, 2]),
-        # RandFlip(prob=0.5, spatial_axis=1),
-        # RandFlip(prob=0.5, spatial_axis=2),
+    #     # 翻转和旋转
+    #     RandFlip(prob=0.5, spatial_axis=0),
+    #     RandRotate90(prob=0.5, spatial_axes=[1, 2]),
+    #     RandRotate90(prob=0.5, spatial_axes=[0, 1]),
+    #     RandRotate90(prob=0.5, spatial_axes=[0, 2]),
+    #     # RandFlip(prob=0.5, spatial_axis=1),
+    #     # RandFlip(prob=0.5, spatial_axis=2),
         
-        # RandRotate(range_x=(-15, 15), range_y=(-15, 15), range_z=(-15, 15), prob=0.5)
+    #     # RandRotate(range_x=(-15, 15), range_y=(-15, 15), range_z=(-15, 15), prob=0.5)
         
-        # 随机对比度
-        RandAdjustContrast(prob=args['prob'], gamma=(0.5, 1.5)),
-        # 随机高斯噪声
-        RandGaussianNoise(prob=args['prob']),
-        # RandAffine(prob=args['prob'], translate_range=10, scale_range=(0.9, 1.1), rotate_range=(0, 0, np.pi/15))
+    #     # 随机对比度
+    #     RandAdjustContrast(prob=args['prob'], gamma=(0.5, 1.5)),
+    #     # 随机高斯噪声
+    #     RandGaussianNoise(prob=args['prob']),
+    #     # RandAffine(prob=args['prob'], translate_range=10, scale_range=(0.9, 1.1), rotate_range=(0, 0, np.pi/15))
         
-        Resize(spatial_size=[args['size'], args['size'], args['size']]),
-        NormalizeIntensity(channel_wise=True),
-    ])
+    #     Resize(spatial_size=[args['size'], args['size'], args['size']]),
+    #     NormalizeIntensity(channel_wise=True),
+    # ])
     
-    pre_transform = Compose([
-        Resize(spatial_size=[args['size'], args['size'], args['size']]),
-        NormalizeIntensity(channel_wise=True),
-    ])
+    # pre_transform = Compose([
+    #     Resize(spatial_size=[args['size'], args['size'], args['size']]),
+    #     NormalizeIntensity(channel_wise=True),
+    # ])
     
     # 导入数据集
     # 先导入数据，再切分
@@ -274,7 +280,7 @@ if __name__ == "__main__":
     # 定义损失函数和优化器
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.Adam(model.parameters(), lr=args['learning_rate'])
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
     
     color_print("\nStart Training:")
     logging.info("Start Training:\n")
@@ -282,8 +288,9 @@ if __name__ == "__main__":
         train(model, device, train_loader, optimizer, criterion, epoch)
         eval(model, device, train_eval_loader, criterion, train=True)
         validate(model, device, validation_loader, criterion)
-        if epoch > 50:
+        if epoch > 30 and epoch < 91:
             scheduler.step()
+            print("learning rate:", scheduler.get_last_lr()[0])
     
     writer.close()
     time_stop = time.perf_counter()

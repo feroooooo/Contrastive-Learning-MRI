@@ -4,13 +4,14 @@ import torch.nn as nn
 from sklearn.metrics import balanced_accuracy_score, precision_recall_fscore_support, confusion_matrix
 
 from mri_dataset import ADNIDataset
-from model import VoxVGG
+from model import *
 from data_augmentation import MRIAugmentation
 
 args = {}
 args['arch'] = 'vgg'
 # args['weight_path'] = './weights/checkpoint_classification_vgg.pth'
-args['weight_path']= './runs/simclr_fintune_vgg/checkpoint_best.pth'
+# args['weight_path']= './runs/simclr_fintune_vgg/checkpoint_best.pth'
+args['weight_path']= './runs/resnet_classification_1/checkpoint_best.pth'
 args['data_dir'] = "E:/Data/ADNI/adni-fnirt-corrected"
 args['csv_train_path'] = "E:/Data/ADNI/single_train.csv"
 args['csv_validation_path'] = "E:/Data/ADNI/single_validation.csv"
@@ -28,7 +29,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 weights = torch.load(args['weight_path'], map_location=device)
 
-model = VoxVGG(class_nums=3).to(device)
+# model = VoxVGG(class_nums=3).to(device)
+model = VoxResNet(class_nums=3).to(device)
 model.load_state_dict(weights["model"], strict=False)
 criterion = nn.CrossEntropyLoss().to(device)
 

@@ -18,14 +18,14 @@ class MRIAugmentation:
             RandSpatialCrop(roi_size=(81, 99, 81), random_size=True),
             
             # # 翻转和旋转
-            RandFlip(prob=0.5, spatial_axis=0),
-            RandRotate90(prob=0.5, spatial_axes=[1, 2]),
-            RandRotate90(prob=0.5, spatial_axes=[0, 1]),
-            RandRotate90(prob=0.5, spatial_axes=[0, 2]),
+            # RandFlip(prob=0.5, spatial_axis=0),
+            # RandRotate90(prob=0.5, spatial_axes=[1, 2]),
+            # RandRotate90(prob=0.5, spatial_axes=[0, 1]),
+            # RandRotate90(prob=0.5, spatial_axes=[0, 2]),
             # RandFlip(prob=0.5, spatial_axis=1),
             # RandFlip(prob=0.5, spatial_axis=2),
             
-            RandRotate(range_x=(-15, 15), range_y=(-15, 15), range_z=(-15, 15), prob=0.5),
+            # RandRotate(range_x=(-15, 15), range_y=(-15, 15), range_z=(-15, 15), prob=0.5),
             
             # 随机对比度
             RandAdjustContrast(prob=1, gamma=(0.5, 1.5)),

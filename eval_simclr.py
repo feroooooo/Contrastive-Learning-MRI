@@ -58,6 +58,7 @@ step = 0
 def train(model, device, train_loader, optimizer, criterion, epoch):
     model.train()
     global step
+    print("")
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
@@ -116,6 +117,7 @@ def validate(model, device, validation_loader, criterion):
             'epoch': epoch,
         }
         torch.save(state, os.path.join(writer.log_dir, 'checkpoint_best.pth'))
+    torch.save(state, os.path.join(writer.log_dir, 'checkpoint_last.pth'))
     if best_loss > validation_loss:
         best_loss = validation_loss
     
@@ -138,12 +140,12 @@ def eval(model, device, loader, criterion, train=True):
 
     accuracy = correct / len(loader.dataset)
     if train:
-        print('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
+        print('Train:\t\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
         writer.add_scalar("average train loss", loss, epoch)
         writer.add_scalar("average train accuracy", accuracy, epoch)
         logging.info('Train:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
     else:
-        print('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
+        print('Test:\t\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
         logging.info('Test:\tAverage Loss: {:.4f}\tAccuracy: {}/{} ({:.1f}%)'.format(loss, correct, len(loader.dataset), accuracy * 100.))
         print('Saving model...\n')
         state = {
