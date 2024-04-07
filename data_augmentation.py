@@ -1,4 +1,5 @@
 from monai.transforms import *
+import numpy as np
 
 class MRIAugmentation:
     def __init__(self) -> None:
@@ -28,10 +29,11 @@ class MRIAugmentation:
             # RandRotate(range_x=(-15, 15), range_y=(-15, 15), range_z=(-15, 15), prob=0.5),
             
             # 随机对比度
-            RandAdjustContrast(prob=1, gamma=(0.5, 1.5)),
+            RandAdjustContrast(prob=0.7, gamma=(0.5, 1.5)),
             # 随机高斯噪声
             RandGaussianNoise(prob=0.5),
-            # RandAffine(prob=args['prob'], translate_range=10, scale_range=(0.9, 1.1), rotate_range=(0, 0, np.pi/15))
+            # 随机仿射变换
+            RandAffine(prob=0.7, translate_range=10, scale_range=(0.9, 1.1), rotate_range=(0, 0, np.pi/15)),
             
             Resize(spatial_size=[size, size, size]),
             NormalizeIntensity(channel_wise=True),

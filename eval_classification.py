@@ -29,6 +29,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 weights = torch.load(args['weight_path'], map_location=device)
 
+print("accuracy:", weights["accuracy"])
+print("loss:", weights["loss"])
+print("epoch:", weights["epoch"])
+
 # model = VoxVGG(class_nums=3).to(device)
 model = VoxResNet(class_nums=3).to(device)
 model.load_state_dict(weights["model"], strict=False)

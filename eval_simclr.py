@@ -106,16 +106,16 @@ def validate(model, device, validation_loader, criterion):
     global best_accuracy
     global best_loss
     global best_epoch
+    state = {
+        'model': model.state_dict(),
+        'accuracy': accuracy,
+        'loss': validation_loss,
+        'epoch': epoch,
+    }
     if best_accuracy < accuracy:
         best_accuracy = accuracy
         best_epoch = epoch
         print('Saving model...\n')
-        state = {
-            'model': model.state_dict(),
-            'accuracy': accuracy,
-            'loss': validation_loss,
-            'epoch': epoch,
-        }
         torch.save(state, os.path.join(writer.log_dir, 'checkpoint_best.pth'))
     torch.save(state, os.path.join(writer.log_dir, 'checkpoint_last.pth'))
     if best_loss > validation_loss:
@@ -291,7 +291,7 @@ if __name__ == "__main__":
         train(model, device, train_loader, optimizer, criterion, epoch)
         eval(model, device, train_eval_loader, criterion, train=True)
         validate(model, device, validation_loader, criterion)
-        if epoch > 30 and epoch < 91:
+        if epoch > 10 and epoch < 71:
             scheduler.step()
             print("learning rate:", scheduler.get_last_lr()[0])
     
