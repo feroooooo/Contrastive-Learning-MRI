@@ -18,8 +18,8 @@ class MRIAugmentation:
             # 随机裁剪
             RandSpatialCrop(roi_size=(81, 99, 81), random_size=True),
             
-            # # 翻转和旋转
-            # RandFlip(prob=0.5, spatial_axis=0),
+            # 翻转和旋转
+            RandFlip(prob=0.5, spatial_axis=0),
             # RandRotate90(prob=0.5, spatial_axes=[1, 2]),
             # RandRotate90(prob=0.5, spatial_axes=[0, 1]),
             # RandRotate90(prob=0.5, spatial_axes=[0, 2]),
@@ -33,7 +33,7 @@ class MRIAugmentation:
             # 随机高斯噪声
             RandGaussianNoise(prob=0.5),
             # 随机仿射变换
-            RandAffine(prob=0.7, translate_range=10, scale_range=(0.9, 1.1), rotate_range=(0, 0, np.pi/15)),
+            # RandAffine(prob=0.7, translate_range=10, scale_range=(0.9, 1.1), rotate_range=(0, 0, np.pi/15)),
             
             Resize(spatial_size=[size, size, size]),
             NormalizeIntensity(channel_wise=True),
