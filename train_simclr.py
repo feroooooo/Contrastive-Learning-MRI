@@ -13,6 +13,8 @@ from tqdm import tqdm
 from mri_dataset import ADNIDataset
 from monai.transforms import *
 from data_augmentation import MRIAugmentation
+from model import Simple3DCNN_SimCLR, VoxVGG_SimCLR, VoxResNet_SimCLR
+
 
 args = argparse.Namespace()
 args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -23,15 +25,15 @@ args.fp16_precision = False
 args.arch = 'vgg'
 args.log_every_n_steps = 100
 args.learning_rate = 0.00003
-args.epochs = 200
+args.epochs = 8
 args.disable_cuda = not torch.cuda.is_available()
 args.dataset_dir = r"E:\Data\ADNI\adni-fnirt-corrected"
-args.csv_path = r"E:\Data\ADNI\pheno_ADNI_longitudinal_new.csv"
+# args.csv_path = r"E:\Data\ADNI\pheno_ADNI_longitudinal_new.csv"
+args.csv_path = r"E:\Data\ADNI\label_0.1.csv"
 args.dataset_name = 'mri'
 args.weight_decay = 1e-4
 args.out_dim = 128
-args
-
+print(args)
 
 class BaseSimCLRException(Exception):
     """Base exception"""
@@ -129,6 +131,7 @@ class SimCLR(object):
         self.optimizer = kwargs['optimizer']
         self.scheduler = kwargs['scheduler']
         self.writer = SummaryWriter()
+        os.mkdir(os.path.join(self.writer.log_dir, 'checkpoint_contrast'))
         logging.basicConfig(filename=os.path.join(self.writer.log_dir, 'training.log'), level=logging.DEBUG)
         self.criterion = torch.nn.CrossEntropyLoss().to(self.args.device)
 
@@ -173,6 +176,7 @@ class SimCLR(object):
         n_iter = 0
         logging.info(f"Start SimCLR training for {self.args.epochs} epochs.")
         logging.info(f"Training with gpu: {not self.args.disable_cuda}.")
+        logging.info(str(ContrastiveLearningDataset.get_simclr_pipeline_transform(100).transforms))
 
         for epoch_counter in range(self.args.epochs):
             for images, _ in tqdm(train_loader):
@@ -205,43 +209,43 @@ class SimCLR(object):
                 self.scheduler.step()
             logging.debug(f"Epoch: {epoch_counter + 1}\tLoss: {loss}\tTop1 accuracy: {top1[0]}")
             
-            checkpoint_name = 'checkpoint_{:04d}.pth'.format(epoch_counter + 1)
-            save_checkpoint({
-                'epoch': epoch_counter + 1,
-                'arch': self.args.arch,
-                'model': self.model.state_dict(),
-                'optimizer': self.optimizer.state_dict(),
-                'scheduler': self.scheduler.state_dict(),
-            }, is_best=False, filename=os.path.join(self.writer.log_dir, checkpoint_name))
+            if (epoch_counter + 1) % 5 == 0:
+                checkpoint_name = 'checkpoint_{:04d}.pth'.format(epoch_counter + 1)
+                save_checkpoint({
+                    'epoch': epoch_counter + 1,
+                    'arch': self.args.arch,
+                    'model': self.model.state_dict(),
+                    'optimizer': self.optimizer.state_dict(),
+                    'scheduler': self.scheduler.state_dict(),
+                }, is_best=False, filename=os.path.join(self.writer.log_dir, 'checkpoint_contrast' ,checkpoint_name))
 
         logging.info("Training has finished.")
         # save model checkpoints
-        checkpoint_name = 'checkpoint.pth'.format(self.args.epochs)
+        checkpoint_name = 'checkpoint_last.pth'.format(self.args.epochs)
         save_checkpoint({
             'epoch': self.args.epochs,
             'arch': self.args.arch,
             'model': self.model.state_dict()
-        }, is_best=False, filename=os.path.join(self.writer.log_dir, checkpoint_name))
+        }, is_best=False, filename=os.path.join(self.writer.log_dir, 'checkpoint_contrast' ,checkpoint_name))
         logging.info(f"Model checkpoint and metadata has been saved at {self.writer.log_dir}.")
 
 
-from model import Simple3DCNN_SimCLR, VoxVGG_SimCLR, VoxResNet_SimCLR
+if __name__ == "__main__":
+    if args.arch == 'simple':
+        model = Simple3DCNN_SimCLR(out_dim=args.out_dim)
+    elif args.arch == 'vgg':
+        model = VoxVGG_SimCLR(out_dim=args.out_dim)
+    elif args.arch == 'resnet':
+        model = VoxResNet_SimCLR(out_dim=args.out_dim)
+    else:
+        raise InvalidBackboneError("Invalid backbone architecture.")
+    print(model)
 
-if args.arch == 'simple':
-    model = Simple3DCNN_SimCLR(out_dim=args.out_dim)
-elif args.arch == 'vgg':
-    model = VoxVGG_SimCLR(out_dim=args.out_dim)
-elif args.arch == 'resnet':
-    model = VoxResNet_SimCLR(out_dim=args.out_dim)
-else:
-    raise InvalidBackboneError("Invalid backbone architecture.")
-print(model)
 
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
 
-optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=len(train_loader), eta_min=0, last_epoch=-1)
 
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=len(train_loader), eta_min=0, last_epoch=-1)
-
-simclr = SimCLR(model=model, optimizer=optimizer, scheduler=scheduler, args=args)
-simclr.train(train_loader)
+    simclr = SimCLR(model=model, optimizer=optimizer, scheduler=scheduler, args=args)
+    simclr.train(train_loader)
 

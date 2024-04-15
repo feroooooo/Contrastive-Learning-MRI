@@ -108,10 +108,11 @@ def split_dataset_subject(data_dir, csv_path, output_dir):
     df_filtered.to_csv(os.path.join(output_dir, 'single_subject.csv'), index=False)
     print('subject num:', len(subjects))
     
-    
+
+# 仅含单一被试的数据集分为训练集、验证集和测试集
 def split_single_three(csv_path, output_dir):
     # 步骤1: 读取CSV文件
-    df = pd.read_csv(csv_path)  # 将'your_file.csv'替换为你的文件路径
+    df = pd.read_csv(csv_path)
 
     # 步骤2: 分割数据集
     # random_state参数确保了分割的可重复性，可以设置为任意的整数值
@@ -127,12 +128,21 @@ def split_single_three(csv_path, output_dir):
     test.to_csv(os.path.join(output_dir, 'single_test.csv'), index=False)
 
 
+# 保留一定百分比的数据集
+def sample(csv_path, output_dir, percentage = 0.01):
+    df = pd.read_csv(csv_path)
+    sampled_df = df.sample(frac=percentage)
+    print("origin size:", len(df))
+    print("sampled size:", len(sampled_df))
+    sampled_df.to_csv(os.path.join(output_dir, f'label_{percentage}.csv'), index=False)
+
 
 if __name__ == '__main__':
-    # csv_path = r"C:\Custom\DataSet\ADNI_预处理后\pheno_ADNI_longitudinal_new.csv"
+    # csv_path = r"E:\Data\ADNI\pheno_ADNI_longitudinal_new.csv"
     csv_path = r"E:\Data\ADNI\single_subject.csv"
     data_dir = r'E:\Data\ADNI\adni-fnirt-corrected'
     output_dir = r'E:\Data\ADNI'
     check_data(data_dir, csv_path)
     # split_dataset_subject(data_dir, csv_path, output_dir)
-    split_single_three(csv_path, output_dir)
+    # split_single_three(csv_path, output_dir)
+    sample(csv_path, output_dir, 0.1)

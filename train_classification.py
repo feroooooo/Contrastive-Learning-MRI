@@ -13,15 +13,10 @@ from mri_dataset import ADNIDataset
 from model import Simple3DCNN, VoxVGG, VoxResNet
 from data_augmentation import MRIAugmentation
 
-# TensorBoard
-writer = SummaryWriter()
-
-logging.basicConfig(filename=os.path.join(writer.log_dir, 'training.log'), level=logging.INFO)
-
 
 # 超参数以及其它配置信息
 args = {}
-args['model'] = 'resnet'
+args['model'] = 'vgg'
 args['epoch_num'] = 100
 args['batch_size'] = 8
 args['learning_rate'] = 0.0001
@@ -37,11 +32,30 @@ args['data_dir'] = "E:/Data/ADNI/adni-fnirt-corrected"
 args['use_sampler'] = True
 args['use_cuda'] = True
 
+# 是否为加载权重后线性分类
+args['linear'] = True
+# 权重路径（仅在线性分类时生效）
+# args['weight_path'] = "./runs/simclr_vgg_150/checkpoint_0150.pth.tar"
+args['weight_path'] = r"E:\Code\github\Contrastive-Learning-MRI\runs\Apr15_11-21-44_DESKTOP-ZERO\checkpoint_contrast\checkpoint_0087.pth"
+
+
 device = torch.device("cuda" if torch.cuda.is_available() and args['use_cuda'] else "cpu")
 if str(device) == "cuda":
     args['use_cuda'] = True
 else:
     args['use_cuda'] = False
+
+print()
+
+
+# TensorBoard
+temp = os.path.dirname(args['weight_path'])
+log_dir = os.path.join(temp[:temp.find("checkpoint_contrast")-1], "linear_", os.path.basename(args['weight_path']))
+if not os.path.exists(log_dir):
+    os.mkdir(log_dir)
+writer = SummaryWriter(log_dir=log_dir)
+
+logging.basicConfig(filename=os.path.join(writer.log_dir, 'training.log'), level=logging.INFO)
 
 # 存储信息
 with open(os.path.join(writer.log_dir, 'config.yaml'), 'w') as outfile:
@@ -156,6 +170,36 @@ def eval(model, device, loader, criterion, train=True):
 # 向控制台打印蓝色字符串
 def color_print(str):
     print(f"\033[94m{str}\033[0m")
+    
+    
+def load_model(model, weight_path):
+    checkpoint_path = weight_path
+    print(checkpoint_path)
+    checkpoint = torch.load(checkpoint_path, map_location=device)
+    print("load model epoch:", checkpoint["epoch"])
+    state_dict = checkpoint['model']
+    print('keys:', list(state_dict.keys()))
+
+    for k in list(state_dict.keys()):
+        if k.startswith('backbone.'):
+            if k.startswith('backbone') and not k.startswith('backbone.last_fc'):
+            # remove prefix
+                state_dict[k[len("backbone."):]] = state_dict[k]
+            else:
+                print(k)
+        del state_dict[k]
+    log = model.load_state_dict(state_dict, strict=False)
+    print(log.missing_keys)
+    # freeze all layers but the last fc
+    for name, param in model.named_parameters():
+        if name not in ['fc.weight', 'fc.bias']:
+            param.requires_grad = False
+        else:
+            print(name)
+
+    parameters = list(filter(lambda p: p.requires_grad, model.parameters()))
+    assert len(parameters) == 2  # fc.weight, fc.bias
+    return model
 
 
 if __name__ == "__main__":
@@ -165,36 +209,7 @@ if __name__ == "__main__":
     # 数据增强
     transform = MRIAugmentation.get_augmentation_transforms()
     pre_transform = MRIAugmentation.get_pre_transforms()
-    # from monai.transforms import Compose, RandRotate90, RandFlip, NormalizeIntensity, Resize, RandAdjustContrast, RandGaussianNoise, RandAffine, RandSpatialCrop
     
-    # transform = Compose([
-    #     # 随机裁剪
-    #     RandSpatialCrop(roi_size=(81, 99, 81), random_size=True),
-        
-    #     # 翻转和旋转
-    #     RandFlip(prob=0.5, spatial_axis=0),
-    #     RandRotate90(prob=0.5, spatial_axes=[1, 2]),
-    #     RandRotate90(prob=0.5, spatial_axes=[0, 1]),
-    #     RandRotate90(prob=0.5, spatial_axes=[0, 2]),
-    #     # RandFlip(prob=0.5, spatial_axis=1),
-    #     # RandFlip(prob=0.5, spatial_axis=2),
-        
-    #     # RandRotate(range_x=(-15, 15), range_y=(-15, 15), range_z=(-15, 15), prob=0.5)
-        
-    #     # 随机对比度
-    #     RandAdjustContrast(prob=args['prob'], gamma=(0.5, 1.5)),
-    #     # 随机高斯噪声
-    #     RandGaussianNoise(prob=args['prob']),
-    #     # RandAffine(prob=args['prob'], translate_range=10, scale_range=(0.9, 1.1), rotate_range=(0, 0, np.pi/15))
-        
-    #     Resize(spatial_size=[args['size'], args['size'], args['size']]),
-    #     NormalizeIntensity(channel_wise=True),
-    # ])
-    
-    # pre_transform = Compose([
-    #     Resize(spatial_size=[args['size'], args['size'], args['size']]),
-    #     NormalizeIntensity(channel_wise=True),
-    # ])
     
     # 导入数据集
     # 先导入数据，再切分
@@ -277,6 +292,10 @@ if __name__ == "__main__":
         model = VoxVGG(class_nums=3).to(device)
     elif args['model'] == 'resnet':
         model = VoxResNet(class_nums=3).to(device)
+    
+    if args['linear']:
+        load_model(model, args['weight_path'])
+    
     # 定义损失函数和优化器
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.Adam(model.parameters(), lr=args['learning_rate'])
