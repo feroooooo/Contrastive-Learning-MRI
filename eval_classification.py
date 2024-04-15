@@ -9,9 +9,8 @@ from data_augmentation import MRIAugmentation
 
 args = {}
 args['arch'] = 'vgg'
-# args['weight_path'] = './weights/checkpoint_classification_vgg.pth'
+args['weight_path'] = './weights/checkpoint_classification_vgg.pth'
 # args['weight_path']= './runs/simclr_fintune_vgg/checkpoint_best.pth'
-args['weight_path']= './runs/resnet_classification_1/checkpoint_best.pth'
 args['data_dir'] = "E:/Data/ADNI/adni-fnirt-corrected"
 args['csv_train_path'] = "E:/Data/ADNI/single_train.csv"
 args['csv_validation_path'] = "E:/Data/ADNI/single_validation.csv"
@@ -33,8 +32,10 @@ print("accuracy:", weights["accuracy"])
 print("loss:", weights["loss"])
 print("epoch:", weights["epoch"])
 
-# model = VoxVGG(class_nums=3).to(device)
-model = VoxResNet(class_nums=3).to(device)
+if args["arch"] == 'resnet':
+    model = VoxResNet(class_nums=3).to(device)
+elif args["arch"] == 'vgg':
+    model = VoxVGG(class_nums=3).to(device)
 model.load_state_dict(weights["model"], strict=False)
 criterion = nn.CrossEntropyLoss().to(device)
 

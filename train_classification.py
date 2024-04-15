@@ -34,7 +34,9 @@ args['use_cuda'] = True
 
 # 是否为加载权重后线性分类
 args['linear'] = True
-# 权重路径（仅在线性分类时生效）
+# 是否为加载权重后微调
+args['finetune'] = False
+# 权重路径（仅在线性分类和微调时生效）
 # args['weight_path'] = "./runs/simclr_vgg_150/checkpoint_0150.pth.tar"
 args['weight_path'] = r"E:\Code\github\Contrastive-Learning-MRI\runs\Apr15_11-21-44_DESKTOP-ZERO\checkpoint_contrast\checkpoint_0087.pth"
 
@@ -49,11 +51,21 @@ print()
 
 
 # TensorBoard
-temp = os.path.dirname(args['weight_path'])
-log_dir = os.path.join(temp[:temp.find("checkpoint_contrast")-1], "linear_", os.path.basename(args['weight_path']))
-if not os.path.exists(log_dir):
-    os.mkdir(log_dir)
-writer = SummaryWriter(log_dir=log_dir)
+if args['linear']:
+    temp = os.path.dirname(args['weight_path'])
+    log_dir = os.path.join(temp[:temp.find("checkpoint_contrast")-1], f"linear_{os.path.basename(args['weight_path'])}")
+    if not os.path.exists(log_dir):
+        os.mkdir(log_dir)
+elif args['finetune']:
+    temp = os.path.dirname(args['weight_path'])
+    log_dir = os.path.join(temp[:temp.find("checkpoint_contrast")-1], f"finetune_{os.path.basename(args['weight_path'])}")
+
+if args['linear'] or args['finetune']:
+    if not os.path.exists(log_dir):
+        os.mkdir(log_dir)
+    writer = SummaryWriter(log_dir=log_dir)
+else:
+    writer = SummaryWriter()
 
 logging.basicConfig(filename=os.path.join(writer.log_dir, 'training.log'), level=logging.INFO)
 
@@ -171,8 +183,9 @@ def eval(model, device, loader, criterion, train=True):
 def color_print(str):
     print(f"\033[94m{str}\033[0m")
     
-    
-def load_model(model, weight_path):
+
+# 加载权重
+def load_model(model, weight_path, freeze=True):
     checkpoint_path = weight_path
     print(checkpoint_path)
     checkpoint = torch.load(checkpoint_path, map_location=device)
@@ -190,15 +203,17 @@ def load_model(model, weight_path):
         del state_dict[k]
     log = model.load_state_dict(state_dict, strict=False)
     print(log.missing_keys)
-    # freeze all layers but the last fc
-    for name, param in model.named_parameters():
-        if name not in ['fc.weight', 'fc.bias']:
-            param.requires_grad = False
-        else:
-            print(name)
-
-    parameters = list(filter(lambda p: p.requires_grad, model.parameters()))
-    assert len(parameters) == 2  # fc.weight, fc.bias
+    
+    if freeze:
+        # freeze all layers but the last fc
+        for name, param in model.named_parameters():
+            if name not in ['fc.weight', 'fc.bias']:
+                param.requires_grad = False
+            else:
+                print(name)
+        parameters = list(filter(lambda p: p.requires_grad, model.parameters()))
+        assert len(parameters) == 2  # fc.weight, fc.bias
+    
     return model
 
 
@@ -295,6 +310,8 @@ if __name__ == "__main__":
     
     if args['linear']:
         load_model(model, args['weight_path'])
+    elif args['finetune']:
+        load_model(model, args['weight_path'], False)
     
     # 定义损失函数和优化器
     criterion = nn.CrossEntropyLoss().to(device)
