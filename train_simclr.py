@@ -25,14 +25,18 @@ args.fp16_precision = False
 args.arch = 'vgg'
 args.log_every_n_steps = 100
 args.learning_rate = 0.00003
-args.epochs = 8
+args.epochs = 10
 args.disable_cuda = not torch.cuda.is_available()
-args.dataset_dir = r"E:\Data\ADNI\adni-fnirt-corrected"
+# args.dataset_dir = r"E:\Data\ADNI\adni-fnirt-corrected"
+args.dataset_dir = r"C:\Custom\DataSet\ADNI_预处理后\Image"
 # args.csv_path = r"E:\Data\ADNI\pheno_ADNI_longitudinal_new.csv"
-args.csv_path = r"E:\Data\ADNI\label_0.1.csv"
+# args.csv_path = r"E:\Data\ADNI\label_0.1.csv"
+args.csv_path = r"C:\Custom\DataSet\ADNI_预处理后\label_0.01.csv"
 args.dataset_name = 'mri'
 args.weight_decay = 1e-4
 args.out_dim = 128
+args.retrain = True
+args.weight_path = r"C:\Users\17993\Desktop\python\Contrastive-Learning-MRI\runs\Apr16_14-18-26_RedMiPro15R7\checkpoint_contrast\checkpoint_0005.pth"
 print(args)
 
 class BaseSimCLRException(Exception):
@@ -166,7 +170,7 @@ class SimCLR(object):
         logits = logits / self.args.temperature
         return logits, labels
 
-    def train(self, train_loader):
+    def train(self, train_loader, start_epoch = 1):
 
         scaler = GradScaler(enabled=self.args.fp16_precision)
 
@@ -178,7 +182,7 @@ class SimCLR(object):
         logging.info(f"Training with gpu: {not self.args.disable_cuda}.")
         logging.info(str(ContrastiveLearningDataset.get_simclr_pipeline_transform(100).transforms))
 
-        for epoch_counter in range(self.args.epochs):
+        for epoch_counter in range(start_epoch - 1, self.args.epochs):
             for images, _ in tqdm(train_loader):
                 images = torch.cat(images, dim=0)
 
@@ -197,7 +201,7 @@ class SimCLR(object):
                 scaler.update()
                 if n_iter % self.args.log_every_n_steps == 0:
                     top1, top5 = accuracy(logits, labels, topk=(1, 5))
-                    self.writer.add_scalar('loss', loss, global_step=n_iter)
+                    self.writer.add_scalar('loss', loss.item(), global_step=n_iter)
                     self.writer.add_scalar('acc/top1', top1[0], global_step=n_iter)
                     self.writer.add_scalar('acc/top5', top5[0], global_step=n_iter)
                     self.writer.add_scalar('learning_rate', self.scheduler.get_last_lr()[0], global_step=n_iter)
@@ -205,11 +209,11 @@ class SimCLR(object):
                 n_iter += 1
 
             # warmup for the first 10 epochs
-            if epoch_counter >= 10:
+            if epoch_counter + 1 > 10:
                 self.scheduler.step()
-            logging.debug(f"Epoch: {epoch_counter + 1}\tLoss: {loss}\tTop1 accuracy: {top1[0]}")
+            logging.debug(f"Epoch: {epoch_counter + 1}\tLoss: {loss.item()}\tTop1 accuracy: {top1[0]}")
             
-            if (epoch_counter + 1) % 5 == 0:
+            if (epoch_counter + 1) % 10 == 0:
                 checkpoint_name = 'checkpoint_{:04d}.pth'.format(epoch_counter + 1)
                 save_checkpoint({
                     'epoch': epoch_counter + 1,
@@ -225,7 +229,9 @@ class SimCLR(object):
         save_checkpoint({
             'epoch': self.args.epochs,
             'arch': self.args.arch,
-            'model': self.model.state_dict()
+            'model': self.model.state_dict(),
+            'optimizer': self.optimizer.state_dict(),
+            'scheduler': self.scheduler.state_dict(),
         }, is_best=False, filename=os.path.join(self.writer.log_dir, 'checkpoint_contrast' ,checkpoint_name))
         logging.info(f"Model checkpoint and metadata has been saved at {self.writer.log_dir}.")
 
@@ -240,12 +246,22 @@ if __name__ == "__main__":
     else:
         raise InvalidBackboneError("Invalid backbone architecture.")
     print(model)
-
+    
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
 
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=len(train_loader), eta_min=0, last_epoch=-1)
 
+    start_epoch = 1
+    if args.retrain:
+        checkpoint = torch.load(args.weight_path, map_location=args.device)
+        model.load_state_dict(checkpoint['model'])
+        optimizer.load_state_dict(checkpoint['optimizer'])
+        scheduler.load_state_dict(checkpoint['scheduler'])
+        start_epoch = checkpoint['epoch'] + 1
+        args.start_epoch = start_epoch
+        print(f"model loaded, start from epoch:{start_epoch}")
+    
     simclr = SimCLR(model=model, optimizer=optimizer, scheduler=scheduler, args=args)
-    simclr.train(train_loader)
+    simclr.train(train_loader, start_epoch)
 
