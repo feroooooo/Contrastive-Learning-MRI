@@ -16,7 +16,7 @@ from data_augmentation import MRIAugmentation
 
 # 超参数以及其它配置信息
 args = {}
-args['model'] = 'vgg'
+args['model'] = 'resnet'
 args['epoch_num'] = 100
 args['batch_size'] = 8
 args['learning_rate'] = 0.0001
@@ -32,13 +32,17 @@ args['data_dir'] = "E:/Data/ADNI/adni-fnirt-corrected"
 args['use_sampler'] = True
 args['use_cuda'] = True
 
+# 是否为继续训练
+args['retrain'] = True
 # 是否为加载权重后线性分类
-args['linear'] = True
+args['linear'] = False
 # 是否为加载权重后微调
-args['finetune'] = False
+args['finetune'] = True
+# 是否数据增强（仅在线性分类和微调时生效）
+args['augmentation'] = True
 # 权重路径（仅在线性分类和微调时生效）
 # args['weight_path'] = "./runs/simclr_vgg_150/checkpoint_0150.pth.tar"
-args['weight_path'] = r"E:\Code\github\Contrastive-Learning-MRI\runs\Apr15_11-21-44_DESKTOP-ZERO\checkpoint_contrast\checkpoint_0087.pth"
+args['weight_path'] = r"E:\Code\github\Contrastive-Learning-MRI\runs\simclr_resnet_100\checkpoint_contrast\checkpoint_0100.pth"
 
 
 device = torch.device("cuda" if torch.cuda.is_available() and args['use_cuda'] else "cpu")
@@ -47,7 +51,7 @@ if str(device) == "cuda":
 else:
     args['use_cuda'] = False
 
-print()
+print()     
 
 
 # TensorBoard
@@ -61,6 +65,8 @@ elif args['finetune']:
     log_dir = os.path.join(temp[:temp.find("checkpoint_contrast")-1], f"finetune_{os.path.basename(args['weight_path'])}")
 
 if args['linear'] or args['finetune']:
+    if args['augmentation']:
+        log_dir += '_aug'
     if not os.path.exists(log_dir):
         os.mkdir(log_dir)
     writer = SummaryWriter(log_dir=log_dir)
@@ -130,6 +136,8 @@ def validate(model, device, validation_loader, criterion):
     global best_epoch
     state = {
         'model': model.state_dict(),
+        'optimizer': optimizer.state_dict(),
+        'scheduler': scheduler.state_dict(),
         'accuracy': accuracy,
         'loss': validation_loss,
         'epoch': epoch,
@@ -172,6 +180,8 @@ def eval(model, device, loader, criterion, train=True):
         print('Saving model...\n')
         state = {
             'model': model.state_dict(),
+            'optimizer': optimizer.state_dict(),
+            'scheduler': scheduler.state_dict(),
             'accuracy': accuracy,
             'loss': loss,
             'epoch': epoch,
@@ -222,7 +232,10 @@ if __name__ == "__main__":
     color_print("Infomations:")
     # 初始化数据集
     # 数据增强
-    transform = MRIAugmentation.get_augmentation_transforms()
+    if (args['linear'] or args['finetune']) and  (not args['augmentation']):
+        transform = MRIAugmentation.get_pre_transforms()
+    else:
+        transform = MRIAugmentation.get_augmentation_transforms()
     pre_transform = MRIAugmentation.get_pre_transforms()
     
     
@@ -307,20 +320,33 @@ if __name__ == "__main__":
         model = VoxVGG(class_nums=3).to(device)
     elif args['model'] == 'resnet':
         model = VoxResNet(class_nums=3).to(device)
-    
-    if args['linear']:
-        load_model(model, args['weight_path'])
-    elif args['finetune']:
-        load_model(model, args['weight_path'], False)
-    
+        
     # 定义损失函数和优化器
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.Adam(model.parameters(), lr=args['learning_rate'])
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
     
+    
+    start_epoch = 1
+    if args['linear']:
+        print("linear")
+        load_model(model, args['weight_path'])
+    elif args['finetune']:
+        print("finetune")
+        load_model(model, args['weight_path'], False)
+    elif args['retrain']:
+        print("retrain")
+        checkpoint = torch.load(args['weight_path'], map_location=device)
+        model.load_state_dict(checkpoint['model'])
+        optimizer.load_state_dict(checkpoint['optimizer'])
+        scheduler.load_state_dict(checkpoint['scheduler'])
+        print("from epoch:", checkpoint["epoch"])
+        start_epoch = checkpoint["epoch"]
+
+    
     color_print("\nStart Training:")
     logging.info("Start Training:\n")
-    for epoch in range(1, args['epoch_num'] + 1):
+    for epoch in range(start_epoch, args['epoch_num'] + 1):
         train(model, device, train_loader, optimizer, criterion, epoch)
         eval(model, device, train_eval_loader, criterion, train=True)
         validate(model, device, validation_loader, criterion)
