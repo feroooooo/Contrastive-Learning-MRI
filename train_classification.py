@@ -109,7 +109,7 @@ best_accuracy = 0
 best_epoch = 0
 
 # 验证
-def validate(model, device, validation_loader, criterion):
+def validate(model, device, validation_loader, criterion, optimizer, scheduler):
     model.eval()
     validation_loss = 0
     correct = 0
@@ -153,7 +153,7 @@ def validate(model, device, validation_loader, criterion):
     
 
 # 评估模型
-def eval(model, device, loader, criterion, train=True):
+def eval(model, device, loader, criterion, optimizer, scheduler, train=True):
     model.eval()
     loss = 0
     correct = 0
@@ -348,8 +348,8 @@ if __name__ == "__main__":
     logging.info("Start Training:\n")
     for epoch in range(start_epoch, args['epoch_num'] + 1):
         train(model, device, train_loader, optimizer, criterion, epoch)
-        eval(model, device, train_eval_loader, criterion, train=True)
-        validate(model, device, validation_loader, criterion)
+        eval(model, device, train_eval_loader, criterion, optimizer, scheduler, train=True)
+        validate(model, device, validation_loader, criterion, optimizer, scheduler)
         if epoch > 10 and epoch < 71:
             scheduler.step()
             print("learning rate:", scheduler.get_last_lr()[0])
@@ -367,4 +367,4 @@ if __name__ == "__main__":
     print(f"best accuracy: {best_accuracy * 100.:.1f}%")
     print(f"best epoch: {best_epoch}\n")
     
-    eval(model, device, test_loader, criterion, train=False)
+    eval(model, device, test_loader, criterion, optimizer, scheduler, train=False)
