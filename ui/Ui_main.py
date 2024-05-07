@@ -955,7 +955,7 @@ class Ui_MainWindow(object):
         self.label_z.setText(QCoreApplication.translate("MainWindow", u"z\uff1a", None))
         self.start_extract_button.setText(QCoreApplication.translate("MainWindow", u"\u63d0\u53d6\u7279\u5f81", None))
         self.saveButton.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58\u6587\u4ef6", None))
-        self.axial_text_label.setText(QCoreApplication.translate("MainWindow", u"\u8f74\u72b6\u4f4d\uff08Axial\uff09", None))
+        self.axial_text_label.setText(QCoreApplication.translate("MainWindow", u"\u8f74\u4f4d\uff08Axial\uff09", None))
         self.saggital_text_label.setText(QCoreApplication.translate("MainWindow", u"\u77e2\u72b6\u4f4d\uff08Saggital\uff09", None))
         self.coronal_text_label.setText(QCoreApplication.translate("MainWindow", u"\u51a0\u72b6\u4f4d\uff08Coronal\uff09", None))
         self.label_x_range.setText(QCoreApplication.translate("MainWindow", u"\uff08\u5f85\u5b9a\uff09", None))

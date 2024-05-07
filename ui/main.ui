@@ -1860,7 +1860,7 @@ QCheckBox{
                            </font>
                           </property>
                           <property name="text">
-                           <string>轴状位（Axial）</string>
+                           <string>轴位（Axial）</string>
                           </property>
                           <property name="alignment">
                            <set>Qt::AlignCenter</set>
