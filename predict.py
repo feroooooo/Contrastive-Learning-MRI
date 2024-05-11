@@ -18,14 +18,14 @@ class Predictor:
         torch.backends.cudnn.benchmark = False
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
-        self.model_classification = VoxVGG(3).to(self.device)
-        # self.model_classification = VoxResNet(3).to(self.device)
+        # self.model_classification = VoxVGG(3).to(self.device)
+        self.model_classification = VoxResNet(3).to(self.device)
         self.model_classification = medcam.inject(self.model_classification, output_dir='attention_maps', backend='gcam', save_maps=False, return_attention=True, layer='auto')
         # 输出固定为128维，与参数无关（最后的MLP被去掉）
         self.model_simclr = VoxVGG_SimCLR(256).to(self.device)
         self.model_simclr.backbone.last_fc = torch.nn.Identity()
-        # self.model_classification = self.load_model_classification(self.model_classification, "./weights/checkpoint_classification_resnet.pth")
-        self.model_classification = self.load_model_classification(self.model_classification, "./weights/checkpoint_classification_vgg.pth")
+        self.model_classification = self.load_model_classification(self.model_classification, "./weights/checkpoint_classification_resnet.pth")
+        # self.model_classification = self.load_model_classification(self.model_classification, "./weights/checkpoint_classification_vgg.pth")
         self.model_simclr = self.load_model_simclr(self.model_simclr, "./weights/checkpoint_simclr_vgg.pth")        
         
     
@@ -91,7 +91,7 @@ class Predictor:
         
     def classify(self, nii_img:np.ndarray):
         nii_img = self.img_pre_process(nii_img)
-        label_mapping = {0: 'NC', 1: 'MCI', 2: 'AD'}
+        label_mapping = {0: 'CN', 1: 'MCI', 2: 'AD'}
         self.model_classification.eval()
         with torch.no_grad():
             outputs, attention_map = self.model_classification(nii_img)

@@ -2266,7 +2266,7 @@ QLabel#operator_title_label{
                            </rect>
                           </property>
                           <property name="text">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='line-height: 125%;'&gt;&lt;b&gt;特征提取界面：&lt;/b&gt;用于将脑结构磁共振图像转换为向量形式，供下游任务使用。点击选择图像按钮选择要提取特征的图像（nii或gz格式），加载图像后可在界面进行预览，通过选择x，y，z来观察不同的切片。点击提取特征按钮进行特征提取，等待提取完成。提取完成后点击保存文件按钮将以vector文件格式将向量形式的特征保存。&lt;/p&gt;&lt;p style='line-height: 125%;'&gt;&lt;b&gt;图像分类界面：&lt;/b&gt;加载图像操作同上。点击预测分类按钮可对图像进行分类，结果包括NC（正常对照）、MCI（轻度认知障碍）、AD（认知障碍）。分类完成后，通过勾选展示热力图复选框可观察模型对图像各部分关注程度的热力图。&lt;/p&gt;&lt;p style='line-height: 125%;'&gt;&lt;b&gt;批量处理界面：&lt;/b&gt;通过设置输入和输出目录，可进行批量特征提取和分类。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='line-height: 125%;'&gt;&lt;b&gt;特征提取界面：&lt;/b&gt;用于将脑结构磁共振图像转换为向量形式，供下游任务使用。点击选择图像按钮选择要提取特征的图像（nii或gz格式），加载图像后可在界面进行预览，通过选择x，y，z来观察不同的切片。点击提取特征按钮进行特征提取，等待提取完成。提取完成后点击保存文件按钮将以vector文件格式将向量形式的特征保存。&lt;/p&gt;&lt;p style='line-height: 125%;'&gt;&lt;b&gt;图像分类界面：&lt;/b&gt;加载图像操作同上。点击预测分类按钮可对图像进行分类，结果包括CN（认知正常）、MCI（轻度认知障碍）、AD（认知障碍）。分类完成后，通过勾选展示热力图复选框可观察模型对图像各部分关注程度的热力图。&lt;/p&gt;&lt;p style='line-height: 125%;'&gt;&lt;b&gt;批量处理界面：&lt;/b&gt;通过设置输入和输出目录，可进行批量特征提取和分类。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                           <property name="alignment">
                            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>

@@ -375,6 +375,7 @@ class MainWindow(QMainWindow):
             self.ui.label_x_range.setText(f"(1~{nii_img.shape[0]})")
             self.ui.label_y_range.setText(f"(1~{nii_img.shape[1]})")
             self.ui.label_z_range.setText(f"(1~{nii_img.shape[2]})")
+            self.ui.heatmap_checkBox.setChecked(False)
             self.refresh_pixmap()
             
             self.eventFilter.loaded = True
