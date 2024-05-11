@@ -139,10 +139,10 @@ def sample(csv_path, output_dir, percentage = 0.01):
 
 if __name__ == '__main__':
     # csv_path = r"E:\Data\ADNI\pheno_ADNI_longitudinal_new.csv"
-    csv_path = r"C:\Custom\DataSet\ADNI_预处理后\pheno_ADNI_longitudinal_new.csv"
-    data_dir = r'C:\Custom\DataSet\ADNI_预处理后\Image'
-    output_dir = r'C:\Custom\DataSet\ADNI_预处理后'
+    csv_path = r"E:\Data\ADNI\label\50%\label_0.5.csv"
+    data_dir = r'E:\Data\ADNI\adni-fnirt-corrected'
+    output_dir = r'E:\Data\ADNI\label\50%'
     check_data(data_dir, csv_path)
     # split_dataset_subject(data_dir, csv_path, output_dir)
-    # split_single_three(csv_path, output_dir)
-    sample(csv_path, output_dir, 0.01)
+    split_single_three(csv_path, output_dir)
+    # sample(csv_path, output_dir, 0.5)

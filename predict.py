@@ -6,6 +6,7 @@ from monai import transforms
 import random
 
 from model import *
+from data_augmentation import MRIAugmentation
 
 class Predictor:
     def __init__(self) -> None:
@@ -18,10 +19,12 @@ class Predictor:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
         self.model_classification = VoxVGG(3).to(self.device)
+        # self.model_classification = VoxResNet(3).to(self.device)
         self.model_classification = medcam.inject(self.model_classification, output_dir='attention_maps', backend='gcam', save_maps=False, return_attention=True, layer='auto')
         # 输出固定为128维，与参数无关（最后的MLP被去掉）
         self.model_simclr = VoxVGG_SimCLR(256).to(self.device)
         self.model_simclr.backbone.last_fc = torch.nn.Identity()
+        # self.model_classification = self.load_model_classification(self.model_classification, "./weights/checkpoint_classification_resnet.pth")
         self.model_classification = self.load_model_classification(self.model_classification, "./weights/checkpoint_classification_vgg.pth")
         self.model_simclr = self.load_model_simclr(self.model_simclr, "./weights/checkpoint_simclr_vgg.pth")        
         
@@ -31,7 +34,7 @@ class Predictor:
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             weights = torch.load(weights_path, map_location=device)
             for key in weights:
-                if key != "model":
+                if key != "model" and key != "optimizer" and key != "scheduler":
                     print(f"{key}:{weights[key]}")
             log = model.load_state_dict(weights["model"])
             print(log)
@@ -104,10 +107,11 @@ class Predictor:
     def img_pre_process(self, nii_img):
         print(f"image dimension: {nii_img.shape}")
         
-        transform = transforms.Compose([
-            transforms.Resize(spatial_size=[100, 100, 100]),
-            transforms.NormalizeIntensity(nonzero=True, channel_wise=True),
-        ])
+        # transform = transforms.Compose([
+        #     transforms.Resize(spatial_size=[100, 100, 100]),
+        #     transforms.NormalizeIntensity(nonzero=True, channel_wise=True),
+        # ])
+        transform = MRIAugmentation.get_pre_transforms()
         nii_img = torch.from_numpy(nii_img)
         nii_img = nii_img.unsqueeze(0)
         nii_img = transform(nii_img)

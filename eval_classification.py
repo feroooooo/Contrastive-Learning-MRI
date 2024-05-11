@@ -8,8 +8,8 @@ from model import *
 from data_augmentation import MRIAugmentation
 
 args = {}
-args['arch'] = 'vgg'
-args['weight_path'] = './weights/checkpoint_classification_vgg.pth'
+args['arch'] = 'resnet'
+args['weight_path'] = r"E:\Code\github\Contrastive-Learning-MRI\runs\simclr_resnet_100\linear_checkpoint_0100.pth_aug\checkpoint_last.pth"
 # args['weight_path']= './runs/simclr_fintune_vgg/checkpoint_best.pth'
 args['data_dir'] = "E:/Data/ADNI/adni-fnirt-corrected"
 args['csv_train_path'] = "E:/Data/ADNI/single_train.csv"

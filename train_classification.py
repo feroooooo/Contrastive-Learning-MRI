@@ -22,6 +22,8 @@ args['batch_size'] = 8
 args['learning_rate'] = 0.0001
 # 数据形式（single：每个被试图像唯一、split：每个被试图像不唯一，但对于某个被试，其图像只同时存在于一个集合、all：每个被试图像不唯一）
 args['data_type'] = 'single_split'
+# 标签比例
+args['partition'] = 1
 # 每个数据增强方法的概率
 # args['prob'] = 1
 # 图像resize后的大小，三个维度相同
@@ -33,16 +35,16 @@ args['use_sampler'] = True
 args['use_cuda'] = True
 
 # 是否为继续训练
-args['retrain'] = True
+args['retrain'] = False
 # 是否为加载权重后线性分类
-args['linear'] = False
+args['linear'] = True
 # 是否为加载权重后微调
-args['finetune'] = True
+args['finetune'] = False
 # 是否数据增强（仅在线性分类和微调时生效）
 args['augmentation'] = True
 # 权重路径（仅在线性分类和微调时生效）
 # args['weight_path'] = "./runs/simclr_vgg_150/checkpoint_0150.pth.tar"
-args['weight_path'] = r"E:\Code\github\Contrastive-Learning-MRI\runs\simclr_resnet_100\checkpoint_contrast\checkpoint_0100.pth"
+args['weight_path'] = r"E:\Code\github\Contrastive-Learning-MRI\runs\simclr_resnet_100_without_contrast\checkpoint_contrast\checkpoint_0100.pth"
 
 
 device = torch.device("cuda" if torch.cuda.is_available() and args['use_cuda'] else "cpu")
@@ -58,8 +60,6 @@ print()
 if args['linear']:
     temp = os.path.dirname(args['weight_path'])
     log_dir = os.path.join(temp[:temp.find("checkpoint_contrast")-1], f"linear_{os.path.basename(args['weight_path'])}")
-    if not os.path.exists(log_dir):
-        os.mkdir(log_dir)
 elif args['finetune']:
     temp = os.path.dirname(args['weight_path'])
     log_dir = os.path.join(temp[:temp.find("checkpoint_contrast")-1], f"finetune_{os.path.basename(args['weight_path'])}")
@@ -233,8 +233,10 @@ if __name__ == "__main__":
     # 初始化数据集
     # 数据增强
     if (args['linear'] or args['finetune']) and  (not args['augmentation']):
+        print("no augmentation")
         transform = MRIAugmentation.get_pre_transforms()
     else:
+        print("with augmentation")
         transform = MRIAugmentation.get_augmentation_transforms()
     pre_transform = MRIAugmentation.get_pre_transforms()
     
@@ -265,9 +267,18 @@ if __name__ == "__main__":
         validation_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/validation label.csv", transform=pre_transform)
         test_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/test label.csv", transform=pre_transform)
     elif args['data_type'] == 'single_split':
-        train_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_train.csv", transform=transform)
-        validation_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_validation.csv", transform=pre_transform)
-        test_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_test.csv", transform=pre_transform)
+        if args['partition'] == 0.1:
+            train_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path=r"E:/Data/ADNI/label/10%/single_train.csv", transform=transform)
+            validation_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path=r"E:/Data/ADNI/label/10%/single_validation.csv", transform=pre_transform)
+            test_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path=r"E:/Data/ADNI/label/10%/single_test.csv", transform=pre_transform)
+        elif args['partition'] == 0.5:
+            train_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path=r"E:/Data/ADNI/label/50%/single_train.csv", transform=transform)
+            validation_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path=r"E:/Data/ADNI/label/50%/single_validation.csv", transform=pre_transform)
+            test_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path=r"E:/Data/ADNI/label/50%/single_test.csv", transform=pre_transform)
+        else:
+            train_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_train.csv", transform=transform)
+            validation_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_validation.csv", transform=pre_transform)
+            test_dataset = ADNIDataset(data_dir=args['data_dir'], csv_path="E:/Data/ADNI/single_test.csv", transform=pre_transform)
     import copy
     train_eval_dataset = copy.deepcopy(train_dataset)
     train_eval_dataset.transform = pre_transform
