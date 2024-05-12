@@ -22,11 +22,13 @@ class Predictor:
         self.model_classification = VoxResNet(3).to(self.device)
         self.model_classification = medcam.inject(self.model_classification, output_dir='attention_maps', backend='gcam', save_maps=False, return_attention=True, layer='auto')
         # 输出固定为128维，与参数无关（最后的MLP被去掉）
-        self.model_simclr = VoxVGG_SimCLR(256).to(self.device)
+        # self.model_simclr = VoxVGG_SimCLR(256).to(self.device)
+        self.model_simclr = VoxResNet_SimCLR(256).to(self.device)
         self.model_simclr.backbone.last_fc = torch.nn.Identity()
         self.model_classification = self.load_model_classification(self.model_classification, "./weights/checkpoint_classification_resnet.pth")
         # self.model_classification = self.load_model_classification(self.model_classification, "./weights/checkpoint_classification_vgg.pth")
-        self.model_simclr = self.load_model_simclr(self.model_simclr, "./weights/checkpoint_simclr_vgg.pth")        
+        self.model_simclr = self.load_model_simclr(self.model_simclr, "./weights/checkpoint_simclr_resnet.pth")
+        # self.model_simclr = self.load_model_simclr(self.model_simclr, "./weights/checkpoint_simclr_vgg.pth")        
         
     
     def load_model_classification(self, model:nn.Module, weights_path):
@@ -49,9 +51,9 @@ class Predictor:
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             weights = torch.load(weights_path, map_location=device)
             for key in weights:
-                if key != "state_dict" and key != "optimizer":
+                if key != "model" and key != "optimizer" and key != "scheduler":
                     print(f"{key}:{weights[key]}")
-            state_dict = weights['state_dict']
+            state_dict = weights['model']
             
 
             for k in list(state_dict.keys()):
