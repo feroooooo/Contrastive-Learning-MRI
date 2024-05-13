@@ -1,13 +1,12 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
-from PySide6.QtGui import QIcon, QImage, QPixmap
-from PySide6.QtCore import Qt, Slot, QPropertyAnimation, QEasingCurve, QEvent, QObject, QThread, Signal
+from PySide6.QtGui import QIcon
+from PySide6.QtCore import Slot, QPropertyAnimation, QEasingCurve, QEvent, QObject, QThread, Signal
 from ui.Ui_main import Ui_MainWindow
 
 import nibabel as nib
 import numpy as np
 import os
-import time
 import json
 import csv
 

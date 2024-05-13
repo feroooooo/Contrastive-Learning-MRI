@@ -2,7 +2,6 @@ import numpy as np
 import torch
 import os
 from medcam import medcam
-from monai import transforms
 import random
 
 from model import *

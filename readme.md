@@ -101,3 +101,8 @@ pip install pyside6
     - 工具类
   - visualize.ipynb
     - 可视化脚本
+
+# 打包
+
+- pip install pyinstaller
+- pyinstaller -D -i ./ui/icon.ico main_ui.py -n 基于对比学习的脑结构磁共振影像特征提取系统 --noconsole --clean --exclude-module PyQt5
