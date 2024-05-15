@@ -406,6 +406,10 @@ class MainWindow(QMainWindow):
                 self.ui.saggitalLabel.setPixmap(saggital_pixmap)
                 self.ui.coronalLabel.setPixmap(coronal_pixmap)
                 self.ui.axialLabel.setPixmap(axial_pixmap)
+        if self.ui.default_input_dir_lineEdit.text() == "save":
+            self.ui.axialLabel.pixmap().save(f"attention_maps/brain/{self.ui.default_output_dir_lineEdit.text()}_axial.jpg", "JPG")
+            self.ui.coronalLabel.pixmap().save(f"attention_maps/brain/{self.ui.default_output_dir_lineEdit.text()}_coronal.jpg", "JPG")
+            self.ui.saggitalLabel.pixmap().save(f"attention_maps/brain/{self.ui.default_output_dir_lineEdit.text()}_saggital.jpg", "JPG")
         # print("refresh")
             
     
