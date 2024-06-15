@@ -1,6 +1,4 @@
-毕设
-
-# 环境配置
+# Environment
 
 ```Shell
 conda create -n mri python=3.11
@@ -20,17 +18,17 @@ pip install pyside6
 
 # TensorBoard
 
-- 启动
+- Start
   - tensorboard --logdir=$logdir$
 - url
   - http://localhost:6006
 
-# 可视化应用
+# Visualize
 
-- 启动
+- Start
   - python main_ui.py
 
-# 文件说明
+# File Description
 
 - learn
   - description
